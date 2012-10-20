@@ -8,10 +8,19 @@ import collections
 import os
 import re
 
+def abstractNum(num):
+    '''Get the number of the title and construct the '#', '##', or '###'.'''
+    lst = num.split('.')
+    if lst[-1] == '':    # chapter numbering ends with dot
+        del lst[-1]
+    return '#' * len(lst)
+
+
 def extractCZ(fname):
     toc = []
     page_headers = []
-    headings = []
+    chapters = []
+    chapter_content = None
 
     # TOC line example: "1.1 Správa verzí -- 17"
     # where '--' is the Em-dash.
@@ -20,6 +29,7 @@ def extractCZ(fname):
 
     rexTOC = re.compile(r'^' + patTOC + r'$')
     rexHeadingU = re.compile(r'^\u2014\s+(?P<title>.+?)(\s+(?P<pageno>\d+)\s*)$')
+    rexTitle = re.compile(r'^' + patNum + r'\s+(?P<title>.+?)\s*$')
 
     page_header = None  # init -- the page header string (just below form feed)
 
@@ -51,9 +61,7 @@ def extractCZ(fname):
                 else:
                     m = rexTOC.match(line)
                     if m:
-                        toc.append((m.group('num'),
-                                    m.group('title'),
-                                    ))
+                        toc.append((m.group('num'), m.group('title')))
 
             elif status == 3:           # ------- the page header lines after TOC
                 page_header = line.rstrip()
@@ -64,12 +72,31 @@ def extractCZ(fname):
                 if line.startswith('\f'):       # FormFeed
                     status = 3
                 else:
-                    m = rexTOC.match(line)      # TOC-like line in the text
+                    m = rexTitle.match(line)    # numbered chapter, sectio... title
                     if m:
-                        headings.append(line.rstrip())
+                        x = abstractNum(m.group('num'))
+                        if len(x) == 1:
+                            # Close the previous chapter and start the new one.
+                            # Append the chapter title.
+                            if chapter_content is not None:
+                                chapters.append(chapter_content)
+                            s = '{} {} {}\n\n'.format(x, m.group('title'), x)
+                            chapter_content = [s]
+                        else:
+                            # Append the section or subsection title.
+                            s = '{} {} {}\n\n'.format(x, m.group('title'), x)
+                            chapter_content.append(s)
+                    else:
+                        # Append normal line. Ignore the lines before
+                        # the first chapter.
+                        if chapter_content is not None:
+                            chapter_content.append(line)
 
+            elif status == 888:         # ------- actions after EOF
+                # Append the last chapter.
+                chapters.append(chapter_content)
 
-    return toc, page_headers, headings
+    return toc, page_headers, chapters
 
 
 
@@ -83,7 +110,7 @@ if __name__ == '__main__':
 
     # Extract the information from the Czech translation text file (captured
     # and manually edited PDF with the CZ.NIC translation).
-    toc, page_headers, headings = extractCZ('../txtFromPDF/scott_chacon_pro_git_CZ.txt')
+    toc, page_headers, chapters = extractCZ('../txtFromPDF/scott_chacon_pro_git_CZ.txt')
 
     # TOC
     with open(os.path.join(aux_dir, 'czTOC.txt'), 'w', encoding='utf-8') as f:
@@ -93,13 +120,8 @@ if __name__ == '__main__':
         # TOC formatted the src-input way.
         f.write('------------------------------------------------------\n')
         for num, title in toc:
-            # Get the level of the title and construct the '#', '##', or '###'.
-            lst = num.split('.')
-            if lst[-1] == '':    # chapter numbering ends with dot
-                del lst[-1]
-            x = '#' * len(lst)
-
             # The TOC with symbolic levels of titles (no explicit numbering).
+            x = abstractNum(num)
             f.write('{} {} {}\n'.format(x, title, x))
 
     # Page headers
@@ -107,8 +129,29 @@ if __name__ == '__main__':
         for line in page_headers:
             f.write(line + '\n')
 
-    # Headings
-    with open(os.path.join(aux_dir, 'Headings.txt'), 'w', encoding='utf-8') as f:
-        for line in headings:
-            f.write(line + '\n')
+    # Chapters
+    chapter_subdirs = [
+        '01-introduction',
+        '02-git-basics',
+        '03-git-branching',
+        '04-git-server',
+        '05-distributed-git',
+        '06-git-tools',
+        '07-customizing-git',
+        '08-git-and-other-scms',
+        '09-git-internals',
+        ]
 
+    for n, (sub, chapter_content) in enumerate(zip(chapter_subdirs, chapters)):
+        # Create the subdirectory for the chapter.
+        subdir = os.path.join(aux_dir, sub)
+        if not os.path.isdir(subdir):
+            os.mkdir(subdir)
+
+        # Construct the filename for the chapter.
+        fname = '01_chapter{}.mardown'.format(n+1)
+        full_name = os.path.join(subdir, fname)
+
+        # Write the chapter content to the chapter filename.
+        with open(full_name, 'w', encoding='utf-8') as f:
+            f.write(''.join(chapter_content))
