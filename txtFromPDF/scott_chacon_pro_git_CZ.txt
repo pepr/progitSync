@@ -380,8 +380,7 @@ soubory.
 
 Aby se uživatelé tomuto riziku vyhnuli, vyvinuli programátoři už před dlouhou dobou lokální systémy
 VCS s jednoduchou databází, která uchovávala všechny změny souborů s nastavenou správou revizí
-
-Obr. (viz obrázek 1.1).
+(viz obrázek 1.1).
 
 Jedním z velmi oblíbených nástrojů VCS byl systém s názvem rcs, který je ještě dnes distribuován
 s mnoha počítači. Dokonce i populární operační systém Mac OS X obsahuje po nainstalování vývojářských
@@ -395,43 +394,15 @@ týmu. Řešení tohoto problému nabízejí tzv. centralizované systémy sprá
 Version Control System). Tyto systémy, jmenovitě např. CVS, Subversion či Perforce, obsahují
 serverovou část, která uchovává všechny verzované soubory. Z tohoto centrálního úložiště si potom
 soubory stahují jednotliví klienti. Tento koncept byl dlouhá léta standardem pro správu verzí (viz
-
-Obr. obrázek 1.2).
+obrázek 1.2).
 
 
 1.1 Správa verzí 18
-Obrázek 1.1 Obrázek 1.2
-Diagram lokální správy verzí Diagram centralizované správy verzí
+Obrázek 1.1 Diagram lokální správy verzí
 
-Lokální pocítac Centrální server VCS
-
-Databáze verzí
-Lokální kopie
-Nactený soubor Verze 3
-Verze 2
-Verze 1
-Pocítac A
-
-Lokální kopie
-
-Databáze verzí
-
-Nactený soubor
-
-
-Verze 3
-Verze 2
-Verze 1
-
-Pocítac B
-
-Lokální kopie
-
-Nactený soubor
-
+Obrázek 1.2 Diagram centralizované správy verzí
 
 Nabízí ostatně mnoho výhod, zejména v porovnání s lokálními systémy VCS. Každý například
-
 – do určité míry – ví, co dělají ostatní účastníci projektu a administrátoři mají přesnou kontrolu
 nad jednotlivými právy. Kromě toho je podstatně jednodušší spravovat CVCS, než pracovat
 s lokálními databázemi na jednotlivých klientech.
@@ -451,8 +422,7 @@ Version Control System). V systémech DVCS (např. Git, Mercurial, Bazaar nebo D
 nestahují nejnovější verzi souborů (tzv. snímek, anglicky snapshot), ale uchovávají kompletní kopii
 repozitáře (repository). Pokud v takové situaci dojde ke kolapsu serveru, lze jej obnovit zkopírováním
 repozitáře od libovolného uživatele. Každá lokální kopie (checkout) je plnohodnotnou zálohou všech
-
-Obr. dat (viz obrázek 1.3.).
+dat (viz obrázek 1.3.).
 
 Mnoho z těchto systémů navíc bez větších obtíží pracuje i s několika vzdálenými repozitáři, a vy
 tak můžete v rámci jednoho projektu spolupracovat na různých úrovních s rozdílnými skupinami lidí.
@@ -529,8 +499,7 @@ předejít nejasnostem, které mohou vzniknout při používání systému Git.
 Hlavním rozdílem mezi systémem Git a všemi ostatními systémy VCS (včetně Subversion a jemu
 podobných) je způsob, jakým Git zpracovává data. Většina ostatních systémů ukládá informace
 jako seznamy změn jednotlivých souborů. Tyto systémy (CVS, Perforce, Bazaar atd.) chápou uložené
-
-Obr. informace jako sadu souborů a seznamů změn těchto souborů v čase – viz obrázek 1.4.
+informace jako sadu souborů a seznamů změn těchto souborů v čase – viz obrázek 1.4.
 
 Obrázek 1.4
 
@@ -547,8 +516,7 @@ Git zpracovává data jinak. Chápe je spíše jako sadu snímků (snapshots) vl
 souborů. Pokaždé, když v systému zapíšete (uložíte) stav projektu, Git v podstatě „vyfotí“, jak vypadají
 všechny vaše soubory v daném okamžiku, a uloží reference na tento snímek. Pokud v souborech nebyly
 provedeny žádné změny, Git v zájmu zefektivnění práce neukládá znovu celý soubor, ale pouze odkaz
-
-Obr. na předchozí identický soubor, který už byl uložen. Zpracování dat v systému Git ilustruje obrázek 1.5.
+na předchozí identický soubor, který už byl uložen. Zpracování dat v systému Git ilustruje obrázek 1.5.
 
 Toto je důležitý rozdíl mezi systémem Git a téměř všemi ostatními systémy VCS. Git díky tomu znovu
 zkoumá skoro každý aspekt správy verzí, které ostatní systémy kopírovaly z předchozí generace. Git
@@ -753,7 +721,7 @@ $ apt-get install git-core
 
 1.4.3 Instalace v systému Mac
 Existují dva jednoduché způsoby, jak nainstalovat Git v systému Mac. Tím nejjednodušším je použít
-Obr. grafický instalátor Git, který si můžete stáhnout ze stránky Google Code (viz obrázek 1.7):
+grafický instalátor Git, který si můžete stáhnout ze stránky Google Code (viz obrázek 1.7):
 
 http://code.google.com/p/git-osx-installer
 
@@ -1041,9 +1009,7 @@ klonování repozitáře budou všechny vaše soubory sledované a nezměněné,
 jejich checkout a dosud jste neudělali žádné změny.
 
 Jakmile začnete soubory upravovat, Git je bude považovat za „změněné“, protože jste v nich od poslední
-revize provedli změny. Poté všechny tyto změněné soubory připravíte k zapsání a následně všechny při-
-
-Obr. pravené změny zapíšete. Cyklus může začít od začátku. Pracovní cyklus je znázorněn na obrázku 2.1.
+revize provedli změny. Poté všechny tyto změněné soubory připravíte k zapsání a následně všechny připravené změny zapíšete. Cyklus může začít od začátku. Pracovní cyklus je znázorněn na obrázku 2.1.
 
 2.2.1 Kontrola stavu souborů
 Hlavním nástrojem na zjišťování stavu jednotlivých souborů je příkaz git status. Spustíte-li tento
@@ -1783,8 +1749,7 @@ $ git log --pretty=format:"%h %s" --graph
 2.3 Zobrazení historie revizí 43
 * d6016bc require time for xmlschema
 * 11d191e Merge branch 'defunkt' into local
-To je jen několik základních parametrů k formátování výstupu pro příkaz git log, celkově jich je mno-
-Tab. hem více. Tabulka 2.2 uvádí parametry, které jsme už zmínili, a některé další běžné parametry formátování,
+To je jen několik základních parametrů k formátování výstupu pro příkaz git log, celkově jich je mnohem více. Tabulka 2.2 uvádí parametry, které jsme už zmínili, a některé další běžné parametry formátování,
 které mohou být užitečné. Pravý sloupec popisuje, jak který parametr změní výstup logu.
 
 Tabulka 2.2
@@ -1877,10 +1842,7 @@ zadaným kritériím.
 Grafické uživatelské rozhraní pro procházení historie
 Chcete-li použít graficky výrazněji zpracovaný nástroj k procházení historie revizí, možná oceníte
 Tcl/Tk program nazvaný „gitk“, který je distribuován spolu se systémem Git. Gitk je v zásadě grafická
-verze příkazu git log a umožňuje téměř všechny možnosti filtrování jako git log. Pokud do příkazo-
-
-Obr.
-vého řádku ve svém projektu zadáte příkaz gitk, otevře se okno podobné jako na obrázku 2.2.
+verze příkazu git log a umožňuje téměř všechny možnosti filtrování jako git log. Pokud do příkazového řádku ve svém projektu zadáte příkaz gitk, otevře se okno podobné jako na obrázku 2.2.
 
 Obrázek 2.2
 
@@ -2705,8 +2667,7 @@ test.rb
 5b1d3
 911e7
 cb0a
-Jestliže v souborech provedete změny a zapíšete je, další revize uloží ukazatel na revizi, jež jí bezpro-
-Obr. středně předcházela. Po dalších dvou revizích bude vaše historie vypadat jako na obrázku 3.2.
+Jestliže v souborech provedete změny a zapíšete je, další revize uloží ukazatel na revizi, jež jí bezprostředně předcházela. Po dalších dvou revizích bude vaše historie vypadat jako na obrázku 3.2.
 
 Obrázek 3.2
 
@@ -2777,10 +2738,7 @@ f30ab
 Jak Git pozná, na jaké větvi se právě nacházíte? Používá speciální ukazatel zvaný HEAD. Nenechte se
 mást, tento HEAD je velmi odlišný od všech koncepcí v ostatních systémech VCS, na něž jste možná
 zvyklí, jako Subversion nebo CVS. V systému Git se jedná o ukazatel na lokální větev, na níž se právě
-nacházíte. V našem případě jste však stále ještě na hlavní větvi. Příkazem git branch jste pouze vytvo-
-
-Obr.
-řili novou větev, zatím jste na ni nepřepnuli (viz obrázek 3.5).
+nacházíte. V našem případě jste však stále ještě na hlavní větvi. Příkazem git branch jste pouze vytvořili novou větev, zatím jste na ni nepřepnuli (viz obrázek 3.5).
 
 
 3.1 Co je to větev 62
@@ -3020,8 +2978,7 @@ vpřed. Jinými slovy: pokud se pokoušíte sloučit jednu revizi s revizí druh
 historie první revize, Git proces zjednoduší a přesune ukazatel vpřed, protože neexistuje žádná
 rozdílná práce, kterou by bylo třeba sloučit. Tomuto postupu se říká „rychle vpřed“.
 
-Vaše změna je nyní obsažena ve snímku revize, na niž ukazuje hlavní větev master, a vy můžete pokra-
-Obr. čovat v provádění změn (viz obrázek 3.14).
+Vaše změna je nyní obsažena ve snímku revize, na niž ukazuje hlavní větev master, a vy můžete pokračovat v provádění změn (viz obrázek 3.14).
 
 Obrázek 3.14
 
@@ -3426,9 +3383,7 @@ Možná to není úplně jasné, a tak uvedeme malý příklad. Řekněme, že m
 git.ourcompany.com. Pokud provedete klonování z tohoto serveru, Git ho automaticky pojmenuje
 origin, stáhne z něj všechna data, vytvoří ukazatel, který bude označovat jeho hlavní větev, a lokálně
 ji pojmenuje origin/master. Tuto větev nemůžete přesouvat. Git vám dá rovněž vaši vlastní hlavní
-větev, která bude začínat ve stejném místě jako hlavní větev serveru origin. Máte tak definován výcho-
-
-Obr. zí bod pro svoji práci (viz obrázek 3.22).
+větev, která bude začínat ve stejném místě jako hlavní větev serveru origin. Máte tak definován výchozí bod pro svoji práci (viz obrázek 3.22).
 
 dumbidea
 
@@ -3763,10 +3718,7 @@ o poslední z přeskládaných revizí po přeskládání, nebo poslední revizi
 práce ještě jednou v jiné linii, a to v pořadí, v jakém byly provedeny. Sloučení naproti tomu vezme
 koncové body větví a sloučí je dohromady.
 3.6.2 Zajímavější možnosti přeskládání
-Opětovné provedení změn pomocí příkazu rebase můžete využít i jiným účelům než jen k přeskládá-
-
-Obr.
-ní větve. Vezměme například historii na brázku 3.31. Vytvořili jste novou tematickou větev (server),
+Opětovné provedení změn pomocí příkazu rebase můžete využít i jiným účelům než jen k přeskládání větve. Vezměme například historii na brázku 3.31. Vytvořili jste novou tematickou větev (server),
 pomocí níž chcete do svého projektu přidat funkci na straně serveru, a zapsali jste revizi.
 
 Poté jste tuto větev opustili a začali pracovat na změnách na straně klienta (client). I tady jste zapsali
@@ -3786,8 +3738,7 @@ C1C2C5C6C3C4C10C8C9serverclientmaster
 
 3.6 Přeskládání 84
 Tím v podstatě říkáte: „Proveď checkout větve client, zjisti záplaty ze společného předka větví client
-a server a znovu je aplikuj na hlavní větev master.“ Postup je možná trochu složitý, ale výsledek, zná-
-Obr. zorněný na obrázku 3.32, stojí opravdu za to.
+a server a znovu je aplikuj na hlavní větev master.“ Postup je možná trochu složitý, ale výsledek, znázorněný na obrázku 3.32, stojí opravdu za to.
 
 Obrázek 3.32
 
@@ -4253,8 +4204,7 @@ většinou podstatně větší režii síťových operací a objem přenášený
 protokolů. Protože protokol není natolik inteligentní, aby přenášel pouze data, která potřebujete
 
 – v těchto transakcích se na straně serveru nesetkáte s dynamickou činností – je protokol HTTP často
-nazýván „dumb protocol“ (hloupý protokol). Více informací o rozdílech ve výkonnosti mezi protoko-
-Kap. lem HTTP a ostatními protokoly najdete v kapitole 9.
+nazýván „dumb protocol“ (hloupý protokol). Více informací o rozdílech ve výkonnosti mezi protokolem HTTP a ostatními protokoly najdete v kapitole 9.
 
 4.2 Jak umístit Git na server
 Pro úvodní nastavení serveru Git je třeba exportovat existující repozitář do nového, holého repozitáře
@@ -4566,8 +4516,7 @@ věnovat v následující části.
 
 4.6 GitWeb 101
 4.6 GitWeb
-Nyní, když máte ke svému projektu nastavena základní oprávnění pro čtení/zápis a pouze pro čte-
-ní, možná budete chtít nastavit jednoduchou online vizualizaci. Git vám nabízí CGI skript s názvem
+Nyní, když máte ke svému projektu nastavena základní oprávnění pro čtení/zápis a pouze pro čtení, možná budete chtít nastavit jednoduchou online vizualizaci. Git vám nabízí CGI skript s názvem
 GitWeb, který slouží k tomuto účelu. Jak GitWeb funguje, na to se můžete podívat např. na stránkách
 http://git.kernel.org (viz obrázek 4.1).
 
@@ -5251,18 +5200,14 @@ Výběr typu účtu na serveru GitHub
 
 
 4.10 Hostování projektů Git 113
-Tady si budete muset zvolit uživatelské jméno, které zatím není v systému obsazeno, a zadat e-mailo-
-Obr. vou adresu, která bude přiřazena k účtu a heslu (viz obrázek 4.3).
+Tady si budete muset zvolit uživatelské jméno, které zatím není v systému obsazeno, a zadat e-mailovou adresu, která bude přiřazena k účtu a heslu (viz obrázek 4.3).
 
 Obrázek 4.3
 
 Registrační formulář na serveru GitHub
 
 
-Po vyplnění osobních údajů nadešel vhodný čas k vložení vašeho veřejného klíče SSH. Jak vygenero-
-
-Kap.
-vat nový klíč, jsme popsali výše, v části 4.3. Vezměte obsah veřejného klíče z daného páru a vložte ho
+Po vyplnění osobních údajů nadešel vhodný čas k vložení vašeho veřejného klíče SSH. Jak vygenerovat nový klíč, jsme popsali výše, v části 4.3. Vezměte obsah veřejného klíče z daného páru a vložte ho
 do textového pole „SSH Public Key“. Kliknutím na odkaz „explain ssh keys“ přejdete na stránku s podrobnými
 instrukcemi, jak klíč vložit ve všech hlavních operačních systémech. Kliknutím na tlačítko
 
@@ -5392,8 +5337,7 @@ jeho oprávnění k odesílání dat. U budoucích projektů budete také moci z
 spolupracovníků zkopírováním oprávnění z existujícího projektu.
 
 4.10.6 Váš projekt
-Po odeslání projektu nebo jeho naimportování ze systému Subversion budete mít hlavní stránku pro-
-Obr. jektu, která bude vypadat přibližně jako na obrázku 4.13.
+Po odeslání projektu nebo jeho naimportování ze systému Subversion budete mít hlavní stránku projektu, která bude vypadat přibližně jako na obrázku 4.13.
 
 Obrázek 4.13
 
@@ -6314,8 +6258,7 @@ $ (email maintainer)
 $ git fetch origin
 
 
-Nyní mají obě vaše témata samostatný zásobník – podobně jako řada záplat – které můžete přepsat, pře-
-Obr. skládat a upravit, aniž by se tím obě témata navzájem ovlivňovala nebo omezovala (viz obrázek 5.16).
+Nyní mají obě vaše témata samostatný zásobník – podobně jako řada záplat – které můžete přepsat, přeskládat a upravit, aniž by se tím obě témata navzájem ovlivňovala nebo omezovala (viz obrázek 5.16).
 
 Řekněme, že správce projektu natáhl do projektu několik jiných záplat a nyní vyzkoušel vaši první větev,
 jenže tu už nelze čistě začlenit. V takovém případě můžete zkusit přeskládat tuto větev na vrcholu
@@ -6361,8 +6304,7 @@ do jedné revize, která nevznikla jako výsledek sloučení a leží na vrcholu
 nacházíte. Parametr --no-commit říká systému Git, aby revizi automaticky nezaznamenával. To vám
 umožní provést všechny změny z jiné větve a poté udělat více změn, než zaznamenáte novou revizi.
 
-Nyní můžete správci oznámit, že jste provedli požadované změny a že je najde ve vaší větvi featu-
-Obr. reBv2 (viz obrázek 5.18).
+Nyní můžete správci oznámit, že jste provedli požadované změny a že je najde ve vaší větvi featureBv2 (viz obrázek 5.18).
 
 Obrázek 5.18
 
@@ -8001,8 +7943,7 @@ pick na edit na více řádcích, můžete tyto kroky opakovat pro každou reviz
 Git pokaždé zastaví, nechá vás revizi upravit, a až budete hotovi, bude pokračovat.
 
 6.4.3 Změna pořadí revizí
-Interaktivní přeskládání můžete použít rovněž ke změně pořadí revizí nebo k jejich odstranění. Bude-
-te-li chtít odstranit revizi „added cat-file“ a současně změnit pořadí, v němž se vyskytují zbývající dvě
+Interaktivní přeskládání můžete použít rovněž ke změně pořadí revizí nebo k jejich odstranění. Budete-li chtít odstranit revizi „added cat-file“ a současně změnit pořadí, v němž se vyskytují zbývající dvě
 revize, změňte skript přeskládání z podoby:
 
 pick f7f3f6d changed my name a bit
@@ -8585,8 +8526,7 @@ a vytvořit repozitáře superprojektu Git, které budou obsahovat několik subm
 je, že můžete podrobněji definovat vztah mezi projekty se značkami a větvemi v superprojektech.
 
 6.6.4 Projekty se submoduly
-Používání submodulů se však vždy neobejde bez zádrhelů. Zaprvé je třeba, abyste si v adresáři sub-
-modulu počínali opatrně. Spustíte-li příkaz git submodule update, provedete tím checkout konkrétní
+Používání submodulů se však vždy neobejde bez zádrhelů. Zaprvé je třeba, abyste si v adresáři submodulu počínali opatrně. Spustíte-li příkaz git submodule update, provedete tím checkout konkrétní
 verze projektu, avšak nikoli v rámci větve. Říká se tomu oddělená hlava (detached head) – znamená to,
 že soubor HEAD ukazuje přímo na revizi, ne na symbolickou referenci. Problém je, že většinou nechcete
 pracovat v prostředí oddělené hlavy, protože tu velmi snadno přijdete o provedené změny. Jestliže nejprve
@@ -8634,8 +8574,7 @@ $ git status
 Budete ho muset buď přemístit, nebo odstranit. V druhém případě ho budete muset znovu naklonovat,
 až přepnete zpět, navíc hrozí, že ztratíte lokální změny nebo větve, které jste neodeslali.
 
-Poslední velký problém s nímž se uživatelé často setkávají, souvisí s přepínáním z podadresářů na sub-
-moduly. Pokud jste ve svém projektu sledovali soubory a chcete je přesunout do submodulu, musíte být
+Poslední velký problém s nímž se uživatelé často setkávají, souvisí s přepínáním z podadresářů na submoduly. Pokud jste ve svém projektu sledovali soubory a chcete je přesunout do submodulu, musíte být
 velmi opatrní, abyste si Git proti sobě nepoštvali. Řekněme, že máte soubory rack v podadresáři svého
 projektu a chcete ho přepnout do submodulu.
 
@@ -9538,8 +9477,7 @@ Data atributů Git umožňují rovněž některé zajímavé úkony při exportu
 
 export-ignore
 
-Systému Git můžete zadat, aby při generování archivu neexportoval určité soubory nebo adresáře. Obsahuje-
-li projekt podadresář nebo soubor, který nechcete zahrnout do souboru archivu, ale který chcete
+Systému Git můžete zadat, aby při generování archivu neexportoval určité soubory nebo adresáře. Obsahuje-li projekt podadresář nebo soubor, který nechcete zahrnout do souboru archivu, ale který chcete
 ponechat jako součást projektu, můžete tyto soubory specifikovat atributem export-ignore.
 
 Řekněme například, že máte v podadresáři test/ několik testovacích souborů, které by nemělo smysl
@@ -9597,8 +9535,7 @@ V tomto případě zůstane soubor database.xml ve své původní podobě.
 
 7.3 Zásuvné moduly Git 203
 7.3 Zásuvné moduly Git
-Stejně jako jiné systémy správy verzí přistupuje i Git k tomu, že spouští uživatelské skripty, nastane-
-li určitá důležitá akce. Rozlišujeme dvě skupiny těchto zásuvných modulů (háčků, angl. hooks):
+Stejně jako jiné systémy správy verzí přistupuje i Git k tomu, že spouští uživatelské skripty, nastane-li určitá důležitá akce. Rozlišujeme dvě skupiny těchto zásuvných modulů (háčků, angl. hooks):
 na straně klienta a na straně serveru. Zásuvné moduly na straně klienta jsou určeny pro operace
 klienta, např. zapisování revizí či slučování. Zásuvné moduly na straně serveru se týkají operací
 serveru Git, např. přijímání odeslaných revizí. Zásuvné moduly se dají využívat k různým účelům.
@@ -10005,8 +9942,7 @@ změněnými mimo umístění jim vyhrazená.
 Pouze „rychle vpřed“
 
 Poslední věcí, která nám ještě zbývá, je povolit pouze odeslání směřující „rychle vpřed“ (fast forward).
-Ve verzi 1.6 systému Git a novějších lze nastavit možnosti receive.denyDeletes a receive.denyNon-
-FastForwards. Pokud však totéž nastavíte pomocí zásuvného modulu, pochodíte i ve starších verzích
+Ve verzi 1.6 systému Git a novějších lze nastavit možnosti receive.denyDeletes a receive.denyNonFastForwards. Pokud však totéž nastavíte pomocí zásuvného modulu, pochodíte i ve starších verzích
 systému Git a navíc ho můžete nastavit pouze pro konkrétní uživatele nebo na cokoli jiného, s čím se
 kdy setkáte.
 
@@ -10919,8 +10855,7 @@ Date: Sun May 3 00:12:22 2009 +0000
 
  fixed install - go to trunk
 
- git-svn-id: https://my-project.googlecode.com/svn/trunk@94 4c93b258-373f-11debe05-
-5f7a86268029
+ git-svn-id: https://my-project.googlecode.com/svn/trunk@94 4c93b258-373f-11debe05-5f7a86268029
 
 Dostanou tuto podobu:
 
@@ -11991,8 +11926,7 @@ spuštěním například tohoto příkazu:
 
 $ git update-ref refs/tags/v1.0 cac0cab538b970a37ea1e769cbbde608743bc96d
 
-To je celá prostá značka – větev, která se nikdy nepřemisťuje. Anotovaná značka je už složitější. Vytvoříte-
-li anotovanou značku, Git vytvoří objekt značky a zapíše referenci, která na objekt ukazuje (neukazuje
+To je celá prostá značka – větev, která se nikdy nepřemisťuje. Anotovaná značka je už složitější. Vytvoříte-li anotovanou značku, Git vytvoří objekt značky a zapíše referenci, která na objekt ukazuje (neukazuje
 tedy na samotnou revizi). To je dobře vidět, vytvoříte-li anotovanou značku (-a udává, že se jedná
 
 o anotovanou značku):
@@ -12270,8 +12204,7 @@ From git@github.com:schacon/simplegit
 V tomto případě bylo odeslání hlavní větve odmítnuto, protože reference nesměřovala „rychle vpřed“.
 Odmítnutí serveru můžete potlačit zadáním znaku + před vzorec refspec.
 
-V konfiguračním souboru můžete také použít více vzorců refspec pro vyzvedávání dat. Chcete-li po-
-každé vyzvednout hlavní větev a větev „experiment“, vložte do něj tyto dva řádky:
+V konfiguračním souboru můžete také použít více vzorců refspec pro vyzvedávání dat. Chcete-li pokaždé vyzvednout hlavní větev a větev „experiment“, vložte do něj tyto dva řádky:
 
 [remote "origin"]
 
@@ -12348,8 +12281,7 @@ na serveru. Podívejme se na proces http-fetch pro knihovnu „simplegit“:
 
 $ git clone http://github.com/schacon/simplegit-progit.git
 
-První věcí, kterou příkaz udělá, je stažení souboru info/refs. Tento soubor se zapisuje příkazem update-
-server-info. To je také důvod, proč ho je nutné zapnout jako zásuvný modul post-receive, aby
+První věcí, kterou příkaz udělá, je stažení souboru info/refs. Tento soubor se zapisuje příkazem update-server-info. To je také důvod, proč ho je nutné zapnout jako zásuvný modul post-receive, aby
 přenos dat prostřednictvím protokolu probíhal správně:
 
 => GET info/refs
@@ -12858,8 +12790,7 @@ tím rozdílem, že příkazem nezměníte soubory načtené na disku, ale oblas
 index. Nepomůže odstranit konkrétní soubor příkazem rm file nebo podobným. Odstraňte ho raději příkazem
 git rm --cached – soubor musíte odstranit z indexu, ne z disku. Důvodem je rychlost. Git nemusí
 před spuštěním filtru provádět checkout každé jednotlivé revize na disk a celý proces je tak mnohem,
-mnohem rychlejší. Pokud chcete, můžete provést stejný úkon i pomocí parametru --tree-filter. Za-
-dáte-li k příkazu git rm parametr --ignore-unmatch, nařídíte systému Git, aby nepovažoval za chybu,
+mnohem rychlejší. Pokud chcete, můžete provést stejný úkon i pomocí parametru --tree-filter. Zadáte-li k příkazu git rm parametr --ignore-unmatch, nařídíte systému Git, aby nepovažoval za chybu,
 jestliže nenajde vzor, který se snažíte odstranit. A konečně požádáte příkaz filter-branch, aby přepsal
 historii až od revize 6df7640 dále, neboť víte, že tady problém začíná. Bez této konkretizace začne
 proces od začátku a bude trvat zbytečně dlouho.
