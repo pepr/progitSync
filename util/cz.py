@@ -27,6 +27,12 @@ def first_pass(fname, aux_dir):
        nezapisuje. Ostatní vypuštěné prvky (nepatřící ani do obsahu, ani
        k hlavičkám stránek) zapisuje do ignored.txt. Vše se generuje
        do adresáře aux_dir, který se nejdříve úplně promaže (vytvoří znovu).
+
+       Pro potřeby další fáze generuje slovník obsahu, kde klíčem je
+       číslo kapitoly/podkapitoly/... a hodnotou je text jejího názvu.
+       Tento slovník se později používá pro rozpoznání řádků, které
+       sice mohou vypadat jako nadpis, ale nejsou jím (například seznam
+       číslovaných položek).
     '''
 
     # Vytvoříme čerstvý pomocný podadresář s extrahovanými informacemi.
@@ -34,13 +40,17 @@ def first_pass(fname, aux_dir):
         shutil.rmtree(aux_dir)
     os.mkdir(aux_dir)
 
-    # TOC line example: "1.1 Správa verzí -- 17"
-    # where '--' is the Em-dash.
+    # Slovník naplněný položkami obsahu, který funkce vrací.
+    toc = {}
+
+    # Řádek obsahu má tvar: "1.1 Správa verzí -- 17"
+    # kde '--' je čtverčíková pomlčka.
     patNum = r'(?P<num>(?P<num1>\d+)\.(?P<num2>\d+)?(\.(?P<num3>\d+))?)'
     patTOCitem = patNum + r'\s+(?P<title>.+?)(\s+\u2014)?(\s+(?P<pageno>\d+)\s*)'
 
     rexTOCline = re.compile(r'^' + patTOCitem + r'$')
     rexObsah = re.compile(r'^\u2014\s+(?P<title>Obsah.*?)(\s+(?P<pageno>\d+)\s*)$')
+    rexKapitola = re.compile(r'^\d+\.\s+Kapitola\s+\d+\s*$')
 
     with open(os.path.join(aux_dir, 'czTOC.txt'), 'w', encoding='utf-8') as ftoc,       \
          open(os.path.join(aux_dir, 'PageHeaders.txt'), 'w', encoding='utf-8') as fph,  \
@@ -55,7 +65,7 @@ def first_pass(fname, aux_dir):
             if line == '':
                 status = 888                    # EOF
 
-            if status == 0:             # -------
+            if status == 0:             # ------- ignorujeme do FF (před Obsahem)
                 fignored.write(line)            # všechny řádky do prvního FormFeed
                 if line.startswith('\f'):       # ... se ignorují
                     status = 1
@@ -77,8 +87,16 @@ def first_pass(fname, aux_dir):
                     m = rexTOCline.match(line)  # je to řádek s položkou obsahu?
                     if m:
                         # Zapíšeme v očištěné podobě, bez čísla stránky.
-                        ftoc.write('{} {}\n'.format(m.group('num'),
-                                                    m.group('title')))
+                        num = m.group('num')
+                        title = m.group('title')
+                        ftoc.write('{} {}\n'.format(num, title))
+
+                        # Řádek obsahu zachytíme do slovníku pro potřeby
+                        # druhého průchodu.
+                        toc[num] = title
+
+                        # Řádek obsahu ale nezapisujeme do výstupního
+                        # filtrovaného souboru.
                         fignored.write('TOC: ' + line)
                     else:
                         fignored.write(line)    # ignorujeme prázdné...
@@ -87,7 +105,14 @@ def first_pass(fname, aux_dir):
             elif status == 3:           # ------- záhlaví stránky po Obsahu
                 fph.write(line)
                 fignored.write('PH: ' + line)
-                status = 4
+
+                mKap = rexKapitola.match(line)  # stránka s velkým názvem kapitoly
+                mObsah = rexObsah.match(line)   # stránka s obsahem kapitoly
+                if mKap or mObsah:
+                    status = 5          # ignorovat celou stránku (po Obsahu)
+                else:
+                    status = 4          # sbírat následující řádky
+
 
             elif status == 4:           # ------- textové řádky lines
                 if line.startswith('\f'):       # FormFeed
@@ -96,8 +121,16 @@ def first_pass(fname, aux_dir):
                 else:
                     fout.write(line)    # běžný platný řádek
 
+            elif status == 5:           # ------- ignorujeme stránku (po Obsaheu)
+                fignored.write(line)            # všechny řádky do prvního FormFeed
+                if line.startswith('\f'):       # ... se ignorují
+                    status = 3
+
             elif status == 888:         # ------- akce po EOF
                 pass
+
+    # Pro potřeby druhého průchodu vrátíme slovník s položkami obsahu.
+    return toc
 
 
 def second_pass(fname, aux_dir):
@@ -185,9 +218,16 @@ def second_pass(fname, aux_dir):
 
 if __name__ == '__main__':
 
-    # Auxiliary subdirectory for the extracted information.
+    # Pomocný podadresář pro generované informace.
     aux_dir = os.path.realpath('../info_aux_cz')
 
-    # Extract the information from the Czech translation text file
-    # (captured from CZ.NIC PDF and manually edited ).
-    first_pass('../txtFromPDF/scott_chacon_pro_git_CZ.txt', aux_dir)
+    # Zpracujeme český překlad z textového souboru, který byl získán
+    # uložením PDF jako text a následnou ruční úpravou některých jevů,
+    # které vznikly ruční sazbou orientovanou na vzhled (tj. nikoliv
+    # na zachování struktury dokumentu). Hlavním výsledkem je soubor
+    # pass1.txt a vracený slovník toc.
+    toc = first_pass('../txtFromPDF/scott_chacon_pro_git_CZ.txt', aux_dir)
+
+    with open('check_toc.txt', 'w', encoding='utf-8') as f:
+        for k in sorted(toc):
+            f.write('{} | {}\n'.format(k, toc[k]))
