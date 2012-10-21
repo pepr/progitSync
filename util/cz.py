@@ -1,7 +1,7 @@
 #!python3
 # -*- coding: utf-8 -*-
 
-'Skript pro zpracování extrahovaného txt z českého překladu v podobě PDF.'
+'''Skript pro zpracování extrahovaného txt z českého překladu v podobě PDF.'''
 
 import collections
 import os
@@ -121,7 +121,7 @@ def first_pass(fname, aux_dir):
                 else:
                     fout.write(line)    # běžný platný řádek
 
-            elif status == 5:           # ------- ignorujeme stránku (po Obsaheu)
+            elif status == 5:           # ------- ignorujeme stránku (po Obsahu)
                 fignored.write(line)            # všechny řádky do prvního FormFeed
                 if line.startswith('\f'):       # ... se ignorují
                     status = 3
@@ -132,88 +132,94 @@ def first_pass(fname, aux_dir):
     # Pro potřeby druhého průchodu vrátíme slovník s položkami obsahu.
     return toc
 
+#-----------------------------------------------------------------
+class Pass2Parser:
+    '''Parser konzumující výstup prvního průchodu.'''
 
-def second_pass(fname, aux_dir):
-    toc = []
-    page_headers = []
-    chapters = []
-    chapter_content = None
+    def __init__(self, fname, toc, aux_dir):
+        self.fname_in = fname
+        self.toc = toc    # toc = Table Of Content
+        self.aux_dir = aux_dir
 
-    # TOC line example: "1.1 Správa verzí -- 17"
-    # where '--' is the Em-dash.
-    patNum = r'(?P<num>(?P<num1>\d+)\.(?P<num2>\d+)?(\.(?P<num3>\d+))?)'
-    patTOC = patNum + r'\s+(?P<title>.+?)(\s+\u2014)?(\s+(?P<pageno>\d+)\s*)'
+        self.type = None  # init -- symbolický typ řádku (jeho význam)
+        self.parts = None # init -- seznam částí řádku dle významu
 
-    rexTOC = re.compile(r'^' + patTOC + r'$')
-    rexHeadingU = re.compile(r'^\u2014\s+(?P<title>.+?)(\s+(?P<pageno>\d+)\s*)$')
-    rexTitle = re.compile(r'^' + patNum + r'\s+(?P<title>.+?)\s*$')
+        patNum = r'(?P<num>(?P<num1>\d+)\.(?P<num2>\d+)?(\.(?P<num3>\d+))?)'
+        self.rexTitle = re.compile(r'^' + patNum + r'\s+(?P<title>.+?)\s*$')
+        
+        # Bullet
+        self.rexBullet = re.compile('^[*\u2022]' + r'\s*(?P<text>.*?)\s*$')
 
-    page_header = None  # init -- the page header string (just below form feed)
+    def parse_line(self):
+        '''Rozloží self.line na self.type a self.parts.'''
 
-    with open(fname, encoding='utf-8') as f:
+        if self.line == '':
+            # Prázdný řádek indikuje konec načítaného souboru. Python
+            # platný řádek souboru nikdy nevrátí jako zcela prázdný.
+            # Z pohledu řešeného problému to tedy není prázdný řádek
+            # ve významu oddělovače.
+            self.type = 'EOF'
+            self.parts = None
 
-        status = 0
-        while status != 888:
+        elif self.line.isspace():
+            # Řádek obsahující jen whitespace považujeme za prázdný
+            # řádek ve významu oddělovače.
+            self.type = 'empty'
+            self.parts = ['']   # reprezentací bude prázdný řetězec
 
-            line = f.readline()
-            if line == '':
-                status = 888                    # EOF
+        else:
+            # Budeme testovat přes regulární výrazy a v případě
+            # rozpoznání určíme typ, rozložíme na části a ukončíme
+            # běh metody. (Dalo by se to zoptimalizovat, ale nestojí
+            # to za námahu).
+            m = self.rexTitle.match(self.line)
+            if m:
+                num = m.group('num')
+                title = m.group('title')
 
-            if status == 0:             # -------
-                if line.startswith('\f'):       # FormFeed
-                    status = 1
-
-            elif status == 1:           # ------- the page header lines before TOC
-                page_headers.append(line.rstrip())
-
-                m = rexHeadingU.match(line)
-                if m and m.group('title') == 'Obsah':
-                    status = 2                  # start collecting TOC
+                # Pokud je číslo a hodnota nadpisu zachycena v toc, jde
+                # skutečně o nadpis. Pokud ne, budeme to pokládat za položku
+                # číslovaného seznamu.
+                if num in toc and title == toc[num]:
+                    self.type = 'title'
+                    self.parts = [num, title]
                 else:
-                    status = 0                  # wait for next FF
+                    self.type = 'li'
+                    self.parts = [num, title]
+                    
+                return
+                
+            m = self.rexBullet.match(self.line)
+            if m:
+                text = m.group('text')
+                self.type = 'li'        # ListItem nečíslovaného seznamu
+                self.parts = ['*\t', text]  # markdown reprezentace...
+                return    
+                
+            # Nerozpoznaný případ.
+            self.type = '???'
+            self.parts = [ self.line.rstrip() ]
 
-            elif status == 2:           # ------- collecting TOC
-                if line.startswith('\f'):       # FormFeed ends the TOC
-                    status = 3
-                else:
-                    m = rexTOC.match(line)
-                    if m:
-                        toc.append((m.group('num'), m.group('title')))
 
-            elif status == 3:           # ------- the page header lines after TOC
-                page_header = line.rstrip()
-                page_headers.append(page_header)
-                status = 4                      # wait for next FF
+    def run(self):
+        with open(self.fname_in, encoding='utf-8') as fin, \
+             open(os.path.join(aux_dir, 'pass2.txt'), 'w', encoding='utf-8') as fout:
 
-            elif status == 4:           # ------- text lines
-                if line.startswith('\f'):       # FormFeed
-                    status = 3
-                else:
-                    m = rexTitle.match(line)    # numbered chapter, sectio... title
-                    if m:
-                        x = abstractNum(m.group('num'))
-                        if len(x) == 1:
-                            # Close the previous chapter and start the new one.
-                            # Append the chapter title.
-                            if chapter_content is not None:
-                                chapters.append(chapter_content)
-                            s = '{} {} {}\n\n'.format(x, m.group('title'), x)
-                            chapter_content = [s]
-                        else:
-                            # Append the section or subsection title.
-                            s = '{} {} {}\n\n'.format(x, m.group('title'), x)
-                            chapter_content.append(s)
-                    else:
-                        # Append normal line. Ignore the lines before
-                        # the first chapter.
-                        if chapter_content is not None:
-                            chapter_content.append(line)
+            status = 0
+            while status != 888:
 
-            elif status == 888:         # ------- actions after EOF
-                # Append the last chapter.
-                chapters.append(chapter_content)
+                self.line = fin.readline()
+                self.parse_line()
 
-    return toc, page_headers, chapters
+                if self.type == 'EOF':
+                    status = 888
+
+                if status == 0:             # ------- 
+                    fout.write('{}|{}\n'.format(self.type, 
+                                                ' '.join(self.parts)))
+
+                elif status == 888:         # ------- akce po EOF
+                    pass
 
 
 if __name__ == '__main__':
@@ -227,3 +233,7 @@ if __name__ == '__main__':
     # na zachování struktury dokumentu). Hlavním výsledkem je soubor
     # pass1.txt a vracený slovník toc.
     toc = first_pass('../txtFromPDF/scott_chacon_pro_git_CZ.txt', aux_dir)
+
+    # V druhém průchodu rozpoznáváme pass1.txt a generujeme pass2.txt.
+    parser = Pass2Parser(os.path.join(aux_dir, 'pass1.txt'), toc, aux_dir)
+    parser.run()
