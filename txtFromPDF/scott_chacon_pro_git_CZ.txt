@@ -1691,7 +1691,7 @@ ca82a6d - Scott Chacon, 11 months ago : changed the version number
 085bb3b - Scott Chacon, 11 months ago : removed unnecessary test code
 a11bef0 - Scott Chacon, 11 months ago : first commit
 
-Tab. Tabulka 2.1 uvádí některé užitečné parametry, které format akceptuje.
+Tabulka 2.1 uvádí některé užitečné parametry, které format akceptuje.
 
 Tabulka 2.1
 
@@ -1791,7 +1791,7 @@ oddělena od ostatních parametrů.
 
 
 2.3 Zobrazení historie revizí 44
-Tab.
+
 Tabulka 2.3 uvádí pro přehlednost zmíněné parametry a několik málo dalších.
 Tabulka 2.2
 
