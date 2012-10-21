@@ -522,8 +522,7 @@ Toto je důležitý rozdíl mezi systémem Git a téměř všemi ostatními syst
 zkoumá skoro každý aspekt správy verzí, které ostatní systémy kopírovaly z předchozí generace. Git
 je tak z obyčejného VCS spíše povýšen na vlastní systém správy souborů s řadou skutečně výkonných
 nástrojů, jež stojí na jeho vrcholu. Některé přednosti, které tato metoda správy dat nabízí, si podrobně
-
-Kap. ukážeme na systému větvení v kapitole 3.
+ukážeme na systému větvení v kapitole 3.
 
 1.3.2 Téměř každá operace je lokální
 Většina operací v systému Git vyžaduje ke své činnosti pouze lokální soubory a zdroje a nejsou potřeba
@@ -608,8 +607,7 @@ databázi do jiného repozitáře.
 
 Díky tomu vás bude práce se systémem Git bavit. Budete pracovat s vědomím, že můžete experimentovat,
 a neriskujete přitom nevratné zničení své práce. Podrobnější informace o tom, jak Git ukládá data
-
-Kap. a jak lze obnovit zdánlivě ztracenou práci, najdete v části „Pod pokličkou“ v kapitole 9.
+a jak lze obnovit zdánlivě ztracenou práci, najdete v části „Pod pokličkou“ v kapitole 9.
 
 1.3.5 Tři stavy
 A nyní pozor. Pokud chcete dále hladce pokračovat ve studiu Git, budou pro vás následující informace
@@ -662,8 +660,6 @@ Nachází-li se konkrétní verze souboru v adresáři Git, je považována za z
 verze přidána do oblasti připravených změn, je považována za připravenou k zapsání. A pokud
 byla od posledního checkoutu změněna, ale nebyla připravena k zapsání, je považována za změněnou.
 O těchto stavech, způsobech jak je co nejlépe využívat nebo i o tom, jak přeskočit proces připravení
-
-Kap.
 souborů, se dozvíte v kapitole 2.
 
 1.4
@@ -736,7 +732,7 @@ Jiným obvyklým způsobem je instalace systému Git prostřednictvím systému 
 $ sudo port install git-core +svn +doc +bash_completion +gitweb
 
 Není nutné přidávat všechny doplňky, ale pokud budete někdy používat Git s repozitáři systému
-Kap. Subversion, budete pravděpodobně chtít nainstalovat i doplněk +svn (viz kapitola 8).
+Subversion, budete pravděpodobně chtít nainstalovat i doplněk +svn (viz kapitola 8).
 
 1.4.4 Instalace v systému Windows
 Instalace systému Git v OS Windows je velice nenáročná. Postup instalace projektu msysGit patří
@@ -809,8 +805,7 @@ $ git config --global merge.tool vimdiff
 1.7 Shrnutí
 Jako platné nástroje slučování Git akceptuje: kdiff3, tkdiff, meld, xxdiff, emerge, vimdiff, gvimdiff,
 ecmerge a opendiff. Nastavit můžete ale i jiné uživatelské nástroje – více informací o této možnosti
-
-Kap. naleznete v kapitole 7.
+naleznete v kapitole 7.
 
 1.5.4 Kontrola provedeného nastavení
 Chcete-li zkontrolovat provedené nastavení, použijte příkaz git config --list. Git vypíše všechna
@@ -935,17 +930,11 @@ sář a importuje ho do systému Git. Druhý naklonuje existující repozitář 
 2.1.1
 Inicializace repozitáře v existujícím adresáři
 Chcete-li zahájit sledování existujícího projektu v systému Git, přejděte do adresáře projektu a zadejte
-
 příkaz:
 
 $ git init
 
-Příkaz vytvoří nový podadresář s názvem .git, který bude obsahovat všechny soubory nezbytné pro re
-
-
-pozitář, tzv. kostru repozitáře Git. V tomto okamžiku ještě není nic z vašeho projektu sledováno. (Více
-
-Kap.
+Příkaz vytvoří nový podadresář s názvem .git, který bude obsahovat všechny soubory nezbytné pro repozitář, tzv. kostru repozitáře Git. V tomto okamžiku ještě není nic z vašeho projektu sledováno. (Více
 informací o tom, jaké soubory obsahuje právě vytvořený adresář .git, naleznete v kapitole 9.) Chcete-li
 spustit verzování existujících souborů (na rozdíl od prázdného adresáře), měli byste pravděpodobně
 zahájit sledování (tracking) těchto souborů a provést první revizi (commit). Můžete tak učinit pomocí
@@ -970,8 +959,6 @@ podstatným rozdílem: Git stáhne kopii téměř všech dat na serveru. Po spu�
 budou k historii projektu staženy všechny verze všech souborů. Pokud by někdy poté došlo k poruše
 disku serveru, lze použít libovolný z těchto klonů na kterémkoli klientovi a obnovit pomocí něj server
 zpět do stavu, v němž byl v okamžiku klonování (může dojít ke ztrátě některých zásuvných modulů
-
-Kap.
 na straně serveru apod., ale všechna verzovaná dat budou obnovena – další podrobnosti v kapitole 4).
 
 
@@ -1379,7 +1366,7 @@ $ git commit
 
 Po zadání příkazu se otevře zvolený editor. (Ten je nastaven proměnnou prostředí $EDITOR vašeho shellu.
 Většinou se bude jednat o editor vim nebo emacs, ale pomocí příkazu git config --global core.editor
-Kap. můžete nastavit i jakýkoli jiný – viz kapitola 1.)
+můžete nastavit i jakýkoli jiný – viz kapitola 1.)
 
 Editor zobrazí následující text (tento příklad je z editoru Vim):
 
@@ -1728,8 +1715,7 @@ Parametr Popis výstupu
 Možná se ptáte, jaký je rozdíl mezi autorem a autorem revize. Autor je osoba, která práci původně
 napsala, zatímco autor revize je osoba, která práci zapsala do repozitáře. Pokud tedy pošlete záplatu
 k projektu a některý z ústředních členů (core members) ji použije, do výpisu se dostanete oba –
-
-Kap. vy jako autor a core member jako autor revize. K tomuto rozlišení se blíže dostaneme v kapitole 5.
+vy jako autor a core member jako autor revize. K tomuto rozlišení se blíže dostaneme v kapitole 5.
 
 Parametry oneline a format jsou zvlášť užitečné ve spojení s další možností logu – parametrem
 --graph. Tento parametr vloží pěkný malý ASCII graf, znázorňující historii vaší větve a slučování,
@@ -1962,8 +1948,7 @@ Tyto postupy většinou bývají vhodnější.
 
 
 2.5 Práce se vzdálenými repozitáři 47
-Vše, co je zapsáno v systému Git, lze téměř vždy obnovit. Obnovit lze dokonce i revize na odstraněKap.
-ných větvích nebo revize, které byly přepsány revizí --amend (o obnovování dat viz kapitola 9). Pokud
+Vše, co je zapsáno v systému Git, lze téměř vždy obnovit. Obnovit lze dokonce i revize na odstraněných větvích nebo revize, které byly přepsány revizí --amend (o obnovování dat viz kapitola 9). Pokud
 však dojde ke ztrátě dat, která dosud nebyla součástí žádné revize, bude tato ztráta patrně nevratná.
 
 2.5 Práce se vzdálenými repozitáři
@@ -2017,7 +2002,7 @@ origin git@github.com:mojombo/grit.git
 
 To znamená, že můžeme velmi snadno stáhnout příspěvky od kteréhokoli z těchto uživatelů. Nezapomeňte
 však, že pouze vzdálený server origin je SSH URL, a je tedy jediným repozitářem, kam lze
-Kap. posílat soubory (důvod objasníme v kapitole 4).
+posílat soubory (důvod objasníme v kapitole 4).
 
 
 2.5 Práce se vzdálenými repozitáři 48
@@ -2060,7 +2045,7 @@ $ git fetch [název vzdáleného repozitáře]
 
 Příkaz zamíří do vzdáleného projektu a stáhne z něj všechna data, která ještě nevlastníte. Poté byste
 měli mít reference na všechny větve tohoto vzdáleného projektu. Nyní je můžete kdykoli slučovat nebo
-Kap. prohlížet. (Podrobněji se budeme větvím a jejich použití věnovat v kapitole 3.)
+prohlížet. (Podrobněji se budeme větvím a jejich použití věnovat v kapitole 3.)
 
 Pokud jste naklonovali repozitář, příkaz automaticky přiřadí tento vzdálený repozitář pod název
 „origin“. Příkaz git fetch origin tak vyzvedne veškerou novou práci, která byla na server poslána
@@ -2070,8 +2055,6 @@ automaticky nesloučí s vaší prací ani jinak nezmění nic z toho, na čem p
 sloučíte se svou prací, až to uznáte za vhodné.
 
 Pokud máte větev nastavenou ke sledování vzdálené větve (více informací naleznete v následující části
-
-Kap.
 a v kapitole 3), můžete použít příkaz git pull, který automaticky vyzvedne a poté začlení vzdálenou
 větev do vaší aktuální větve. Tento postup pro vás může být snazší a pohodlnější. Standardně přitom
 příkaz git clone automaticky nastaví vaši lokální hlavní větev, aby sledovala vzdálenou hlavní větev
@@ -2094,8 +2077,6 @@ Tento příkaz bude funkční, pouze pokud jste klonovali ze serveru, k němuž 
 a pokud sem od vašeho klonování nikdo neposílal svou práci. Pokud spolu s vámi provádí současně
 klonování ještě někdo další a ten poté svou práci odešle na server, vaše později odesílaná práce bude
 oprávněně odmítnuta. Nejprve musíte stáhnout práci ostatních a začlenit ji do své, teprve potom vám
-
-Kap.
 server umožní odeslání. Více informací o odesílání na vzdálené servery najdete v kapitole 3.
 
 2.5.5
@@ -3148,8 +3129,7 @@ Hit return to start merge resolution tool (opendiff):
 Chcete-li použít jiný než výchozí nástroj pro slučování (Git mi v tomto případě vybral opendiff, protože
 jsem příkaz zadal v systému Mac), všechny podporované nástroje jsou uvedeny na začátku výstupu
 v části „merge tool candidates“ (možné nástroje pro slučování). Zadejte název nástroje, který chcete
-
-Kap. použít. V kapitole 7 probereme, jak lze tuto výchozí hodnotu pro vaše prostředí změnit.
+použít. V kapitole 7 probereme, jak lze tuto výchozí hodnotu pro vaše prostředí změnit.
 
 Až nástroj pro slučování zavřete, Git se vás zeptá, zda sloučení proběhlo úspěšně. Pokud skriptu oznámíte,
 že ano, připraví soubor k zapsání a tím ho označí jako vyřešený.
@@ -3529,8 +3509,6 @@ To git@github.com:schacon/simplegit.git
  * [new branch] serverfix -> serverfix
 Toto je zkrácená verze příkazu. Git automaticky rozšíří název větve serverfix na refs/heads/serverfix:
 refs/heads/serverfix, což znamená: „Vezmi mou lokální větev serverfix a odešli ji na vzdálený
-
-Kap.
 server, kde aktualizuje tamní větev serverfix.“ Části refs/heads/ se budeme podrobněji věnovat v kapitole
 9, pro většinu uživatelů však nebude zajímavá. Můžete rovněž zadat příkaz git push origin
 serverfix:serverfix, který provede totéž. Systému Git říká: „Vezmi mou větev serverfix a udělej
@@ -3997,8 +3975,6 @@ cestu, Git se pokusí použít hardlinky nebo rovnou zkopírovat soubory, které
 výraz file://, Git spustí procesy, jež běžně používá k přenosu dat prostřednictvím sítě. Síť je většinou
 výrazně méně výkonnou metodou přenosu dat. Hlavním důvodem, proč zadat předponu file:// je to,
 že tak získáte čistou kopii repozitáře bez nepotřebných referencí a objektů, např. po importu z jiného
-
-Kap.
 verzovacího systému a podobně (úkony správy jsou popsány v kapitole 9). My budeme používat normální
 cestu, neboť tato metoda je téměř vždy rychlejší.
 
@@ -4117,8 +4093,6 @@ rozšířený port většinou blokován.
 4.1.4 Protokol HTTP/S
 Na konec jsme si nechali protokol HTTP. Co je na protokolu HTTP nebo HTTPS sympatické, je jejich
 jednoduché nastavení. Jediné, co většinou stačí udělat, je umístit holý repozitář Git do kořenového
-
-Kap.
 adresáře HTTP a nastavit příslušný zásuvný modul post-update (zásuvné moduly Git viz kapitola 7).
 Tím je nastavení hotové. V tuto chvíli může každý, kdo má přístup na webový server, kam jste repozitář
 uložili, tento repozitář naklonovat. Chcete-li u svého repozitáře nastavit oprávnění pro čtení
@@ -4142,8 +4116,7 @@ $ git clone http://example.com/gitproject.git
 4.2 Jak umístit Git na server 95
 V tomto konkrétním případě používáme cestu /var/www/htdocs, která je obvyklá u nastavení Apache,
 ale použít lze v podstatě jakýkoli webový server – stačí uložit holý repozitář do daného umístění. Data
-
-Kap. repozitáře Git jsou obsluhována jako obyčejné statické soubory (podrobnosti naleznete v kapitole 9).
+repozitáře Git jsou obsluhována jako obyčejné statické soubory (podrobnosti naleznete v kapitole 9).
 
 Odesílat data do repozitáře Git je možné také přes protokol HTTP, avšak tento způsob není příliš
 rozšířený a vyžaduje nastavení komplexních požadavků protokolu WebDAV. Protože se tato možnost
@@ -5264,7 +5237,7 @@ Rozhraní importu ze systému Subversion
 
 
 Proces nejspíš nebude fungovat, pokud je váš projekt příliš velký, nestandardní nebo soukromý.
-Kap. V kapitole 7 se dostaneme k tomu, jak lze ručně importovat složitější projekty.
+V kapitole 7 se dostaneme k tomu, jak lze ručně importovat složitější projekty.
 
 4.10.5 Přidávání spolupracovníků
 Nyní přidáme zbytek vašeho týmu. Pokud si John, Josie i Jessica zaregistrují účty na serveru GitHub
@@ -5618,8 +5591,6 @@ ideální pracovat celý víkend na pěti různých problémech a v pondělí je
 v jedné velké revizi. I pokud nebudete během víkendu zapisovat revize, využijte v pondělí oblasti
 připravených změn a rozdělte svou práci alespoň do stejného počtu revizí, kolik je řešených problémů,
 a přidejte k nim vysvětlující zprávy. Pokud některé změny modifikují tentýž soubor, zkuste použít
-
-Kap.
 příkaz git add --patch a připravit soubory k zapsání po částech (podrobnosti v kapitole 6). Snímek
 projektu na vrcholu větve bude stejný, ať zapíšete jednu revizi, nebo pět (za předpokladu, že vložíte
 všechny změny). Snažte se proto usnadnit práci svým kolegům, kteří – možná – budou vaše změny
@@ -6024,7 +5995,7 @@ To jessica@githost:simplegit.git
  fba9af8..cd685d1 featureB -> featureBee
 
 Říká se tomu refspec. Více o vzorcích refspec systému Git a různých možnostech, k nimž je lze využít,
-Kap. najdete v kapitole 9.
+najdete v kapitole 9.
 
 Poté pošle John Jessice e-mail, že odeslal několik změn do větve featureA, a poprosí ji, aby je ověřila.
 Jessica spustí příkaz git fetch, jímž tyto změny stáhne.
@@ -6120,7 +6091,7 @@ $ git commit
 
 Možná budete chtít využít příkaz rebase -i a zkomprimovat svou práci do jediné revize nebo přeorganizovat
 práci v revizích tak, aby byla kontrola záplaty pro správce jednodušší – další informace
-Kap. o interaktivním přeskládání najdete v kapitole 6.
+o interaktivním přeskládání najdete v kapitole 6.
 
 
 5.2 Přispívání do projektu 138
@@ -6827,7 +6798,7 @@ Nyní můžete tematickou větev odstranit a zahodit revize, které nehodláte n
 5.3.6 Označení vydání značkou
 Až se rozhodnete vydat určitou verzi, pravděpodobně ji budete chtít označit značkou, abyste mohli
 toto vydání v kterémkoli okamžiku v budoucnosti obnovit. Novou značku vytvoříte podle návodu
-Kap. v kapitole 2. Pokud se rozhodnete podepsat značku jako správce, bude označení probíhat takto:
+v kapitole 2. Pokud se rozhodnete podepsat značku jako správce, bude označení probíhat takto:
 
 
 5.3 Správa projektu 154
@@ -7126,8 +7097,6 @@ $ git show topic1
 6.1 Výběr revize 161
 Jestliže vás zajímá, na kterou konkrétní hodnotu SHA větev ukazuje, nebo chcete-li zjistit, jak bude
 některý z těchto příkladů vypadat v podobě SHA, můžete použít jeden z nízkoúrovňových nástrojů
-
-Kap.
 systému Git: rev-parse. Více o nízkoúrovňových nástrojích najdete v kapitole 9. Nástroj rev-parse se
 používá v podstatě pouze pro operace na nižších úrovních a není koncipován pro každodenní používání.
 Může se však hodit, až budete jednou potřebovat zjistit, co se doopravdy odehrává. Tehdy můžete
@@ -8613,8 +8582,6 @@ README
 
 
 Projekt Rack chcete do projektu master natáhnout jako podadresář. V systému Git k tomu slouží příkaz
-
-Kap.
 git read-tree. O příkazu read-tree a jeho příbuzných se více dočtete v kapitole 9, nyní však vězte,
 že načte kořenový strom jedné větve do vaší aktuální oblasti připravených změn a do pracovního
 adresáře. Přepnuli jste zpět na hlavní větev a větev rack natáhnete do podadresáře rack své hlavní
@@ -8704,7 +8671,7 @@ modulů. Pomocí těchto nástrojů lze systém Git snadno nastavit přesně tak
 jak potřebujete vy, vaše společnost nebo vaše skupina.
 
 7.1 Konfigurace systému Git
-Kap.
+
 Jak jsme v krátkosti ukázali v kapitole 1, příkazem git config lze specifikovat konfigurační nastavení
 systému Git. Jednou z prvních věcí, kterou jsme udělali, bylo nastavení nastavení jména a e-mailové
 adresy:
@@ -8807,12 +8774,10 @@ Nastavení core.pager určuje, jaký stránkovač bude použit, musí-li Git roz
 $ git config --global core.pager ''
 
 Spustíte-li tento příkaz, Git nebude stránkovat celý výstup všech příkazů, bez ohledu na to, jak
-
 jsou dlouhé.
 
 user.signingkey
 
-Kap.
 Vytváříte-li podepsané anotované značky (jak je popsáno v kapitole 2), celou věc vám usnadní nastavení
 GPG podpisového klíče v konfiguraci. ID svého klíče nastavíte takto:
 
@@ -9430,7 +9395,6 @@ Další možností pro archivy je jednoduchá substituce klíčového slova. Git
 
 $Format:$ do libovolného souboru s kterýmkoli ze zkrácených kódů formátování --pretty=format,
 
-Kap.
 z nichž jsme několik poznali v kapitole 2. Chcete-li do projektu zahrnout například soubor s názvem
 LAST_COMMIT a při spuštění příkazu git archive do něj bylo automaticky vloženo datum poslední
 revize, můžete nastavit tento soubor takto:
@@ -9803,8 +9767,7 @@ get_acl_access_data datovou strukturu v této podobě:
 Nyní, když jste uspořádali příslušná oprávnění, zbývá zjistit, která umístění odesílané revize změnily,
 abyste měli jistotu, že k nim ke všem má odesílající uživatel přístup.
 
-Zjistit, které soubory byly v jedné revizi změněny, lze velmi snadno pomocí příkazu git logs
-Kap. parametrem --name-only (stručně popsáno v kapitole 2):
+Zjistit, které soubory byly v jedné revizi změněny, lze velmi snadno pomocí příkazu git log s parametrem --name-only (stručně popsáno v kapitole 2):
 
 $ git log -1 --name-only --pretty=format:'' 9f585d
 
@@ -10135,7 +10098,6 @@ end
 end
 end
 
-Kap.
 Tento skript používá syntax, které jsme se v části Výběr revize v kapitole 6 nevěnovali. Seznam revizí,
 které už byly odeslány, získáte takto:
 
@@ -10929,8 +10891,6 @@ Pokud vám nefunguje ani jeden z těchto nástrojů, používáte méně častý
 speciální proces importu ještě z jiného důvodu, použijte git fast-import. Tento příkaz načítá ze
 vstupů stdin jednoduché instrukce k zapsáni specifických dat systému Git. Je podstatně jednodušší
 vytvořit objekty Git tímto způsobem než spouštět syrové příkazy Git či se pokoušet zapsat syrové
-
-Kap.
 objekty (podrobnější informace v kapitole 9). Tímto způsobem lze vytvořit importovací skript, který
 bude načítat potřebné informace ze systému, z nějž import provádíte, a vypíše jasné instrukce do výstupu
 stdout. Tento program můžete spustit a jeho výstup nechat zpracovat příkazem git fast-import.
@@ -10956,7 +10916,6 @@ jaká data revizí na ně ukazují a pořadí, v němž budou převzaty. Vaše s
 v tom, že postupně projdete jednotlivé snímky a vytvoříte revize s obsahem každého adresáře, přičemž
 každá revize bude odkazovat na revizi předchozí.
 
-Kap.
 Stejně jako v části „Příklad systémem Git kontrolovaných standardů“ v kapitole 7 použijeme i tentokrát
 Ruby, s nímž většinou pracuji a který je srozumitelný. Tento příklad můžete ale beze všeho napsat
 v čemkoli, co vám vyhovuje. Jedinou podmínkou je, aby byly potřebné informace zapsány do výstupu
@@ -11338,8 +11297,7 @@ a soubor description používá pouze program GitWeb, o tyto dvě položky se te
 Soubor config obsahuje jednotlivá nastavení pro konfiguraci vašeho projektu a v adresáři info je
 uchováván globální soubor .gitignore s maskami ignorovaných souborů a adresářů, které si nepřejete
 sledovat. Adresář hooks obsahuje skripty zásuvných modulů na straně klienta nebo serveru, které
-
-Kap. jsme podrobně popisovali v kapitole 6.
+jsme podrobně popisovali v kapitole 6.
 
 Zbývají čtyři důležité položky: soubory HEAD a index a adresáře objects a refs. To jsou ústřední součásti
 adresáře Git. V adresáři objects je uložen celý obsah vaší databáze, v adresáři refs jsou uloženy
@@ -11854,7 +11812,6 @@ v mnohém podobá objektu revize – obsahuje autora značky, datum, zprávu a u
 je, že objekt značky ukazuje na revizi, zatímco objekt revize na strom. Podobá se také referenci
 větve, jen se nikdy nepřesouvá. Stále ukazuje na stejnou revizi, jen jí dává hezčí jméno.
 
-Kap.
 Jak jsme zmínili už v kapitole 2, existují dva typy značek: anotované a prosté. Prostou značku lze vytvořit
 spuštěním například tohoto příkazu:
 
@@ -12680,11 +12637,6 @@ posledních (největších) souborů:
 
 
 9.7 Správa a obnova dat 262
-Kap.
-
-Kap.
-
-Kap.
 
 $ git verify-pack -v .git/objects/pack/pack-3f8c0...bb.idx | sort -k 3 -n | tail -3
 e3f094f522629ae358806b17daf78246c27c007b blob 1486 734 4667
