@@ -227,7 +227,3 @@ if __name__ == '__main__':
     # na zachování struktury dokumentu). Hlavním výsledkem je soubor
     # pass1.txt a vracený slovník toc.
     toc = first_pass('../txtFromPDF/scott_chacon_pro_git_CZ.txt', aux_dir)
-
-    with open('check_toc.txt', 'w', encoding='utf-8') as f:
-        for k in sorted(toc):
-            f.write('{} | {}\n'.format(k, toc[k]))
