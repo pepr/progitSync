@@ -1,8 +1,5 @@
 #!python3
-'''\
-Skript pro zjištění všech nadpisů kapitol, podkapitol, ... z extrahovaného
-českého překladu knihy.
-'''
+'Skript pro zpracování extrahovaného txt z českého překladu v podobě PDF.'
 
 import collections
 import os
@@ -149,7 +146,7 @@ if __name__ == '__main__':
             os.mkdir(subdir)
 
         # Construct the filename for the chapter.
-        fname = '01_chapter{}.mardown'.format(n+1)
+        fname = '01_chapter{}.markdown'.format(n+1)
         full_name = os.path.join(subdir, fname)
 
         # Write the chapter content to the chapter filename.
