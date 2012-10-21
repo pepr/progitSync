@@ -106,6 +106,11 @@ def first_pass(fname, aux_dir):
                 fph.write(line)
                 fignored.write('PH: ' + line)
 
+                # Na výstupu nahradíme FormFee + page heading značkou,
+                # která by mohla ulehčit řešení speciálních případů
+                # při dalším průchodu.
+                fout.write('---------- pagesep\n')
+
                 mKap = rexKapitola.match(line)  # stránka s velkým názvem kapitoly
                 mObsah = rexObsah.match(line)   # stránka s obsahem kapitoly
                 if mKap or mObsah:
@@ -146,9 +151,19 @@ class Pass2Parser:
 
         patNum = r'(?P<num>(?P<num1>\d+)\.(?P<num2>\d+)?(\.(?P<num3>\d+))?)'
         self.rexTitle = re.compile(r'^' + patNum + r'\s+(?P<title>.+?)\s*$')
-        
-        # Bullet
+
+        # Bullet.
         self.rexBullet = re.compile('^[*\u2022]' + r'\s*(?P<text>.*?)\s*$')
+
+        # Značka přechodu mezi stránkami. Je generovaná v prvním průchodu,
+        # takže můžeme volit jednoduchý výraz.
+        self.rexPagesep = re.compile(r'^---------- pagesep$')
+
+        # Umístění obrázku s číslem. Může následovat popisný text,
+        # ale bývá zalomený za ještě jedním prázdným řádkem.
+        patObrazek = r'^Obrázek\s+(?P<num>\d+\.\d+)(\s+(?P<text>.+?))?\s*$'
+        self.rexObrazek = re.compile(patObrazek)
+
 
     def parse_line(self):
         '''Rozloží self.line na self.type a self.parts.'''
@@ -185,17 +200,36 @@ class Pass2Parser:
                     self.parts = [num, title]
                 else:
                     self.type = 'li'
-                    self.parts = [num, title]
-                    
+                    self.parts = [num + '\t', title]
+
                 return
-                
+
+            # Nečíslovaná odrážka (bullet).
             m = self.rexBullet.match(self.line)
             if m:
                 text = m.group('text')
                 self.type = 'li'        # ListItem nečíslovaného seznamu
                 self.parts = ['*\t', text]  # markdown reprezentace...
-                return    
-                
+                return
+
+            # Obrázek s popisem.
+            m = self.rexObrazek.match(self.line)
+            if m:
+                text = m.group('text')
+                if text is None:
+                    text = ''           # korekce
+                num = m.group('num').replace('.', '-')
+                self.type = 'obrazek'
+                self.parts = ['Insert ????????.png\nObrázek {}. {}'.format(num, text)]
+                return
+
+            # Rozhraní mezi stránkami.
+            m = self.rexPagesep.match(self.line)
+            if m:
+                self.type = 'pagesep'
+                self.parts = []
+                return
+
             # Nerozpoznaný případ.
             self.type = '???'
             self.parts = [ self.line.rstrip() ]
@@ -214,8 +248,8 @@ class Pass2Parser:
                 if self.type == 'EOF':
                     status = 888
 
-                if status == 0:             # ------- 
-                    fout.write('{}|{}\n'.format(self.type, 
+                if status == 0:             # -------
+                    fout.write('{}|{}\n'.format(self.type,
                                                 ' '.join(self.parts)))
 
                 elif status == 888:         # ------- akce po EOF
