@@ -451,22 +451,13 @@ Mezi požadované vlastnosti systému patřily zejména:
 • silná podpora nelineárního vývoje (tisíce paralelních větví);
 • plná distribuovatelnost;
 • schopnost efektivně spravovat velké projekty, jako je linuxové jádro (rychlost a objem dat).
+
 Od svého vzniku v roce 2005 se Git vyvinul a vyzrál v snadno použitelný systém, který si dodnes
 uchovává své prvotní kvality. Je extrémně rychlý, velmi efektivně pracuje i s velkými projekty a nabízí
 skvělý systém větvení pro nelineární způsob vývoje (viz kapitola 3).
 
 
 1.3 Základy systému Git 20
-Verze 1
-
-Verze 2
-
-Verze 3
-
-Verze 4
-
-Verze 5
-
 1.3 Základy systému Git
 Jak bychom tedy mohli Git charakterizovat? Odpověď na tuto otázku je velmi důležitá, protože pokud
 pochopíte, co je Git a na jakém principu pracuje, budete ho bezpochyby moci používat mnohem
@@ -534,7 +525,7 @@ Mechanismus, který Git k tomuto kontrolnímu součtu používá, se nazývá ot
 Jedná se o řetězec o 40 hexadecimálních znacích (0–9; a–f) vypočítaný na základě obsahu souboru
 nebo adresářové struktury systému Git. Otisk SHA-1 může vypadat například takto:
 
-24b9da6552252987aa493b52f8696cd6d3b00373
+	24b9da6552252987aa493b52f8696cd6d3b00373
 
 S těmito otisky se budete setkávat ve všech úložištích systému Git, protože je používá opravdu často.
 Neukládá totiž soubory podle jejich názvu, ale ve své databázi podle otisku (hashe) jeho obsahu.
@@ -574,13 +565,6 @@ Oblast připravených změn je jednoduchý soubor, většinou uložený v adres�
 informace o tom, co bude obsahovat příští revize. Soubor se někdy označuje také anglickým výrazem
 „index“, ale oblast připravených změn (staging area) je už dnes termín běžnější.
 
-Pracovní adresár
-
-Oblast pripravených
-zmen
-
-Adresár (rezporitár)
-
 
 1.4 Instalace systému Git 23
 Standardní pracovní postup vypadá v systému Git následovně:
@@ -614,12 +598,12 @@ Před instalcí samotného Gitu musí váš systém obsahovat následující kni
 curl, zlib, openssl, expat, a libiconv. Pokud používáte yum (např. Fedora) nebo apt-get (např. distribuce
 založené na Debianu), můžete k instalaci použít jeden z následujících příkazů:
 
-$ yum install curl-devel expat-devel gettext-devel \
-openssl-devel zlib-devel
+	$ yum install curl-devel expat-devel gettext-devel \
+	  openssl-devel zlib-devel
 
 
-$ apt-get install libcurl4-gnutls-dev libexpat1-dev gettext \
-libz-dev
+	$ apt-get install libcurl4-gnutls-dev libexpat1-dev gettext \
+	  libz-dev
 
 
 Po doinstalování všech potřebných závislostí můžete pokračovat stažením nejnovější verze systému
@@ -627,16 +611,16 @@ Git z webové stránky http://git-scm.com/download.
 
 Poté přistupte ke kompilaci a instalaci:
 
-$ tar -zxf git-1.6.0.5.tar.gz
-$ cd git-1.6.0.5
-$ make prefix=/usr/local all
-$ sudo make prefix=/usr/local install
+	$ tar -zxf git-1.6.0.5.tar.gz
+	$ cd git-1.6.0.5
+	$ make prefix=/usr/local all
+	$ sudo make prefix=/usr/local install
 
 
 Po dokončení instalace můžete rovněž vyhledat aktualizace systému Git prostřednictvím systému
 samotného:
 
-$ git clone git://git.kernel.org/pub/scm/git/git.git
+	$ git clone git://git.kernel.org/pub/scm/git/git.git
 
 
 1.4 Instalace systému Git 24
@@ -645,17 +629,17 @@ Chcete-li nainstalovat Git v Linuxu pomocí binárního instalátoru, většinou
 základního nástroje pro správu balíčků, který byl součástí vaší distribuce. Ve Fedoře můžete použít
 nástroj yum:
 
-$ yum install git-core
+	$ yum install git-core
 
 V distribuci založené na Debianu (např. Ubuntu) zkuste použít program apt-get:
 
-$ apt-get install git-core
+	$ apt-get install git-core
 
 1.4.3 Instalace v systému Mac
 Existují dva jednoduché způsoby, jak nainstalovat Git v systému Mac. Tím nejjednodušším je použít
 grafický instalátor Git, který si můžete stáhnout ze stránky Google Code (viz obrázek 1-7):
 
-http://code.google.com/p/git-osx-installer
+	http://code.google.com/p/git-osx-installer
 
 Obrázek 1-7. Instalátor Git pro OS X
 
@@ -663,7 +647,7 @@ Obrázek 1-7. Instalátor Git pro OS X
 Jiným obvyklým způsobem je instalace systému Git prostřednictvím systému MacPorts
 (http://www.macports.org). Máte-li systém MacPorts nainstalován, nainstalujte Git příkazem:
 
-$ sudo port install git-core +svn +doc +bash_completion +gitweb
+	$ sudo port install git-core +svn +doc +bash_completion +gitweb
 
 Není nutné přidávat všechny doplňky, ale pokud budete někdy používat Git s repozitáři systému
 Subversion, budete pravděpodobně chtít nainstalovat i doplněk +svn (viz kapitola 8).
@@ -672,7 +656,7 @@ Subversion, budete pravděpodobně chtít nainstalovat i doplněk +svn (viz kapi
 Instalace systému Git v OS Windows je velice nenáročná. Postup instalace projektu msysGit patří
 k těm nejjednodušším. Ze stránky Google Code stáhněte instalační soubor exe a spusťte ho:
 
-http://code.google.com/p/msysgit
+	http://code.google.com/p/msysgit
 
 
 1.5 První nastavení systému Git 25
@@ -698,6 +682,7 @@ Git používat pouze tento soubor;
 konfigurační soubor v adresáři Git (tedy .git/config) jakéhokoli repozitáře, který právě používáte:
 je specifický pro tento konkrétní repozitář. Každá úroveň je nadřazená hodnotám úrovně
 předchozí, např. hodnoty v .git/config mají přednost před hodnotami v /etc/gitconfig.
+
 Ve Windows používá Git soubor .gitconfig, který je umístěný v domovském adresáři (u většiny
 uživatelů C:\Documents and Settings\$USER). Dále se pokusí vyhledat ještě soubor /etc/gitconfig,
 který je relativní vůči kořenovému adresáři. Ten je umístěn tam, kam jste se rozhodli nainstalovat Git
@@ -709,9 +694,8 @@ První věcí, kterou byste měli po nainstalování systému Git udělat, je na
 (user name) a e-mailové adresy. Tyto údaje se totiž později využívají při všech revizích v systému Git
 a jsou nezměnitelnou složkou každé revize, kterou zapíšete:
 
-$ git config --global user.name "John Doe"
-$ git config --global user.email johndoe@example.com
-
+	$ git config --global user.name "John Doe"
+	$ git config --global user.email johndoe@example.com
 
 Použijete-li parametr --global, pak také toto nastavení stačí provést pouze jednou. Git bude používat
 tyto údaje pro všechny operace, které v systému uděláte. Pokud chcete pro konkrétní projekty změnit
@@ -754,18 +738,15 @@ color.interactive=auto
 color.diff=auto
 ...
 
-
 Některé klíče se mohou objevit vícekrát, protože Git načítá stejný klíč z různých souborů (např.
 /etc/gitconfig a ~/.gitconfig). V takovém případě použije Git poslední hodnotu pro každý
 unikátní klíč, který vidí.
 
 Můžete také zkontrolovat, jakou hodnotu Git uchovává pro konkrétní položku. Zadejte příkaz
-
 git config key:
 
 $ git config user.name
 Scott Chacon
-
 
 1.6 Kde hledat pomoc
 Budete-li někdy při používání systému Git potřebovat pomoc, existují tři způsoby, jak vyvolat nápovědu
@@ -781,8 +762,7 @@ Například manpage nápovědu pro příkaz config vyvoláte zadáním:
 $ git help config
 
 Tyto příkazy jsou užitečné, neboť je můžete spustit kdykoli, dokonce i offline. Pokud nenajdete pomoc
-na manuálové stránce ani v této knize a uvítali byste osobní pomoc, můžete zkusit kanál #git nebo
-#github na serveru Freenode IRC (irc.freenode.net). Na těchto kanálech se většinou pohybují stovky
+na manuálové stránce ani v této knize a uvítali byste osobní pomoc, můžete zkusit kanál #git nebo #github na serveru Freenode IRC (irc.freenode.net). Na těchto kanálech se většinou pohybují stovky
 lidí, kteří mají se systémem Git bohaté zkušenosti a často ochotně pomohou.
 
 1.7 Shrnutí
@@ -856,17 +836,14 @@ a stahovat z nich.
 
 2.1
 Získání repozitáře Git
-Projekt v systému Git lze získat dvěma základními způsoby. První vezme existující projekt nebo adre
-
-
-sář a importuje ho do systému Git. Druhý naklonuje existující repozitář Git z jiného serveru.
+Projekt v systému Git lze získat dvěma základními způsoby. První vezme existující projekt nebo adresář a importuje ho do systému Git. Druhý naklonuje existující repozitář Git z jiného serveru.
 
 2.1.1
 Inicializace repozitáře v existujícím adresáři
 Chcete-li zahájit sledování existujícího projektu v systému Git, přejděte do adresáře projektu a zadejte
 příkaz:
 
-$ git init
+	$ git init
 
 Příkaz vytvoří nový podadresář s názvem .git, který bude obsahovat všechny soubory nezbytné pro repozitář, tzv. kostru repozitáře Git. V tomto okamžiku ještě není nic z vašeho projektu sledováno. (Více
 informací o tom, jaké soubory obsahuje právě vytvořený adresář .git, naleznete v kapitole 9.) Chcete-li
@@ -874,15 +851,11 @@ spustit verzování existujících souborů (na rozdíl od prázdného adresář
 zahájit sledování (tracking) těchto souborů a provést první revizi (commit). Můžete tak učinit pomocí
 několika příkazů git add, jimiž určíte soubory, které chcete sledovat, a provedete revizi:
 
-$ git add *.c
-$ git add README
-$ git commit –m 'initial project version'
+	$ git add *.c
+	$ git add README
+	$ git commit –m 'initial project version'
 
-
-K tomu, co přesně tyto příkazy provedou, se dostaneme za okamžik. V této chvíli máte vytvořen repo
-
-
-zitář Git se sledovanými soubory a úvodní revizí.
+K tomu, co přesně tyto příkazy provedou, se dostaneme za okamžik. V této chvíli máte vytvořen repozitář Git se sledovanými soubory a úvodní revizí.
 
 2.1.2
 Klonování existujícího repozitáře
@@ -1105,6 +1078,7 @@ Toto jsou pravidla pro masky, které můžete použít v souboru .gitignore:
 • Standardní masku souborů.
 • Chcete-li označit adresář, můžete masku zakončit lomítkem (/).
 • Pokud řádek začíná vykřičníkem (!), maska na něm je negována.
+
 Masky souborů jsou jako zjednodušené regulární výrazy, které používá shell. Hvězdička (*) označuje
 žádný nebo více znaků; [abc] označuje jakýkoli znak uvedený v závorkách (v tomto případě a, b nebo
 c); otazník (?) označuje jeden znak; znaky v závorkách oddělené pomlčkou ([0-9]) označují jakýkoli
