@@ -162,8 +162,16 @@ class Pass2Parser:
         # Číslovaný nadpis.
         self.rexTitle = re.compile(r'^' + patNum + r'\s+(?P<title>.+?)\s*$')
 
-        # Bullet.
-        self.rexBullet = re.compile('^[*\u2022]' + r'\s*(?P<text>.*?)\s*$')
+        # Nečíslovaná odrážka korektně explicitně zapsaná (markdown syntaxe).
+        self.rexBullet = re.compile(r'^(?P<uli>\*\t.+?)\s*$')
+
+        # Dobře rozpoznaná nečíslovaná odrážka zapsaná Unicode znakem.
+        self.rexUBullet = re.compile('^\u2022' + r'\s*(?P<text>.*?)\s*$')
+
+        # Pouze zahajovací znak (dobře rozpoznaný) špatně zalomeného
+        # textu nečíslované odrážky. Musí se k němu přidat jeden nebo
+        # víc dalších řádků.
+        self.rexUXBullet = re.compile('^\u2022' + r'\s*$')
 
         # Značka přechodu mezi stránkami. Je generovaná v prvním průchodu,
         # takže můžeme volit jednoduchý výraz.
@@ -179,7 +187,7 @@ class Pass2Parser:
         self.rexCode = re.compile(r'^\t(?P<text>.*)$')
 
         # Řádek, který má být pravděpodobně změněn na příklad textového řádku.
-        self.rexShouldBeCode = re.compile(r'^(?P<text>[$#].*)$')
+        self.rexXCode = re.compile(r'^(?P<text>[$#].*)$')
 
 
     def png_name(self, num):
@@ -189,12 +197,16 @@ class Pass2Parser:
         return '18333fig{:02}{:02}-tn.png'.format(int(n1), int(n2))
 
 
-    def collect(self):
+    def collect(self, text=None):
         '''Přidá aktuální parts do výstupní kolekce oddělí mezerou.'''
 
         if len(self.collection) > 0:
             self.collection.append(' ')
-        self.collection.extend(self.parts)
+
+        if text is not None:
+            self.collection.append(text)
+        else:
+            self.collection.extend(self.parts)
 
 
     def write_collection(self):
@@ -252,11 +264,26 @@ class Pass2Parser:
                 self.parts = [num]
                 return
 
-            # Nečíslovaná odrážka (bullet).
+            # Nečíslovaná odrážka (bullet) -- markdown syntaxe.
             m = self.rexBullet.match(self.line)
             if m:
                 text = m.group('text')
-                self.type = 'li'        # ListItem nečíslovaného seznamu
+                self.type = 'uli'        # ListItem nečíslovaného seznamu
+                self.parts = ['*\t', text]  # markdown reprezentace...
+                return
+
+            # Úvodní unicode znak nečíslované odrážky.
+            m = self.rexUXBullet.match(self.line)
+            if m:
+                self.type = 'xuli'          # jen znak zahajující odrážku
+                self.parts = ['*\t']
+                return
+
+            # Nečíslovaná odrážka s unicode znakem, asi bez tabulátoru.
+            m = self.rexUBullet.match(self.line)
+            if m:
+                text = m.group('text')
+                self.type = 'uli'           # ListItem nečíslovaného seznamu
                 self.parts = ['*\t', text]  # markdown reprezentace...
                 return
 
@@ -280,7 +307,7 @@ class Pass2Parser:
                 return
 
             # Řádek s potenciálním příkladem kódu.
-            m = self.rexShouldBeCode.match(self.line)
+            m = self.rexXCode.match(self.line)
             if m:
                 self.type = 'xcode'
                 self.parts = ['\t', m.group('text')]
@@ -317,6 +344,19 @@ class Pass2Parser:
                         self.collect()
                         self.write_collection() # řádky kódu se neslepují
                         self.status = 1         # další řádky až do empty
+
+                    elif self.type == 'code':
+                        # Správně a explicitně určený řádek s příkladem kódu
+                        # nebo s nějakým textovým výstupem. Provedeme výstup
+                        # tohoto řádku a nečiníme žádné speciální předpoklady.
+                        self.collect()
+                        self.write_collection()
+
+                    elif self.type == 'xuli':
+                        # Dobře rozpoznaný zahajovací znak odrážky.
+                        self.collect()
+                        self.status = 2         # sběr textu odrážky
+
                     else:
                         # Diagnostický výstup.
                         self.fout.write('{}|{}\n'.format(self.type,
@@ -336,13 +376,32 @@ class Pass2Parser:
                         self.collect()
                         self.write_collection() # řádky kódu se neslepují
 
+                elif self.status == 2:          # ------- první řádek odrážky
+                    self.collect(self.line.strip())
+                    self.status = 3
+
+                elif self.status == 3:          # ------- další řádek odrážky
+                    if self.type == '?':
+                        self.collect()          # pokračovat ve sběru
+                    elif self.type == 'empty':
+                        self.write_collection()
+                        self.collect()          # ukončeno prázdným řádkem
+                        self.write_collection()
+                        self.status = 0
+                    elif self.type == 'xuli':
+                        self.write_collection() # předchozí odrážka
+                        self.collect()          # jen značka
+                        self.status = 2
+                    else:
+                        self.status = 'unknown'
+
                 elif self.status == 888:        # ------- akce po EOF
                     pass
 
                 else:
                     # Neznámý stav. Indikujeme na výstupu a vypíšeme
                     # sesbíranou kolekci.
-                    self.fout.write('!!! Neznámý stav: {}\n'.format(self.status)
+                    self.fout.write('!!! Neznámý stav: {}\n'.format(self.status))
 
         # Uzavřeme výstupní soubor.
         self.fout.close()
