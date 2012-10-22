@@ -139,17 +139,27 @@ def first_pass(fname, aux_dir):
 
 #-----------------------------------------------------------------
 class Pass2Parser:
-    '''Parser konzumující výstup prvního průchodu.'''
+    '''Parser pro druhý průchod, konzumující výstup prvního průchodu.'''
 
     def __init__(self, fname, toc, aux_dir):
-        self.fname_in = fname
-        self.toc = toc    # toc = Table Of Content
-        self.aux_dir = aux_dir
+        self.fname_in = fname   # jméno vstupního souboru
+        self.toc = toc          # toc = Table Of Content
+        self.aux_dir = aux_dir  # adresář pro generovaný výstupní soubor
 
-        self.type = None  # init -- symbolický typ řádku (jeho význam)
-        self.parts = None # init -- seznam částí řádku dle významu
+        self.type = None        # init -- symbolický typ řádku (jeho význam)
+        self.parts = []         # init -- seznam částí řádku dle významu
+        self.collection = []    # init -- kolekce sesbíraných řádků
 
+        self.fout = None        # souborový objekt otevřený pro výstup.
+        self.status = None      # init -- stav konečného automatu
+
+        # Vícekrát použitý vzorek pro číslo s tečkami.
         patNum = r'(?P<num>(?P<num1>\d+)\.(?P<num2>\d+)?(\.(?P<num3>\d+))?)'
+
+        # Řádek obsahující pouze číslo (kapitoly, podkapitoly, ..., bodu seznamu.
+        self.rexNum = re.compile(r'^' + patNum + r'\s*$')
+
+        # Číslovaný nadpis.
         self.rexTitle = re.compile(r'^' + patNum + r'\s+(?P<title>.+?)\s*$')
 
         # Bullet.
@@ -164,12 +174,35 @@ class Pass2Parser:
         patObrazek = r'^Obrázek\s+(?P<num>\d+-\d+).(\s+(?P<text>.+?))?\s*$'
         self.rexObrazek = re.compile(patObrazek)
 
+        # Řádek reprezentující příklad sázený jako kódový řádek
+        # neproporcionálním písmem. U této aplikace je uvozen jedním tabulátorem.
+        self.rexCode = re.compile(r'^\t(?P<text>.*)$')
+
+        # Řádek, který má být pravděpodobně změněn na příklad textového řádku.
+        self.rexShouldBeCode = re.compile(r'^(?P<text>[$#].*)$')
+
 
     def png_name(self, num):
         '''Pro číslo 'x-y' vrací '18333fig0x0y-tn.png'''
 
         n1, n2 = num.split('-')
         return '18333fig{:02}{:02}-tn.png'.format(int(n1), int(n2))
+
+
+    def collect(self):
+        '''Přidá aktuální parts do výstupní kolekce oddělí mezerou.'''
+
+        if len(self.collection) > 0:
+            self.collection.append(' ')
+        self.collection.extend(self.parts)
+
+
+    def write_collection(self):
+        '''Zapíše kolekci na výstup jako jeden řádek a vyprázdní ji.'''
+
+        if len(self.collection) > 0:
+            self.fout.write(''.join(self.collection) + '\n')
+            self.collection = []
 
 
     def parse_line(self):
@@ -211,6 +244,14 @@ class Pass2Parser:
 
                 return
 
+            # Pouze číslo s tečkou/tečkami.
+            m = self.rexNum.match(self.line)
+            if m:
+                num = m.group('num')
+                self.type = 'num'
+                self.parts = [num]
+                return
+
             # Nečíslovaná odrážka (bullet).
             m = self.rexBullet.match(self.line)
             if m:
@@ -238,31 +279,73 @@ class Pass2Parser:
                 self.parts = []
                 return
 
+            # Řádek s potenciálním příkladem kódu.
+            m = self.rexShouldBeCode.match(self.line)
+            if m:
+                self.type = 'xcode'
+                self.parts = ['\t', m.group('text')]
+                return
+
+            # Řádek se zadaným příkladem kódu.
+            m = self.rexCode.match(self.line)
+            if m:
+                self.type = 'code'
+                self.parts = ['\t', m.group('text')]
+                return
+
             # Nerozpoznaný případ.
-            self.type = '???'
+            self.type = '?'
             self.parts = [ self.line.rstrip() ]
 
 
     def run(self):
-        with open(self.fname_in, encoding='utf-8') as fin, \
-             open(os.path.join(aux_dir, 'pass2.txt'), 'w', encoding='utf-8') as fout:
+        self.fout = open(os.path.join(aux_dir, 'pass2.txt'), 'w', encoding='utf-8')
 
-            status = 0
-            while status != 888:
+        with open(self.fname_in, encoding='utf-8') as fin:
+
+            self.status = 0
+            while self.status != 888:
 
                 self.line = fin.readline()
                 self.parse_line()
 
                 if self.type == 'EOF':
-                    status = 888
+                    self.status = 888
 
-                if status == 0:             # -------
-                    fout.write('{}|{}\n'.format(self.type,
-                                                ' '.join(self.parts)))
+                if self.status == 0:            # ------- základní stav
+                    if self.type == 'xcode':
+                        self.collect()
+                        self.write_collection() # řádky kódu se neslepují
+                        self.status = 1         # další řádky až do empty
+                    else:
+                        # Diagnostický výstup.
+                        self.fout.write('{}|{}\n'.format(self.type,
+                                                         ' '.join(self.parts)))
 
-                elif status == 888:         # ------- akce po EOF
+                elif self.status == 1:          # ------- až do empty jako code
+                    if self.type == 'empty':
+                        self.collect()
+                        self.write_collection() # prázdný řádek na výstup
+                        self.status = 0
+                    else:
+                        # Typ a parts položky mohou být odhadnuty chybně. Tento
+                        # řádek se nachází v souvislém bloku za 'xcode', takže
+                        # jej budeme reinterpretovat jako 'xcode'.
+                        self.type = 'xcode'
+                        self.parts = ['\t', self.line.rstrip()]
+                        self.collect()
+                        self.write_collection() # řádky kódu se neslepují
+
+                elif self.status == 888:        # ------- akce po EOF
                     pass
 
+                else:
+                    # Neznámý stav. Indikujeme na výstupu a vypíšeme
+                    # sesbíranou kolekci.
+                    self.fout.write('!!! Neznámý stav: {}\n'.format(self.status)
+
+        # Uzavřeme výstupní soubor.
+        self.fout.close()
 
 if __name__ == '__main__':
 
