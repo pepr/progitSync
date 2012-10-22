@@ -1056,11 +1056,9 @@ soubory, jako soubory log nebo soubory vytvořené sestavovacím systémem. V ta
 vytvořit soubor .gitignore, který specifikuje ignorované soubory. Tady je malý příklad souboru
 .gitignore:
 
-$ cat .gitignore
-*.[oa]
-
-
-*~
+	$ cat .gitignore
+	*.[oa]
+	*~
 
 První řádek říká systému Git, že má ignorovat všechny soubory končící na .o nebo .a – objektové
 a archivní soubory, které mohou být výsledkem vytváření kódu. Druhý řádek systému Git říká, aby
@@ -1102,59 +1100,38 @@ git status vám tyto otázky zodpoví velmi obecně, příkaz git diff přesně 
 řádky – tedy samotná záplata. Řekněme, že znovu upravíte a připravíte soubor README a poté
 bez připravení upravíte soubor benchmarks.rb. Po spuštění příkazu status se zobrazí zhruba toto:
 
-$ git status
-
-# On branch master
-
-# Changes to be committed:
-
-# (use "git reset HEAD <file>..." to unstage)
-
-#
-
-# new file: README
-
-#
-
-# Changed but not updated:
-
-# (use "git add <file>..." to update what will be committed)
-
-#
-
-# modified: benchmarks.rb
-
-#
+	$ git status
+	# On branch master
+	# Changes to be committed:
+	# (use "git reset HEAD <file>..." to unstage)
+	#
+	# new file: README
+	#
+	# Changed but not updated:
+	# (use "git add <file>..." to update what will be committed)
+	#
+	# modified: benchmarks.rb
+	#
 
 Chcete-li vidět, co jste změnili, avšak ještě nepřipravili k zapsání, zadejte příkaz git diff bez dalších
 parametrů:
 
-$ git diff
+	$ git diff
+	diff --git a/benchmarks.rb b/benchmarks.rb
+	index 3cb747f..da65585 100644
+	--- a/benchmarks.rb
+	+++ b/benchmarks.rb
+	@@ -36,6 +36,10 @@ def main
+	           @commit.parents[0].parents[0].parents[0]
+	         end
 
-diff --git a/benchmarks.rb b/benchmarks.rb
-
-index 3cb747f..da65585 100644
-
---- a/benchmarks.rb
-
-+++ b/benchmarks.rb
-
-@@ -36,6 +36,10 @@ def main
-
- @commit.parents[0].parents[0].parents[0]
-
- end
-
-
-2.2 Nahrávání změn do repozitáře 35
-+ run_code(x, 'commits 1') do
-+ git.commits.size
-+ end
-+
-run_code(x, 'commits 2') do
-log = git.commits('master', 15)
-log.size
-
+	+        run_code(x, 'commits 1') do
+	+          git.commits.size
+	+        end
+	+
+	         run_code(x, 'commits 2') do
+	           log = git.commits('master', 15)
+	           log.size
 
 Tento příkaz srovná obsah vašeho pracovního adresáře a oblasti připravených změn. Výsledek vám
 ukáže provedené změny, které jste dosud nepřipravili k zapsání. Chcete-li vidět, co jste připravili a co
