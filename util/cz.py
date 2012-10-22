@@ -161,8 +161,15 @@ class Pass2Parser:
 
         # Umístění obrázku s číslem. Může následovat popisný text,
         # ale bývá zalomený za ještě jedním prázdným řádkem.
-        patObrazek = r'^Obrázek\s+(?P<num>\d+\.\d+)(\s+(?P<text>.+?))?\s*$'
+        patObrazek = r'^Obrázek\s+(?P<num>\d+-\d+).(\s+(?P<text>.+?))?\s*$'
         self.rexObrazek = re.compile(patObrazek)
+
+
+    def png_name(self, num):
+        '''Pro číslo 'x-y' vrací '18333fig0x0y-tn.png'''
+
+        n1, n2 = num.split('-')
+        return '18333fig{:02}{:02}-tn.png'.format(int(n1), int(n2))
 
 
     def parse_line(self):
@@ -218,9 +225,10 @@ class Pass2Parser:
                 text = m.group('text')
                 if text is None:
                     text = ''           # korekce
-                num = m.group('num').replace('.', '-')
+                num = m.group('num')
                 self.type = 'obrazek'
-                self.parts = ['Insert ????????.png\nObrázek {}. {}'.format(num, text)]
+                self.parts = ['Insert {}\n'.format(self.png_name(num)),
+                              'Obrázek {}. {}'.format(num, text)]
                 return
 
             # Rozhraní mezi stránkami.
