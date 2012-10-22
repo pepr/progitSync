@@ -380,7 +380,7 @@ soubory.
 
 Aby se uživatelé tomuto riziku vyhnuli, vyvinuli programátoři už před dlouhou dobou lokální systémy
 VCS s jednoduchou databází, která uchovávala všechny změny souborů s nastavenou správou revizí
-(viz obrázek 1.1).
+(viz obrázek 1-1).
 
 Jedním z velmi oblíbených nástrojů VCS byl systém s názvem rcs, který je ještě dnes distribuován
 s mnoha počítači. Dokonce i populární operační systém Mac OS X obsahuje po nainstalování vývojářských
@@ -394,13 +394,13 @@ týmu. Řešení tohoto problému nabízejí tzv. centralizované systémy sprá
 Version Control System). Tyto systémy, jmenovitě např. CVS, Subversion či Perforce, obsahují
 serverovou část, která uchovává všechny verzované soubory. Z tohoto centrálního úložiště si potom
 soubory stahují jednotliví klienti. Tento koncept byl dlouhá léta standardem pro správu verzí (viz
-obrázek 1.2).
+obrázek 1-2).
 
 
 1.1 Správa verzí 18
-Obrázek 1.1 Diagram lokální správy verzí
+Obrázek 1-1. Diagram lokální správy verzí
 
-Obrázek 1.2 Diagram centralizované správy verzí
+Obrázek 1-2. Diagram centralizované správy verzí
 
 Nabízí ostatně mnoho výhod, zejména v porovnání s lokálními systémy VCS. Každý například
 – do určité míry – ví, co dělají ostatní účastníci projektu a administrátoři mají přesnou kontrolu
@@ -422,7 +422,7 @@ Version Control System). V systémech DVCS (např. Git, Mercurial, Bazaar nebo D
 nestahují nejnovější verzi souborů (tzv. snímek, anglicky snapshot), ale uchovávají kompletní kopii
 repozitáře (repository). Pokud v takové situaci dojde ke kolapsu serveru, lze jej obnovit zkopírováním
 repozitáře od libovolného uživatele. Každá lokální kopie (checkout) je plnohodnotnou zálohou všech
-dat (viz obrázek 1.3.).
+dat (viz obrázek 1-3).
 
 Mnoho z těchto systémů navíc bez větších obtíží pracuje i s několika vzdálenými repozitáři, a vy
 tak můžete v rámci jednoho projektu spolupracovat na různých úrovních s rozdílnými skupinami lidí.
@@ -437,7 +437,7 @@ sporu. Jádro Linuxu je software s otevřeným kódem a širokou škálou využi
 bylo jádro Linuxu spravováno formou záplat a archivních souborů. V roce 2002 začal projekt vývoje
 linuxového jádra využívat komerční systém DVCS s názvem Bit-Keeper.
 
-Obrázek 1.3
+Obrázek 1-3.
 
 Diagram distribuované správy verzí
 Serverový pocítac
@@ -499,9 +499,9 @@ předejít nejasnostem, které mohou vzniknout při používání systému Git.
 Hlavním rozdílem mezi systémem Git a všemi ostatními systémy VCS (včetně Subversion a jemu
 podobných) je způsob, jakým Git zpracovává data. Většina ostatních systémů ukládá informace
 jako seznamy změn jednotlivých souborů. Tyto systémy (CVS, Perforce, Bazaar atd.) chápou uložené
-informace jako sadu souborů a seznamů změn těchto souborů v čase – viz obrázek 1.4.
+informace jako sadu souborů a seznamů změn těchto souborů v čase – viz obrázek 1-4.
 
-Obrázek 1.4
+Obrázek 1-4.
 
 Ostatní systémy ukládají data jako změny v základní verzi každého souboru.
 
@@ -516,7 +516,7 @@ Git zpracovává data jinak. Chápe je spíše jako sadu snímků (snapshots) vl
 souborů. Pokaždé, když v systému zapíšete (uložíte) stav projektu, Git v podstatě „vyfotí“, jak vypadají
 všechny vaše soubory v daném okamžiku, a uloží reference na tento snímek. Pokud v souborech nebyly
 provedeny žádné změny, Git v zájmu zefektivnění práce neukládá znovu celý soubor, ale pouze odkaz
-na předchozí identický soubor, který už byl uložen. Zpracování dat v systému Git ilustruje obrázek 1.5.
+na předchozí identický soubor, který už byl uložen. Zpracování dat v systému Git ilustruje obrázek 1-5.
 
 Toto je důležitý rozdíl mezi systémem Git a téměř všemi ostatními systémy VCS. Git díky tomu znovu
 zkoumá skoro každý aspekt správy verzí, které ostatní systémy kopírovaly z předchozí generace. Git
@@ -533,7 +533,7 @@ disku, probíhá většina operací takřka okamžitě.
 
 
 1.3 Základy systému Git 21
-Obrázek 1.5
+Obrázek 1-5.
 
 Git ukládá data jako snímky projektu proměnlivé v čase.
 
@@ -622,7 +622,7 @@ directory), pracovní adresář (working directory) a oblast připravených změ
 Git ukládá systém databázi metadat a objektů k projektu. Je to nejdůležitější část systému Git a zároveň
 adresář, který se zkopíruje, když klonujete repozitář z jiného počítače.
 
-Obrázek 1.6
+Obrázek 1-6.
 
 Pracovní adresář, oblast připravených změn a adresář Git
 
@@ -717,11 +717,11 @@ $ apt-get install git-core
 
 1.4.3 Instalace v systému Mac
 Existují dva jednoduché způsoby, jak nainstalovat Git v systému Mac. Tím nejjednodušším je použít
-grafický instalátor Git, který si můžete stáhnout ze stránky Google Code (viz obrázek 1.7):
+grafický instalátor Git, který si můžete stáhnout ze stránky Google Code (viz obrázek 1-7):
 
 http://code.google.com/p/git-osx-installer
 
-Obrázek 1.7
+Obrázek 1-7.
 
 Instalátor Git pro OS X
 
@@ -1016,7 +1016,7 @@ budou podrobně popsány v následující kapitole.
 
 
 2.2 Nahrávání změn do repozitáře 31
-Obrázek 2.1
+Obrázek 2-1.
 
 Cyklus stavů vašich souborů
 
@@ -1830,7 +1830,7 @@ Chcete-li použít graficky výrazněji zpracovaný nástroj k procházení hist
 Tcl/Tk program nazvaný „gitk“, který je distribuován spolu se systémem Git. Gitk je v zásadě grafická
 verze příkazu git log a umožňuje téměř všechny možnosti filtrování jako git log. Pokud do příkazového řádku ve svém projektu zadáte příkaz gitk, otevře se okno podobné jako na obrázku 2.2.
 
-Obrázek 2.2
+Obrázek 2-2.
 
 Graficky zpracovaná historie v nástroji „gitk“
 
@@ -2596,7 +2596,7 @@ repozitáři Git se dají schematicky znázornit jako na obrázku 3.1.
 
 
 3.1 Co je to větev 60
-Obrázek 3.1
+Obrázek 3-1.
 
 Repozitář s daty jedné revize
 
@@ -2643,7 +2643,7 @@ test.rb
 cb0a
 Jestliže v souborech provedete změny a zapíšete je, další revize uloží ukazatel na revizi, jež jí bezprostředně předcházela. Po dalších dvou revizích bude vaše historie vypadat jako na obrázku 3.2.
 
-Obrázek 3.2
+Obrázek 3-2.
 
 Data objektů Git pro několik revizí
 
@@ -2684,7 +2684,7 @@ větve v systému Git je master (hlavní větev). Při prvním zapisování revi
 jež bude ukazovat na poslední revizi, kterou jste zapsali. Pokaždé, když zapíšete novou revizi, větev se
 automaticky posune vpřed.
 
-Obrázek 3.3
+Obrázek 3-3.
 
 Větev ukazující do historie dat revizí
 
@@ -2699,8 +2699,8 @@ příkazem git branch:
 
 $ git branch testing
 
-Tento příkaz vytvoří nový ukazatel na stejné revizi, na níž se právě nacházíte (viz obrázek 3.4).
-Obrázek 3.4
+Tento příkaz vytvoří nový ukazatel na stejné revizi, na níž se právě nacházíte (viz obrázek 3-4).
+Obrázek 3-4.
 
 Několik větví ukazujících do historie dat revizí
 
@@ -2711,7 +2711,7 @@ f30ab
 Jak Git pozná, na jaké větvi se právě nacházíte? Používá speciální ukazatel zvaný HEAD. Nenechte se
 mást, tento HEAD je velmi odlišný od všech koncepcí v ostatních systémech VCS, na něž jste možná
 zvyklí, jako Subversion nebo CVS. V systému Git se jedná o ukazatel na lokální větev, na níž se právě
-nacházíte. V našem případě jste však stále ještě na hlavní větvi. Příkazem git branch jste pouze vytvořili novou větev, zatím jste na ni nepřepnuli (viz obrázek 3.5).
+nacházíte. V našem případě jste však stále ještě na hlavní větvi. Příkazem git branch jste pouze vytvořili novou větev, zatím jste na ni nepřepnuli (viz obrázek 3-5).
 
 
 3.1 Co je to větev 62
@@ -2720,7 +2720,7 @@ větev testing:
 
 $ git checkout testing
 
-Obrázek 3.5
+Obrázek 3-5.
 
 Soubor HEAD ukazující na větev, na níž se nacházíte.
 
@@ -2729,7 +2729,7 @@ hlavní vetev
 testing
 f30ab
 HEAD
-Obrázek 3.6
+Obrázek 3-6.
 
 Soubor HEAD ukazuje po přepnutí na jinou větev.
 
@@ -2739,14 +2739,14 @@ testing
 f30ab
 HEAD
 
-Tímto příkazem přesunete ukazatel HEAD tak, že ukazuje na větev testing (viz obrázek 3.6).
+Tímto příkazem přesunete ukazatel HEAD tak, že ukazuje na větev testing (viz obrázek 3-6).
 A jaký to má smysl? Dobře, proveďme další revizi:
 
 $ vim test.rb
 $ git commit -a -m 'made a change'
 
 
-Obrázek 3.7 ukazuje výsledek. Výsledek je zajímavý z toho důvodu, že se větev testing posunula
+Obrázek 3-7 ukazuje výsledek. Výsledek je zajímavý z toho důvodu, že se větev testing posunula
 vpřed, zatímco hlavní větev stále ukazuje na revizi, na níž jste se nacházeli v okamžiku, kdy jste spustili
 příkaz git checkout a přepnuli tím větve.
 
@@ -2756,13 +2756,13 @@ Přepněme zpět na hlavní větev.
 
 $ git checkout master
 
-Výsledek ukazuje obrázek 3.8. Tento příkaz provedl dvě věci. Přemístil ukazatel HEAD zpět, takže nyní
+Výsledek ukazuje obrázek 3-8. Tento příkaz provedl dvě věci. Přemístil ukazatel HEAD zpět, takže nyní
 ukazuje na hlavní větev, a vrátil soubory ve vašem pracovním adresáři zpět ke snímku, na nějž hlavní
 větev ukazuje. To také znamená, že změny, které od teď provedete, se odštěpí od starší verze projektu.
 V podstatě dočasně vrátíte všechny změny, které jste provedli ve větvi testing, a vydáte se jiným
 směrem.
 
-Obrázek 3.7
+Obrázek 3-7.
 
 Větev, na niž ukazuje soubor HEAD, se posouvá vpřed s každou revizí.
 
@@ -2771,7 +2771,7 @@ hlavní vetev
 testing
 f30ab c2b9e
 HEAD
-Obrázek 3.8
+Obrázek 3-8.
 
 Ukazatel HEAD se po příkazu git checkout přesune na jinou větev.
 
@@ -2789,7 +2789,7 @@ $ git commit -a -m 'made a change'
 
 3.2 Základy větvení a slučování 64
 
-Nyní se historie vašeho projektu rozdělila (viz obrázek 3.9). Vytvořili jste novou větev, přepnuli jste
+Nyní se historie vašeho projektu rozdělila (viz obrázek 3-9). Vytvořili jste novou větev, přepnuli jste
 na ni, provedli jste v ní změny a poté jste přepnuli zpět na hlavní větev, v níž jste rovněž provedli změny.
 Oboje tyto změny jsou oddělené na samostatných větvích. Můžete mezi nimi přepínat tam a zpět,
 a až uznáte za vhodné, můžete je sloučit. To vše jste provedli pomocí jednoduchých příkazů branch
@@ -2799,7 +2799,7 @@ Vzhledem k tomu, že větev v systému Git tvoří jeden jednoduchý soubor, obs
 součtu SHA-1 revize, na niž ukazuje, je snadné větve vytvářet i odstraňovat. Vytvořit novou větev
 je právě tak snadné a rychlé jako zapsat 41 bytů do souboru (40 znaků a jeden nový řádek).
 
-Obrázek 3.9
+Obrázek 3-9.
 
 Historie větví se rozdělila.
 
@@ -2843,8 +2843,8 @@ Přepnete zpět na svou původní část a pokračujete v práci.
 3.2.1
 Základní větvení
 
-Řekněme, že pracujete na projektu a už jste vytvořili několik revizí (viz obrázek 3.10).
-Obrázek 3.10
+Řekněme, že pracujete na projektu a už jste vytvořili několik revizí (viz obrázek 3-10).
+Obrázek 3-10.
 
 Krátká a jednoduchá historie revizí
 
@@ -2864,15 +2864,15 @@ $ git branch iss53
 $ git checkout iss53
 
 
-Obrázek 3.11
+Obrázek 3-11.
 
 Vytvoření nového ukazatele na větev
 
 C1C0masteriss53C2
 
-Obrázek 3.11 ukazuje výsledek. Pracujete na webových stránkách a zapíšete několik revizí. S každou
+Obrázek 3-11 ukazuje výsledek. Pracujete na webových stránkách a zapíšete několik revizí. S každou
 novou revizí se větev iss53 posune vpřed, protože jste provedli její checkout (to znamená, že jste na ni
-přepnuli a ukazuje na ni soubor HEAD – viz obrázek 3.12):
+přepnuli a ukazuje na ni soubor HEAD – viz obrázek 3-12):
 
 $ vim index.html
 $ git commit -a -m 'added a new footer [issue 53]'
@@ -2887,7 +2887,7 @@ v části iss53, ani nemusíte dělat zbytečnou práci, abyste všechny tyto zm
 moci začít pracovat na opravě produkční verze stránek. Jediné, co teď musíte udělat, je přepnout zpět
 na hlavní větev.
 
-Obrázek 3.12
+Obrázek 3-12.
 
 Větev iss53 se s vaší prací posouvá vpřed.
 
@@ -2908,7 +2908,7 @@ mít následující: Git vždy vrátí pracovní adresář do stejného stavu, j
 ukazuje větev, jejíž checkout nyní provádíte. Automaticky budou přidány, odstraněny a upraveny
 soubory tak, aby byla vaše pracovní kopie totožná se stavem větve v okamžiku, kdy jste na ni zapsali
 poslední revizi. Nyní přichází na řadu hotfix. Vytvořme větev s hotfixem, v níž budeme pracovat,
-dokud nebude oprava hotová (viz obrázek 3.13):
+dokud nebude oprava hotová (viz obrázek 3-13):
 
 $ git checkout -b 'hotfix'
 Switched to a new branch "hotfix"
@@ -2934,7 +2934,7 @@ files changed, 0 insertions(+), 1 deletions(-)
 
 
 3.2 Základy větvení a slučování 67
-Obrázek 3.13
+Obrázek 3-13.
 
 Větev „hotfix“ začleněná zpět v místě hlavní větve
 C1C0
@@ -2949,9 +2949,9 @@ vpřed. Jinými slovy: pokud se pokoušíte sloučit jednu revizi s revizí druh
 historie první revize, Git proces zjednoduší a přesune ukazatel vpřed, protože neexistuje žádná
 rozdílná práce, kterou by bylo třeba sloučit. Tomuto postupu se říká „rychle vpřed“.
 
-Vaše změna je nyní obsažena ve snímku revize, na niž ukazuje hlavní větev master, a vy můžete pokračovat v provádění změn (viz obrázek 3.14).
+Vaše změna je nyní obsažena ve snímku revize, na niž ukazuje hlavní větev master, a vy můžete pokračovat v provádění změn (viz obrázek 3-14).
 
-Obrázek 3.14
+Obrázek 3-14.
 
 Hlavní větev ukazuje po sloučení na stejné místo jako větev „hotfix“.
 
@@ -2971,7 +2971,7 @@ $ git branch -d hotfix
 Deleted branch hotfix (3a0874c).
 
 
-Nyní můžete přepnout zpět na větev s rozdělanou prací a pokračovat na chybě č. 53 (viz obrázek 3.15):
+Nyní můžete přepnout zpět na větev s rozdělanou prací a pokračovat na chybě č. 53 (viz obrázek 3-15):
 
 $ git checkout iss53
 Switched to branch "iss53"
@@ -2982,7 +2982,7 @@ $ git commit -a -m 'finished the new footer [issue 53]'
 
  1 files changed, 1 insertions(+), 0 deletions(-)
 
-Obrázek 3.15
+Obrázek 3-15.
 
 Větev iss53 může nezávisle postupovat vpřed.
 C1C0C2C4C5masteriss53C3
@@ -3015,7 +3015,7 @@ ukazují větve, a jejich společného předka.
 
 
 3.2 Základy větvení a slučování 69
-Obrázek 3.16
+Obrázek 3-16.
 
 Git automaticky identifikuje nejvhodnějšího společného předka jako základnu pro sloučení větví.
 C1C0 C2 C4
@@ -3030,17 +3030,17 @@ probehne zaclenení
 Zaclenovaný
 snímek
 
-Obrázek 3.16 označuje ony tři snímky, které Git v tomto případě použije ke sloučení.
+Obrázek 3-16 označuje ony tři snímky, které Git v tomto případě použije ke sloučení.
 
 Git tentokrát neposune ukazatel větve vpřed, ale vytvoří nový snímek jako výsledek tohoto třícestného
-sloučení a automaticky vytvoří novou revizi, která bude na snímek ukazovat (viz obrázek 3.17). Takové
+sloučení a automaticky vytvoří novou revizi, která bude na snímek ukazovat (viz obrázek 3-17). Takové
 revizi se říká revize sloučením (merge commit) a její zvláštností je to, že má více než jednoho rodiče.
 Na tomto místě bych chtěl zopakovat, že Git určuje nejvhodnějšího společného předka, který bude použit
 jako základna pro sloučení, automaticky. Liší se tím od systému CVS i Subversion (před verzí 1.5),
 kde musí vývojář při slučování najít nejvhodnější základnu pro sloučení sám. Slučování větví je tak
 v systému Git o poznání jednodušší než v těchto ostatních systémech.
 
-Obrázek 3.17
+Obrázek 3-17.
 
 Git automaticky vytvoří nový objekt revize, který obsahuje sloučenou práci.
 
@@ -3246,16 +3246,16 @@ nebo bude způsobovat chyby.
 
 Ve skutečnosti hovoříme o ukazatelích pohybujících se vzhůru po linii revizí, které zapisujete.
 Stabilní větve leží v linii historie revizí níže a nové, neověřené větve se nacházejí nad nimi (viz
-obrázek 3.18).
+obrázek 3-18).
 
-Obrázek 3.18
+Obrázek 3-18.
 
 Stabilnější větve většinou leží v historii revizí níže.
 C1C2C3C4C5C6developC6topicmaster
 Snáze si je můžeme představit jako pracovní zásobníky, v nichž se sada revizí dostává do stabilnějšího
-zásobníku, když úspěšně absolvovala testování (viz obrázek 3.19).
+zásobníku, když úspěšně absolvovala testování (viz obrázek 3-19).
 
-Obrázek 3.19
+Obrázek 3-19.
 
 Větve si můžeme představit jako zásobníky (stack): master – hlavní větev, develop
 
@@ -3297,7 +3297,7 @@ jiné řešení stejné chyby (iss91v2). Pak se vrátíte zpět na hlavní věte
 dostanete nápad, který by se možná mohl osvědčit, a tak pro něj vytvoříte další větev (dumbidea).
 Historie revizí bude vypadat zhruba jako na obrázku 3.20.
 
-Obrázek 3.20
+Obrázek 3-20.
 
 Historie revizí s několika tematickými větvemi
 
@@ -3317,7 +3317,7 @@ master
 Řekněme, že se nyní rozhodnete, že druhé řešení vašeho problému bude vhodnější (iss91v2). Dále jste
 také ukázali svůj nápad ve větvi dumbidea kolegům a ti ho považují za geniální. Původní větev iss91
 tak nyní můžete zahodit (s ní i revize C5 a C6) a začlenit zbylé dvě větve. Vaši historii v tomto stavu
-znázorňuje obrázek 3.21.
+znázorňuje obrázek 3-21.
 
 
 3.5 Vzdálené větve 75
@@ -3336,7 +3336,7 @@ větev origin/master. Pokud pracujete s kolegou na stejném problému a on odeš
 s názvem iss53, může se stát, že i vy máte jednu z lokálních větví pojmenovanou jako iss53. Větev
 na serveru však ukazuje na revizi označenou jako origin/iss53.
 
-Obrázek 3.21
+Obrázek 3-21.
 
 Vaše historie po začlenění větví „dumbidea“ a „iss91v2“
 
@@ -3348,7 +3348,7 @@ Možná to není úplně jasné, a tak uvedeme malý příklad. Řekněme, že m
 git.ourcompany.com. Pokud provedete klonování z tohoto serveru, Git ho automaticky pojmenuje
 origin, stáhne z něj všechna data, vytvoří ukazatel, který bude označovat jeho hlavní větev, a lokálně
 ji pojmenuje origin/master. Tuto větev nemůžete přesouvat. Git vám dá rovněž vaši vlastní hlavní
-větev, která bude začínat ve stejném místě jako hlavní větev serveru origin. Máte tak definován výchozí bod pro svoji práci (viz obrázek 3.22).
+větev, která bude začínat ve stejném místě jako hlavní větev serveru origin. Máte tak definován výchozí bod pro svoji práci (viz obrázek 3-22).
 
 dumbidea
 
@@ -3361,21 +3361,21 @@ iss91v2
 Pokud nyní budete pracovat na své lokální hlavní větvi a někdo z kolegů mezitím pošle svou práci
 na server git.ourcompany.com a aktualizuje jeho hlavní větev, budou se vaše historie vyvíjet odlišně.
 A dokud zůstanete od serveru origin odpojeni, váš ukazatel origin/master se nemůže přemístit
-(viz obrázek 3.23).
+(viz obrázek 3-23).
 
 K synchronizaci své práce použijte příkaz git fetch origin. Tento příkaz zjistí, který server je
 „origin“ (v našem případě je to git.ourcompany.com), vyzvedne z něj všechna data, která ještě nemáte,
 a aktualizuje vaši lokální databázi. Při tom přemístí ukazatel origin/master na novou, aktuálnější
-pozici (viz obrázek 3.24).
+pozici (viz obrázek 3-24).
 
 Abychom si mohli ukázat, jak se pracuje s několika vzdálenými servery a jak vypadají vzdálené větve
 takových vzdálených projektů, předpokládejme, že máte ještě další interní server Git, který při vývoji
 používá pouze jeden z vašich sprint teamů. Tento server se nachází na git.team1.ourcompany.com.
 Můžete ho přidat jako novou vzdálenou referenci k projektu, na němž právě pracujete – spusťte příkaz
 git remote add (viz kapitola 2). Pojmenujte tento vzdálený server jako teamone, což bude zkrácený
-název pro celou URL adresu (viz obrázek 3.25).
+název pro celou URL adresu (viz obrázek 3-25).
 
-Obrázek 3.22
+Obrázek 3-22.
 
 Příkaz git clone vám vytvoří vlastní hlavní větev a větev origin/master,
 ukazující na hlavní větev serveru origin.
@@ -3395,11 +3395,11 @@ Muj pocítac
 Nyní můžete spustit příkaz git fetch teamone, který ze serveru vyzvedne vše, co ještě nemáte. Protože
 je tento server podmnožinou dat, která jsou právě na serveru origin, Git nevyzvedne žádná data,
 ale nastaví vzdálenou větev nazvanou teamone/master tak, aby ukazovala na revizi, kterou má server
-teamone nastavenou jako hlavní větev (viz obrázek 3.26).
+teamone nastavenou jako hlavní větev (viz obrázek 3-26).
 
 
 3.5 Vzdálené větve 77
-Obrázek 3.23
+Obrázek 3-23.
 
 Pokud pracujete lokálně a někdo jiný odešle svou práci na vzdálený server, obě historie se rozejdou.
 
@@ -3413,7 +3413,7 @@ master
 a38de 893cf
 Muj pocítac
 
-Obrázek 3.24
+Obrázek 3-24.
 
 Příkaz git fetch aktualizuje vaše reference na vzdálený server.
 
@@ -3432,7 +3432,7 @@ Muj pocítac
 
 
 3.5 Vzdálené větve 78
-Obrázek 3.25
+Obrázek 3-25.
 
 Přidání dalšího vzdáleného serveru.
 
@@ -3456,7 +3456,7 @@ origin/master
 master
 a38de 893cf
 31b8e 190a3
-Obrázek 3.26
+Obrázek 3-26.
 
 Muj pocítac
 
@@ -3603,17 +3603,17 @@ nepoužívat.
 3.6 Přeskládání 81
 3.6.1 Základní přeskládání
 
-Pokud se vrátíme k našemu dřívějšímu příkladu z části o slučování větví (viz obrázek 3.27), vidíme,
+Pokud se vrátíme k našemu dřívějšímu příkladu z části o slučování větví (viz obrázek 3-27), vidíme,
 že jsme svoji práci rozdělili a vytvářeli revize ve dvou různých větvích. Víme, že nejjednodušším způsobem,
 jak integrovat větve, je příkaz merge. Ten provede třícestné sloučení mezi dvěma posledními
 snímky (C3 a C4) a jejich nejmladším společným předkem (C2), přičemž vytvoří nový snímek (a novou
-revizi) – viz obrázek 3.28.
+revizi) – viz obrázek 3-28.
 
-Obrázek 3.27
+Obrázek 3-27.
 
 Vaše původně rozdělená historie revizí
 C1C0C2C3C4masterexperiment
-Obrázek 3.28
+Obrázek 3-28.
 
 Integrace rozdělené historie sloučením větví
 
@@ -3637,17 +3637,17 @@ Přeskládání funguje takto: systém najde společného předka obou větví (
 a větve, na kterou přeskládáváte), provede příkaz diff pro všechny revize větve, na níž se nacházíte,
 uloží zjištěné rozdíly do dočasných souborů, vrátí aktuální větev na stejnou revizi jako větev, na kterou
 přeskládáváte, a nakonec po jedné aplikuje všechny změny. Tento proces je naznačen na obrázku 3.29.
-Nyní můžete přejít zpět na hlavní větev a provést sloučení „rychle vpřed“ (viz obrázek 3.30).
+Nyní můžete přejít zpět na hlavní větev a provést sloučení „rychle vpřed“ (viz obrázek 3-30).
 
 Snímek, na který nyní ukazuje revize C3, je zcela totožný se snímkem, na který v příkladu v části
 o slučování ukazovala C5. V koncových produktech integrace není žádný rozdíl, výsledkem přeskládání
 je však čistší historie.
 
-Obrázek 3.29 Přeskládání změny provedené v revizi C3 na revizi C4
+Obrázek 3-29. Přeskládání změny provedené v revizi C3 na revizi C4
 
 C1C0C2C3C4C3’
 masterexperiment
-Obrázek 3.30
+Obrázek 3-30.
 
 „Rychle vpřed“ po hlavní větvi
 
@@ -3685,7 +3685,7 @@ větvi. Použijte k tomu příkaz git rebase v kombinaci s parametrem --onto:
 
 $ git rebase --onto master server client
 
-Obrázek 3.31
+Obrázek 3-31.
 
 Historie s tematickou větví obsahující další tematickou větev.
 C1C2C5C6C3C4C10C8C9serverclientmaster
@@ -3694,20 +3694,20 @@ C1C2C5C6C3C4C10C8C9serverclientmaster
 Tím v podstatě říkáte: „Proveď checkout větve client, zjisti záplaty ze společného předka větví client
 a server a znovu je aplikuj na hlavní větev master.“ Postup je možná trochu složitý, ale výsledek, znázorněný na obrázku 3.32, stojí opravdu za to.
 
-Obrázek 3.32
+Obrázek 3-32.
 
 Přeskládání tematické větve, která byla součástí jiné tematické větve 72.
 
 C1C2C5C6C8’C9’
 C3C4C10C8C9serverclientmaster
 
-Nyní můžete posunout hlavní větev „rychle vpřed“ (viz obrázek 3.33):
+Nyní můžete posunout hlavní větev „rychle vpřed“ (viz obrázek 3-33):
 
 $ git checkout master
 $ git merge client
 
 
-Obrázek 3.33
+Obrázek 3-33.
 
 Posun hlavní větve rychle vpřed na konec změn přeskládaných z větve client
 
@@ -3725,7 +3725,7 @@ $ git rebase master server
 Příkaz provede změny obsažené ve větvi server ještě jednou na vrcholu hlavní větve, jak je znázorněno
 na obrázku 3.34.
 
-Obrázek 3.34
+Obrázek 3-34.
 
 Přeskládání větve server na vrcholu hlavní větve.
 
@@ -3743,7 +3743,7 @@ $ git branch -d client
 $ git branch -d server
 
 
-Obrázek 3.35
+Obrázek 3-35.
 
 Konečná historie revizí
 
@@ -3765,7 +3765,7 @@ Podívejme se na malý příklad, jaké problémy může přeskládání již zv
 si situaci, kdy jste naklonovali repozitář z centrálního serveru a provedli jste v něm několik
 změn. Vaše historie revizí bude vypadat jako na obrázku 3.36.
 
-Obrázek 3.36
+Obrázek 3-36.
 
 Naklonovali jste repozitář a provedli v něm změny.
 
@@ -3780,7 +3780,7 @@ Někdo jiný teď provede jiné úpravy, jejichž součástí bude i začleněn�
 server. Vy tyto změny vyzvednete a začleníte novou vzdálenou větev do své práce – vaše historie teď
 vypadá jako na obrázku 3.37.
 
-Obrázek 3.37
+Obrázek 3-37.
 
 Vyzvedli jste další revize a začlenili je do své práce.
 
@@ -3801,7 +3801,7 @@ Jenže osoba, která odeslala a začlenila své změny, se rozhodne vrátit a sv
 Provede příkaz git push --force a přepíše historii na serveru. Vy poté znovu vyzvednete data
 ze serveru a stáhnete nové revize.
 
-Obrázek 3.38
+Obrázek 3-38.
 
 Kdosi odeslal přeskládané revize a zahodil ty, na nichž jste založili svou práci.
 
@@ -3820,7 +3820,7 @@ C6C4
 C5 C4’
 V tuto chvíli vám nezbývá, než změny znovu začlenit do své práce, ačkoli už jste je jednou začlenili.
 Přeskládáním se změnily otisky SHA-1 těchto revizí, a Git je proto považuje za nové revize, přestože
-změny označené jako C4 už jsou ve skutečnosti ve vaší historii obsaženy (viz obrázek 3.39).
+změny označené jako C4 už jsou ve skutečnosti ve vaší historii obsaženy (viz obrázek 3-39).
 
 Vy musíte tyto změny ve vhodném okamžiku začlenit do své práce, abyste do budoucna neztratili
 kontakt s ostatními vývojáři. Vaše historie pak bude obsahovat revize C4 i C4’, které mají obě jiný
@@ -3838,7 +3838,7 @@ založit svou práci, můžete si tím nepěkně zavařit.
 
 
 3.7 Shrnutí 88
-Obrázek 3.39
+Obrázek 3-39.
 
 Znovu jste začlenili stejnou práci do nové revize sloučením.
 
@@ -4466,9 +4466,9 @@ věnovat v následující části.
 4.6 GitWeb
 Nyní, když máte ke svému projektu nastavena základní oprávnění pro čtení/zápis a pouze pro čtení, možná budete chtít nastavit jednoduchou online vizualizaci. Git vám nabízí CGI skript s názvem
 GitWeb, který slouží k tomuto účelu. Jak GitWeb funguje, na to se můžete podívat např. na stránkách
-http://git.kernel.org (viz obrázek 4.1).
+http://git.kernel.org (viz obrázek 4-1).
 
-Obrázek 4.1
+Obrázek 4-1.
 
 Online uživatelské rozhraní GitWeb
 
@@ -5138,16 +5138,16 @@ s otevřeným kódem. A právě u účtů se teď na chvíli zastavíme.
 4.10.2 Založení uživatelského účtu
 První věcí, kterou budete muset udělat, je vytvoření bezplatného uživatelské účtu. Jestliže na stránce
 „Pricing and Signup“ (http://github.com/plans) kliknete u bezplatného účtu (Free) na tlačítko „Sign
-Up“ (viz obrázek 4.2), přejdete na registrační stránku.
+Up“ (viz obrázek 4-2), přejdete na registrační stránku.
 
-Obrázek 4.2 Výběr typu účtu na serveru GitHub
+Obrázek 4-2. Výběr typu účtu na serveru GitHub
 
 
 
 4.10 Hostování projektů Git 113
-Tady si budete muset zvolit uživatelské jméno, které zatím není v systému obsazeno, a zadat e-mailovou adresu, která bude přiřazena k účtu a heslu (viz obrázek 4.3).
+Tady si budete muset zvolit uživatelské jméno, které zatím není v systému obsazeno, a zadat e-mailovou adresu, která bude přiřazena k účtu a heslu (viz obrázek 4-3).
 
-Obrázek 4.3
+Obrázek 4-3.
 
 Registrační formulář na serveru GitHub
 
@@ -5155,11 +5155,11 @@ Registrační formulář na serveru GitHub
 Po vyplnění osobních údajů nadešel vhodný čas k vložení vašeho veřejného klíče SSH. Jak vygenerovat nový klíč, jsme popsali výše, v části 4.3. Vezměte obsah veřejného klíče z daného páru a vložte ho
 do textového pole „SSH Public Key“. Kliknutím na odkaz „explain ssh keys“ přejdete na stránku s podrobnými
 instrukcemi, jak klíč vložit ve všech hlavních operačních systémech. Kliknutím na tlačítko
-„I agree, sign me up“ přejdete na svůj nový uživatelský ovládací panel (viz obrázek 4.4).
+„I agree, sign me up“ přejdete na svůj nový uživatelský ovládací panel (viz obrázek 4-4).
 
 Jako další krok následuje vytvoření nového repozitáře.
 
-Obrázek 4.4
+Obrázek 4-4.
 
 Uživatelský ovládací panel na serveru GitHub
 
@@ -5168,21 +5168,21 @@ Uživatelský ovládací panel na serveru GitHub
 4.10 Hostování projektů Git 114
 4.10.3 Vytvoření nového repozitáře
 Začněte kliknutím na odkaz „create a new one“ (vytvořit nový) vedle nadpisu „Your Repositories“
-na ovládacím panelu. Přejdete tím na formulář „Create a New Repository“ (viz obrázek 4.5).
+na ovládacím panelu. Přejdete tím na formulář „Create a New Repository“ (viz obrázek 4-5).
 
 Vše, co tu bezpodmínečně musíte udělat, je zadat název projektu. Kromě toho můžete přidat i jeho
 popis. Poté klikněte na tlačítko „Create Repository“ (Vytvořit repozitář). Nyní máte na serveru GitHub
-vytvořen nový repozitář (viz obrázek 4.6).
+vytvořen nový repozitář (viz obrázek 4-6).
 
 Protože v něm ještě nemáte uložen žádný kód, GitHub vám nabízí instrukce, jak vytvořit zcela nový projekt,
-odeslat sem existující projekt Git nebo naimportovat projekt z veřejného repozitáře Subversion (viz obrázek 4.7).
+odeslat sem existující projekt Git nebo naimportovat projekt z veřejného repozitáře Subversion (viz obrázek 4-7).
 
-Obrázek 4.5
+Obrázek 4-5.
 
 Vytvoření nového repozitáře na serveru GitHub
 
 
-Obrázek 4.6
+Obrázek 4-6.
 
 Záhlaví s informacemi o projektu na serveru GitHub
 
@@ -5204,7 +5204,7 @@ $ git push origin master
 
 4.10 Hostování projektů Git 115
 
-Obrázek 4.7 Instrukce k novému repozitáři
+Obrázek 4-7. Instrukce k novému repozitáři
 
 Nyní je váš projekt hostován na serveru GitHub a vy můžete dát adresu URL komukoli, s kým chcete
 svůj projekt sdílet. V tomto případě je adresa http://github.com/testinguser/iphone_project.
@@ -5213,7 +5213,7 @@ V záhlaví na stránce všech vašich projektů si můžete všimnout, že mát
 Nemusíte se bát poskytnout tuto adresu ostatním nebo ji třeba zveřejnit na svých webových
 stránkách.
 
-Obrázek 4.8
+Obrázek 4-8.
 
 Záhlaví projektu s veřejnou a soukromou adresou URL
 
@@ -5227,11 +5227,11 @@ se jim pouze veřejná adresa.
 Máte-li existující veřejný projekt Subversion, který byste rádi importovali do systému Git, GitHub
 vám s tím často ochotně pomůže. Dole na stránce s instrukcemi najdete odkaz na import ze systému
 Subversion. Pokud na něj kliknete, zobrazí se formulář s informacemi o importu a textové pole, kam
-můžete vložit adresu URL svého veřejného projektu Subversion (viz obrázek 4.9).
+můžete vložit adresu URL svého veřejného projektu Subversion (viz obrázek 4-9).
 
 
 4.10 Hostování projektů Git 116
-Obrázek 4.9
+Obrázek 4-9.
 
 Rozhraní importu ze systému Subversion
 
@@ -5245,9 +5245,9 @@ a vy jim chcete udělit oprávnění k odesílání dat do svého repozitáře, 
 jako spolupracovníky. Spolupracovníci mohou odesílat data i na základě svých veřejných klíčů.
 
 Kliknutím na tlačítko „edit“ v záhlaví projektu nebo na záložce „Admin“ v horní části projektu se
-dostanete na stránku správy vašeho projektu na serveru GitHub (viz obrázek 4.10).
+dostanete na stránku správy vašeho projektu na serveru GitHub (viz obrázek 4-10).
 
-Obrázek 4.10
+Obrázek 4-10.
 
 Stránka správy na serveru GitHub
 
@@ -5256,14 +5256,14 @@ Chcete-li k svému projektu poskytnout oprávnění pro zápis ještě dalším 
 na odkaz „Add another collaborator“ (Přidat dalšího spolupracovníka). Zobrazí se nové textové pole,
 do nějž můžete zadat jméno uživatele. Během psaní se zobrazuje pomocník, který vám navrhuje
 možná dokončení uživatelského jména. Poté, co najdete správného uživatele, klikněte na tlačítko
-„Add“. Tím uživatele přidáte jako spolupracovníka na svém projektu (viz obrázek 4.11).
+„Add“. Tím uživatele přidáte jako spolupracovníka na svém projektu (viz obrázek 4-11).
 
 Po přidání všech spolupracovníků byste měli vidět jejich seznam v poli „Repository Collaborators“
-(viz obrázek 4.12).
+(viz obrázek 4-12).
 
 
 4.10 Hostování projektů Git 117
-Obrázek 4.11 Obrázek 4.12
+Obrázek 4-11. Obrázek 4.12
 Přidání spolupracovníka do projektu Seznam spolupracovníků na projektu
 
 
@@ -5274,7 +5274,7 @@ spolupracovníků zkopírováním oprávnění z existujícího projektu.
 4.10.6 Váš projekt
 Po odeslání projektu nebo jeho naimportování ze systému Subversion budete mít hlavní stránku projektu, která bude vypadat přibližně jako na obrázku 4.13.
 
-Obrázek 4.13
+Obrázek 4-13.
 
 Hlavní stránka projektu na serveru GitHub
 
@@ -5304,17 +5304,17 @@ své příspěvky. Uživatelé mohou projekt rozštěpit a odesílat do něj rev
 změny natáhne tím, že je přidá jako vzdálené repozitáře a začlení jejich data.
 
 Chcete-li projekt rozštěpit, přejděte na stránku projektu (v tomto případě mojombo/chronic) a klikněte
-na tlačítko „fork“ v záhlaví (viz obrázek 4.14).
+na tlačítko „fork“ v záhlaví (viz obrázek 4-14).
 
 Po několika sekundách přejdete na novou stránku svého projektu, která oznamuje, že je tento projekt
-rozštěpením (fork) jiného projektu (viz obrázek 4.15).
+rozštěpením (fork) jiného projektu (viz obrázek 4-15).
 
-Obrázek 4.14
+Obrázek 4-14.
 
 Zapisovatelnou kopii jakéhokoli repozitáře získáte kliknutím na tlačítko „fork“.
 
 
-Obrázek 4.15
+Obrázek 4-15.
 
 Vaše rozštěpení projektu
 
@@ -5406,9 +5406,9 @@ Centralizovaný pracovní postup
 V centralizovaných systémech je většinou možný pouze jediný model spolupráce, tzv. centralizovaný
 pracovní postup. Jedno centrální úložiště (hub) nebo repozitář přijímá zdrojový kód a každý podle něj
 synchronizuje svou práci. Několik vývojářů představuje jednotlivé uzly (nodes) – uživatele centrálního
-místa – které se podle tohoto místa synchronizují (viz obrázek 5.1).
+místa – které se podle tohoto místa synchronizují (viz obrázek 5-1).
 
-Obrázek 5.1
+Obrázek 5-1.
 
 Centralizovaný pracovní postup
 
@@ -5438,7 +5438,7 @@ všech ostatních. Tento scénář často zahrnuje jeden standardní repozitář
 projekt. Chcete-li do tohoto projektu přispívat, vytvořte vlastní veřejný klon projektu a odešlete do
 něj změny, které jste provedli. Poté odešlete správci hlavního projektu žádost, aby do projektu natáhl
 vaše změny. Váš repozitář může přidat jako vzdálený repozitář, lokálně otestovat vaše změny, začlenit je
-do své větve a odeslat zpět do svého repozitáře. Postup práce je následující (viz obrázek 5.2):
+do své větve a odeslat zpět do svého repozitáře. Postup práce je následující (viz obrázek 5-2):
 
 1. Správce projektu odešle data do svého veřejného repozitáře.
 2. Přispěvatel naklonuje tento repozitář a provede změny.
@@ -5446,7 +5446,7 @@ do své větve a odeslat zpět do svého repozitáře. Postup práce je následu
 4. Přispěvatel pošle správci e-mail s žádostí, aby natáhl změny do projektu.
 5. Správce přidá repozitář přispěvatele jako vzdálený repozitář a provede lokální začlenění.
 6. Správce odešle začleněné změny do hlavního repozitáře.
-Obrázek 5.2
+Obrázek 5-2.
 
 Pracovní postup s integračním manažerem
 
@@ -5482,7 +5482,7 @@ Všichni poručíci mají jednoho integračního manažera, kterému se říká 
 
 5.2 Přispívání do projektu 125
 Repozitář benevolentního diktátora slouží jako referenční repozitář, z nějž všichni spolupracovníci
-musí stahovat data. Postup práce je následující (viz obrázek 5.3):
+musí stahovat data. Postup práce je následující (viz obrázek 5-3):
 
 1.
 Stálí vývojáři pracují na svých tematických větvích a přeskládávají svou práci na vrchol hlavní
@@ -5494,7 +5494,7 @@ Diktátor začleňuje hlavní větve poručíků do své hlavní větve.
 4.
 Diktátor odesílá svou hlavní větev do referenčního repozitáře, aby si na jeho základně mohli
 ostatní vývojáři přeskládat data.
-Obrázek 5.3
+Obrázek 5-3.
 
 Pracovní postup s benevolentním diktátorem
 
@@ -5728,7 +5728,7 @@ From john@githost:simplegit
 5.2 Přispívání do projektu 129
 
 V tomto okamžiku vypadá Johnův lokální repozitář jako na obrázku 5.4.
-Obrázek 5.4
+Obrázek 5-4.
 
 Johnův výchozí repozitář
 masterorigin/masterfbff54b0781edee738ee
@@ -5752,7 +5752,7 @@ To john@githost:simplegit.git
 
  fbff5bc..72bbc59 master -> master
 
-Obrázek 5.5
+Obrázek 5-5.
 
 Johnův repozitář po začlenění větve origin/master
 
@@ -5761,7 +5761,7 @@ masterorigin/masterfbff54b0781edee72bbc738ee
 5.2 Přispívání do projektu 130
 
 Johnova historie revizí bude nakonec vypadat jako na obrázku 5.6.
-Obrázek 5.6
+Obrázek 5-6.
 
 Johnova historie po odeslání revize na server origin
 
@@ -5770,7 +5770,7 @@ Jessica mezitím pracovala na tematické větvi. Vytvořila tematickou větev s 
 do ní tři revize. Zatím ještě nevyzvedla Johnovy změny, a proto její historie revizí vypadá jako
 na obrázku 5.7.
 
-Obrázek 5.7
+Obrázek 5-7.
 
 Výchozí historie revizí – Jessica
 
@@ -5791,7 +5791,7 @@ Tím stáhne práci, kterou mezitím odeslal John. Historie revizí Jessicy teď
 
 
 5.2 Přispívání do projektu 131
-Obrázek 5.8
+Obrázek 5-8.
 
 Historie Jessicy po vyzvednutí Johnových změn
 master738ee72bbc4b0781edee8149aorigin/master23ac64af42fbff5issue54
@@ -5847,7 +5847,7 @@ files changed, 1 insertions(+), 1 deletions(-)
 
 Začlenění proběhne čistě a historie Jessicy bude vypadat jako na obrázku 5.9.
 
-Obrázek 5.9 Historie Jessicy po začlenění Johnových změn
+Obrázek 5-9. Historie Jessicy po začlenění Johnových změn
 
 738ee72bbc4b0781edee8149aorigin/master23ac64af428059cfbff5masterissue54
 Větev origin/master je nyní dostupná i z hlavní větve Jessicy, a tak může Jessica úspěšně odeslat svou
@@ -5860,9 +5860,9 @@ To jessica@githost:simplegit.git
 
  72bbc59..8059c15 master -> master
 
-Všichni vývojáři zapsali několik revizí a úspěšně začlenili práci ostatních do své – viz obrázek 5.10.
+Všichni vývojáři zapsali několik revizí a úspěšně začlenili práci ostatních do své – viz obrázek 5-10.
 
-Obrázek 5.10
+Obrázek 5-10.
 
 Historie Jessicy po odeslání všech změn zpět na server
 
@@ -5875,7 +5875,7 @@ začleníte ji do své hlavní větve a poté vyzvednete a začleníte větev or
 Nakonec odešlete všechna data do hlavní větve na serveru. Obecná posloupnost kroků je naznačena
 na obrázku 5.11.
 
-Obrázek 5.11
+Obrázek 5-11.
 
 Obecná posloupnost kroků u jednoduchého pracovního postupu s více vývojáři v systému Git
 
@@ -5968,7 +5968,7 @@ From jessica@githost:simplegit
  * [new branch] featureBee -> origin/featureBee
 
 5.2 Přispívání do projektu 135
-Obrázek 5.12
+Obrázek 5-12.
 
 Výchozí historie revizí – Jessica
 e5b0f851274b0781edeefeatureB33009featureAmaster
@@ -6048,7 +6048,7 @@ To jessica@githost:simplegit.git
 
 Historie revizí Jessicy bude nyní vypadat jako na obrázku 5.13.
 
-Obrázek 5.13
+Obrázek 5-13.
 
 Historie Jessicy po zapsání revizí do větve s úkolem
 e5b0f85127fba9a4b0781edeefeatureBcd68533009aad88774b3origin/featureAorigin/featureBeemasterfeatureA
@@ -6059,7 +6059,7 @@ vypadat jako na obrázku 5.14.
 
 
 5.2 Přispívání do projektu 137
-Obrázek 5.14
+Obrázek 5-14.
 
 Historie Jessicy po začlenění obou jejích tematických větví
 e5b0f85127fba9a4b0781edeefeatureBcd68533009aad88774b3origin/featureAorigin/featureBeemasterfeatureA5399eorigin/master
@@ -6095,7 +6095,7 @@ o interaktivním přeskládání najdete v kapitole 6.
 
 
 5.2 Přispívání do projektu 138
-Obrázek 5.15
+Obrázek 5-15.
 
 Základní posloupnost kroků u pracovního postupu v řízeném týmu
 
@@ -6178,7 +6178,7 @@ $ (email maintainer)
 $ git fetch origin
 
 
-Nyní mají obě vaše témata samostatný zásobník – podobně jako řada záplat – které můžete přepsat, přeskládat a upravit, aniž by se tím obě témata navzájem ovlivňovala nebo omezovala (viz obrázek 5.16).
+Nyní mají obě vaše témata samostatný zásobník – podobně jako řada záplat – které můžete přepsat, přeskládat a upravit, aniž by se tím obě témata navzájem ovlivňovala nebo omezovala (viz obrázek 5-16).
 
 Řekněme, že správce projektu natáhl do projektu několik jiných záplat a nyní vyzkoušel vaši první větev,
 jenže tu už nelze čistě začlenit. V takovém případě můžete zkusit přeskládat tuto větev na vrcholu
@@ -6193,10 +6193,10 @@ $ git push –f myfork featureA
 5.2 Přispívání do projektu 140
 
 Tím přepíšete svou historii, která teď bude vypadat jako na obrázku 5.17.
-Obrázek 5.16
+Obrázek 5-16.
 
 Výchozí historie revizí s větví featureB
-Obrázek 5.17
+Obrázek 5-17.
 Historie revizí s větví featureA
 a2de30d708e5b0f4b0781edeefeatureAfeatureB33009masterorigin/master5399edee6be5b0f4b0781edeefeatureAfeatureB33009masterorigin/master
 Protože jste větev přeskládali, musíte k příkazu git push přidat parametr –f, abyste mohli větev
@@ -6224,9 +6224,9 @@ do jedné revize, která nevznikla jako výsledek sloučení a leží na vrcholu
 nacházíte. Parametr --no-commit říká systému Git, aby revizi automaticky nezaznamenával. To vám
 umožní provést všechny změny z jiné větve a poté udělat více změn, než zaznamenáte novou revizi.
 
-Nyní můžete správci oznámit, že jste provedli požadované změny a že je najde ve vaší větvi featureBv2 (viz obrázek 5.18).
+Nyní můžete správci oznámit, že jste provedli požadované změny a že je najde ve vaší větvi featureBv2 (viz obrázek 5-18).
 
-Obrázek 5.18
+Obrázek 5-18.
 
 Historie revizí s větví featureBv2
 5399edee6be5b0f4b0781edeefeatureA17f4dfeatureBv233009masterorigin/masterfeatureB
@@ -6685,9 +6685,9 @@ Máte-li více vývojářů nebo větší projekt, pravděpodobně budete chtít
 cyklus začlenění. V tomto scénáři máte dvě dlouhodobé větve, hlavní větev master a větev develop.
 Určíte, že hlavní větev bude aktualizována, pouze když je k dispozici velmi stabilní verze a do větve
 develop je integrován veškerý nový kód. Obě tyto větve pravidelně odesíláte do veřejného repozitáře.
-Pokaždé, když máte novou tematickou větev k začlenění (obrázek 5.21), začleníte ji do větve develop
-(obrázek 5.22 ). Když poté označujete vydání, posunete hlavní větev rychle vpřed do místa, kde je nyní
-větev develop stabilní (obrázek 5.23).
+Pokaždé, když máte novou tematickou větev k začlenění (obrázek 5-21), začleníte ji do větve develop
+(obrázek 5-22 ). Když poté označujete vydání, posunete hlavní větev rychle vpřed do místa, kde je nyní
+větev develop stabilní (obrázek 5-23).
 
 Pokud někdo při tomto postupu klonuje repozitář vašeho projektu, může provést buď checkout hlavní
 větve, aby získal nejnovější stabilní verzi a udržoval ji aktuální, nebo checkout větve develop, která
@@ -6696,14 +6696,14 @@ veškerou práci slučovat. Teprve pokud je kód v této větvi stabilní a proj
 do větve develop. A až se větev develop ukáže v některém okamžiku jako stabilní, posunete rychle
 vpřed i svou hlavní větev.
 
-Obrázek 5.19
+Obrázek 5-19.
 
 Historie s několika tematickými větvemi
 
 C1C2ruby_clientphp_clientC4C3C6C5C7master
 
 5.3 Správa projektu 150
-Obrázek 5.20
+Obrázek 5-20.
 
 Po začlenění tematické větve
 C1C2ruby_clientphp_clientC4C3C6C5C7C8C9master
@@ -6714,18 +6714,18 @@ novou práci a maint pro backporty správy. Pokud přispěvatelé vytvoří novo
 v tematických větvích v repozitáři správce podobným způsobem, jaký už jsem popisoval (viz obrázek
 5.24).
 
-Obrázek 5.21
+Obrázek 5-21.
 
 Před začleněním tematické větve
 
 C1C2ruby_clientC4C3C5masterdevelop
 
 5.3 Správa projektu 151
-Obrázek 5.22
+Obrázek 5-22.
 
 Po začlenění tematické větve
 C1C2ruby_clientC4C3C5C8masterdevelop
-Obrázek 5.23
+Obrázek 5-23.
 Po vydání tematické větve
 C1C2ruby_clientC4C3C5C8masterdevelop
 Nyní budou tematické větve vyhodnoceny, zda jsou bezpečné a mohou být aplikovány, nebo zda
@@ -6736,7 +6736,7 @@ Pokud ale tematické větve vyžadují další úpravy, budou začleněny do vě
 že jsou tyto tematické větve naprosto stabilní, budou začleněny do hlavní větve a poté budou znovu
 sestaveny z tematických větví, které byly ve větvi next, ale ještě se nedostaly do hlavní větve.
 To znamená, že hlavní větev se téměř neustále posouvá vpřed, větev next je čas od času přeskládána
-a větev pu je přeskládávána ještě o něco častěji (viz obrázek 5.25).
+a větev pu je přeskládávána ještě o něco častěji (viz obrázek 5-25).
 
 Byla-li tematická větev konečně začleněna do hlavní větve, může být odstraněna z repozitáře.
 
@@ -6748,11 +6748,11 @@ strukturovaný pracovní postup k evaluaci nových příspěvků.
 
 
 5.3 Správa projektu 152
-Obrázek 5.24
+Obrázek 5-24.
 
 Správa komplexní série současně zpracovávaných příspěvků v tematických větvích
 C1C2tv/rebase-statjk/clone-post-checkoutdb/push-cleanupjs/notesps/blameC4C3C6C5C8C7C10C9C12C11master
-Obrázek 5.25
+Obrázek 5-25.
 
 Začlenění tematických větví s příspěvky do dlouhodobých integračních větví
 
@@ -6776,7 +6776,7 @@ revizí v tematické větvi, ale chcete integrovat pouze jednu z nich. Částeč
 použít i místo přeskládání, pokud máte v tematické větvi pouze jednu revizi. Uvažujme tedy projekt,
 který vypadá jako na obrázku 5.26.
 
-Obrázek 5.26
+Obrázek 5-26.
 
 Uvažovaná historie před částečným převzetím
 0b743a6b4cruby_client5ddaee43a6f42c5master
@@ -6808,7 +6808,7 @@ user: "Scott Chacon <schacon@gmail.com>"
 1024-bit DSA key, ID F721C45A, created 2009-02-09
 
 
-Obrázek 5.27
+Obrázek 5-27.
 
 Historie po částečném převzetí revize z tematické větve
 0b743a6b4cruby_client5ddaee43a6a0a41f42c5master
@@ -7264,7 +7264,7 @@ C
 
 
 6.1 Výběr revize 164
-Obrázek 6.1
+Obrázek 6-1.
 
 Příklad historie revizí pro výběr intervalu
 
@@ -8968,7 +8968,7 @@ o to, aby systém Git používal nástroj KDiff3 pro nástroj diff, ale použív
 při slučování, a příkaz kdiff3 je ve vašem umístění, spusťte příkaz:
 $ git config --global merge.tool kdiff3
 
-Obrázek 7.1
+Obrázek 7-1.
 
 P4Merge
 
@@ -9281,7 +9281,7 @@ a nelze podle něj určit, zda je jedna revize starší než jiná.
 
 Jak zjistíte, můžete pro substituce v souborech určených k zapsání/checkoutu napsat i vlastní filtry.
 Jedná se o filtry clean a smudge. V souboru .gitattributes můžete určit filtr pro konkrétní
-umístění a nastavit skripty, jimiž budou zpracovány soubory těsně před jejich zapsáním („clean“ – viz obrázek 7.2) a těsně před checkoutem („smudge – viz obrázek 7.3). Tyto filtry lze nastavit
+umístění a nastavit skripty, jimiž budou zpracovány soubory těsně před jejich zapsáním („clean“ – viz obrázek 7-2) a těsně před checkoutem („smudge – viz obrázek 7-3). Tyto filtry lze nastavit
 k různým šikovným úkonům.
 
 Původní zpráva k revizi s touto funkcí dává jednoduchý příklad, jak před zapsáním spustit celý váš
@@ -9290,7 +9290,7 @@ zdrojový kód C programem indent. Tuto možnost lze aplikovat nastavením atrib
 
 *.c filter=indent
 
-Obrázek 7.2
+Obrázek 7-2.
 
 Filtr smudge spuštěný při checkoutu – git checkout
 Smudge*.txt Filter
@@ -9303,7 +9303,7 @@ FileC.rb
 
 
 FileC.rb
-Obrázek 7.3
+Obrázek 7-3.
 
 Filtr clean spuštěný při přípravě souborů k zapsání – git add
 
@@ -11427,7 +11427,7 @@ $ git cat-file -p 99f1a6d12cb4b6f19c8655fca46c3ecf317074e0
 
 Data, která Git ukládá, vypadají v principu jako na obrázku 9.1.
 
-Obrázek 9.1 Zjednodušený model dat v systému Git
+Obrázek 9-1. Zjednodušený model dat v systému Git
 
 StromBlobBlobStromBlobREADMElibRakefilesimplegit.rb
 
@@ -11508,7 +11508,7 @@ Pokud byste vytvořili pracovní adresář z nového stromu, který jste právě
 na nejvyšší úrovni pracovního adresáře a podadresář bak, obsahující první verzi souboru test.txt.
 Data, která Git pro tyto struktury obsahuje, si můžete představit jako ilustraci na obrázku 9.2.
 
-Obrázek 9.2
+Obrázek 9-2.
 
 Struktura obsahu vašich současných dat Git
 
@@ -11618,9 +11618,9 @@ $ find .git/objects -type f
 .git/objects/fd/f4fc3344e67ab068f836878b6c4951e3b15f3d # commit 1
 
 Pokud byste hledali vztahy mezi všemi interními ukazateli, vyšel by vám celý diagram objektů – viz
-obrázek 9.3.
+obrázek 9-3.
 
-Obrázek 9.3
+Obrázek 9-3.
 
 Všechny objekty v adresáři Git
 
@@ -11752,7 +11752,7 @@ hodnotu SHA-1 poslední revize větve, na níž se nacházíte, do nové referen
 
 
 9.3 Reference Git 247
-Obrázek 9.4:
+Obrázek 9-4.
 
 Objekty v adresáři Git s referencemi větve „head“
 
