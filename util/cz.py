@@ -378,6 +378,11 @@ class Pass2Parser:
                         self.collect()
                         self.status = 2         # sběr textu odrážky
 
+                    elif self.type == 'li':
+                        # Dobře rozpoznaná položka číslovaného seznamu.
+                        self.collect()
+                        self.status = 6         # sběr textu položky
+
                     elif self.type == 'num':
                         # Pravděpodobně špatně zalomený nadpis nebo položka
                         # číslovaného seznamu.
@@ -468,6 +473,20 @@ class Pass2Parser:
                     else:
                         self.status = 'unknown after {}'.format(self.status)
 
+                elif self.status == 6:          # ------- řádek za položkou číslovaného seznamu
+                    if self.type == '?':
+                        self.collect()          # pokračovat ve sběru
+                    elif self.type == 'empty':
+                        self.write_collection()
+                        self.collect()          # ukončeno prázdným řádkem
+                        self.write_collection()
+                        self.status = 0
+                    elif self.type == 'li':
+                        self.write_collection() # vypíšeme předchozí bod
+                        self.collect()          # zahájíme sběr dalšího
+                        # Zůstaneme ve stejném stavu.
+                    else:
+                        self.status = 'unknown after {}'.format(self.status)
                 elif self.status == 888:        # ------- akce po EOF
                     pass
 
