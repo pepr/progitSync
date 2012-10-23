@@ -378,6 +378,11 @@ class Pass2Parser:
                         self.collect()
                         self.status = 2         # sběr textu odrážky
 
+                    elif self.type == 'uli':
+                        # Dobře rozpoznaný zahajovací znak + řádek odrážky.
+                        self.collect()
+                        self.status = 3         # sběr textu odrážky
+
                     elif self.type == 'li':
                         # Dobře rozpoznaná položka číslovaného seznamu.
                         self.collect()
@@ -420,6 +425,10 @@ class Pass2Parser:
                         self.collect()          # ukončeno prázdným řádkem
                         self.write_collection()
                         self.status = 0
+                    elif self.type == 'uli':
+                        self.write_collection() # předchozí odrážka
+                        self.collect()          # řádek s další odrážkou
+                        self.status = 3         # zůstaneme ve stejném stavu
                     elif self.type == 'xuli':
                         self.write_collection() # předchozí odrážka
                         self.collect()          # jen značka
