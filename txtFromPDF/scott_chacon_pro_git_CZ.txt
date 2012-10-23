@@ -382,6 +382,8 @@ Aby se uživatelé tomuto riziku vyhnuli, vyvinuli programátoři už před dlou
 VCS s jednoduchou databází, která uchovávala všechny změny souborů s nastavenou správou revizí
 (viz obrázek 1-1).
 
+Obrázek 1-1. Diagram lokální správy verzí
+
 Jedním z velmi oblíbených nástrojů VCS byl systém s názvem rcs, který je ještě dnes distribuován
 s mnoha počítači. Dokonce i populární operační systém Mac OS X obsahuje po nainstalování vývojářských
 nástrojů (Developer Tools) příkaz rcs. Tento nástroj pracuje na tom principu, že na disku
@@ -398,21 +400,19 @@ obrázek 1-2).
 
 
 1.1 Správa verzí 18
-Obrázek 1-1. Diagram lokální správy verzí
-
 Obrázek 1-2. Diagram centralizované správy verzí
 
 Nabízí ostatně mnoho výhod, zejména v porovnání s lokálními systémy VCS. Každý například
 – do určité míry – ví, co dělají ostatní účastníci projektu a administrátoři mají přesnou kontrolu
 nad jednotlivými právy. Kromě toho je podstatně jednodušší spravovat CVCS, než pracovat
 s lokálními databázemi na jednotlivých klientech.
+
 Avšak i tato koncepce má závažné nedostatky. Tímto nejkřiklavějším je riziko kolapsu celého projektu
 po výpadku jediného místa – centrálního serveru. Pokud takový server na hodinu vypadne, pak během
 této hodiny buď nelze pracovat vůbec, nebo přinejmenším není možné ukládat změny ve verzích
 souborů, na nichž uživatelé právě pracují. A dojde-li k poruše pevného disku, na němž je uložena
 centrální databáze, a disk nebyl předem zálohován, dojde ke ztrátě všech dat, celé historie projektu,
 s výjimkou souborů aktuálních verzí, jež mají uživatelé v lokálních počítačích.
-
 Ke stejnému riziku jsou náchylné také lokální systémy VCS. Jestliže máte celou historii projektu uloženou
 na jednom místě, hrozí, že přijdete o vše.
 
@@ -423,6 +423,8 @@ nestahují nejnovější verzi souborů (tzv. snímek, anglicky snapshot), ale u
 repozitáře (repository). Pokud v takové situaci dojde ke kolapsu serveru, lze jej obnovit zkopírováním
 repozitáře od libovolného uživatele. Každá lokální kopie (checkout) je plnohodnotnou zálohou všech
 dat (viz obrázek 1-3).
+
+Obrázek 1-3. Diagram distribuované správy verzí
 
 Mnoho z těchto systémů navíc bez větších obtíží pracuje i s několika vzdálenými repozitáři, a vy
 tak můžete v rámci jednoho projektu spolupracovat na různých úrovních s rozdílnými skupinami lidí.
@@ -437,19 +439,16 @@ sporu. Jádro Linuxu je software s otevřeným kódem a širokou škálou využi
 bylo jádro Linuxu spravováno formou záplat a archivních souborů. V roce 2002 začal projekt vývoje
 linuxového jádra využívat komerční systém DVCS s názvem Bit-Keeper.
 
-Obrázek 1-3. Diagram distribuované správy verzí
-
 V roce 2005 se zhoršily vztahy mezi komunitou, která vyvíjela jádro Linuxu, a komerční společností,
 která vyvinula BitKeeper, a společnost přestala tento systém poskytovat zdarma. To přimělo komunitu
 vývojářů Linuxu (a zejména Linuse Torvaldse, tvůrce Linuxu), aby vyvinula vlastní nástroj, založený
 na poznatcích, které nasbírala při užívání systému BitKeeper.
-
 Mezi požadované vlastnosti systému patřily zejména:
 
-• rychlost;
-• jednoduchý design;
-• silná podpora nelineárního vývoje (tisíce paralelních větví);
-• plná distribuovatelnost;
+• Rychlost,
+• jednoduchý design,
+• silná podpora nelineárního vývoje (tisíce paralelních větví),
+• plná distribuovatelnost,
 • schopnost efektivně spravovat velké projekty, jako je linuxové jádro (rychlost a objem dat).
 
 Od svého vzniku v roce 2005 se Git vyvinul a vyzrál v snadno použitelný systém, který si dodnes
@@ -481,6 +480,8 @@ všechny vaše soubory v daném okamžiku, a uloží reference na tento snímek.
 provedeny žádné změny, Git v zájmu zefektivnění práce neukládá znovu celý soubor, ale pouze odkaz
 na předchozí identický soubor, který už byl uložen. Zpracování dat v systému Git ilustruje obrázek 1-5.
 
+Obrázek 1-5. Git ukládá data jako snímky projektu proměnlivé v čase.
+
 Toto je důležitý rozdíl mezi systémem Git a téměř všemi ostatními systémy VCS. Git díky tomu znovu
 zkoumá skoro každý aspekt správy verzí, které ostatní systémy kopírovaly z předchozí generace. Git
 je tak z obyčejného VCS spíše povýšen na vlastní systém správy souborů s řadou skutečně výkonných
@@ -496,8 +497,6 @@ disku, probíhá většina operací takřka okamžitě.
 
 
 1.3 Základy systému Git 21
-Obrázek 1-5. Git ukládá data jako snímky projektu proměnlivé v čase.
-
 Pokud chcete například procházet historii projektu, Git kvůli tomu nemusí vyhledávat informace
 na serveru – načte ji jednoduše přímo z vaší lokální databáze. Znamená to, že se historie projektu
 zobrazí téměř neprodleně. Pokud si chcete prohlédnout změny provedené mezi aktuální verzí
@@ -552,11 +551,12 @@ zapsán do databáze. Připraveno k zapsání znamená, že jste změněný soub
 k tomu, aby byl zapsán v další revizi (tzv. commit).
 
 Z toho vyplývá, že projekt je v systému Git rozdělen do tří hlavních částí: adresář systému Git (Git
-directory), pracovní adresář (working directory) a oblast připravených změn (staging area). V adresáři
-Git ukládá systém databázi metadat a objektů k projektu. Je to nejdůležitější část systému Git a zároveň
-adresář, který se zkopíruje, když klonujete repozitář z jiného počítače.
+directory), pracovní adresář (working directory) a oblast připravených změn (staging area).
 
 Obrázek 1-6. Pracovní adresář, oblast připravených změn a adresář Git
+
+V adresáři Git ukládá systém databázi metadat a objektů k projektu. Je to nejdůležitější část systému Git a zároveň
+adresář, který se zkopíruje, když klonujete repozitář z jiného počítače.
 
 Pracovní adresář obsahuje lokální kopii jedné verze projektu. Tyto soubory jsou staženy ze zkomprimované
 databáze v adresáři Git a umístěny na disk, abyste je mohli upravovat.
@@ -576,6 +576,7 @@ Soubory připravíte k uložení tak, že vložíte jejich snímky do oblasti p�
 3.
 Zapíšete revizi. Snímky souborů, uložené v oblasti připravených změn, se trvale uloží
 do adresáře Git.
+
 Nachází-li se konkrétní verze souboru v adresáři Git, je považována za zapsanou. Pokud je modifikovaná
 verze přidána do oblasti připravených změn, je považována za připravenou k zapsání. A pokud
 byla od posledního checkoutu změněna, ale nebyla připravena k zapsání, je považována za změněnou.
@@ -606,8 +607,10 @@ založené na Debianu), můžete k instalaci použít jeden z následujících p
 	  libz-dev
 
 
-Po doinstalování všech potřebných závislostí můžete pokračovat stažením nejnovější verze systému
-Git z webové stránky http://git-scm.com/download.
+Po doinstalování všech potřebných závislostí můžete pokračovat stažením nejnovější verze z webových stránek
+systému Git:
+
+	http://git-scm.com/download
 
 Poté přistupte ke kompilaci a instalaci:
 
@@ -615,7 +618,6 @@ Poté přistupte ke kompilaci a instalaci:
 	$ cd git-1.6.0.5
 	$ make prefix=/usr/local all
 	$ sudo make prefix=/usr/local install
-
 
 Po dokončení instalace můžete rovněž vyhledat aktualizace systému Git prostřednictvím systému
 samotného:
@@ -642,7 +644,6 @@ grafický instalátor Git, který si můžete stáhnout ze stránky Google Code 
 	http://code.google.com/p/git-osx-installer
 
 Obrázek 1-7. Instalátor Git pro OS X
-
 
 Jiným obvyklým způsobem je instalace systému Git prostřednictvím systému MacPorts
 (http://www.macports.org). Máte-li systém MacPorts nainstalován, nainstalujte Git příkazem:
@@ -720,7 +721,6 @@ $ git config --global merge.tool vimdiff
 
 
 1.6 Kde hledat pomoc 26
-1.7 Shrnutí
 Jako platné nástroje slučování Git akceptuje: kdiff3, tkdiff, meld, xxdiff, emerge, vimdiff, gvimdiff,
 ecmerge a opendiff. Nastavit můžete ale i jiné uživatelské nástroje – více informací o této možnosti
 naleznete v kapitole 7.
