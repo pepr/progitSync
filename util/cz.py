@@ -179,7 +179,7 @@ class Pass2Parser:
 
         # Umístění obrázku s číslem. Může následovat popisný text,
         # ale bývá zalomený za ještě jedním prázdným řádkem.
-        patObrazek = r'^Obrázek\s+(?P<num>\d+-\d+).(\s+(?P<text>.+?))?\s*$'
+        patObrazek = r'^Obrázek\s+(?P<num>\d+-\d+)\.(\s+(?P<text>.+?))?\s*$'
         self.rexObrazek = re.compile(patObrazek)
 
         # Řádek reprezentující příklad sázený jako kódový řádek
