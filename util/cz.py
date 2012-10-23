@@ -295,7 +295,7 @@ class Pass2Parser:
                     text = ''           # korekce
                 num = m.group('num')
                 self.type = 'obrazek'
-                self.parts = ['Insert {}\n'.format(self.png_name(num)),
+                self.parts = ['Insert {}\n'.format(self.png_name(num)) + \
                               'Obrázek {}. {}'.format(num, text)]
                 return
 
@@ -340,7 +340,28 @@ class Pass2Parser:
                     self.status = 888
 
                 if self.status == 0:            # ------- základní stav
-                    if self.type == 'xcode':
+                    if self.type == 'empty':
+                        self.collect()
+                        self.write_collection() # zapíše prázdný řádek
+
+                    elif self.type == 'pagesep':
+                        self.write_collection() # nezapíše nic
+
+                    elif self.type == 'title':
+                        # Číslo nadpisu změníme na abstraktní označení
+                        # a zapíšeme řádek nadpisu.
+                        xxx = abstractNum(self.parts[0])
+                        self.collect(xxx)
+                        self.collect(self.parts[1])
+                        self.collect(xxx)
+                        self.write_collection()
+
+                        # Většině nadpisů chybí oddělení prázdným řádkem.
+                        # Přidáme jej natvrdo.
+                        self.collect('')
+                        self.write_collection()
+
+                    elif self.type == 'xcode':
                         self.collect()
                         self.write_collection() # řádky kódu se neslepují
                         self.status = 1         # další řádky až do empty
@@ -356,6 +377,12 @@ class Pass2Parser:
                         # Dobře rozpoznaný zahajovací znak odrážky.
                         self.collect()
                         self.status = 2         # sběr textu odrážky
+
+                    elif self.type == 'num':
+                        # Pravděpodobně špatně zalomený nadpis nebo položka
+                        # číslovaného seznamu.
+                        self.collect()
+                        self.status = 4        # očekává se řádek s textem
 
                     else:
                         # Diagnostický výstup.
@@ -393,7 +420,53 @@ class Pass2Parser:
                         self.collect()          # jen značka
                         self.status = 2
                     else:
-                        self.status = 'unknown'
+                        self.status = 'unknown after {}'.format(self.status)
+
+                elif self.status == 4:          # ------- očekává text po num
+                    if self.type == '?':
+                        num = self.collection[0]
+                        text = self.parts[0]
+
+                        if num in toc and toc[num] == text:
+                            # Je to nadpis. Nahradíme číslo abstraktním označením
+                            # úrovně.
+                            self.collect()
+                            xxx = abstractNum(self.collection[0])
+                            self.collection[0] = xxx
+                            self.collect(xxx)
+                            self.write_collection()
+
+                            # Prázdný řádek po špatně zalomeném nadpisu.
+                            self.collect('')
+                            self.write_collection()
+                            self.status = 0     # do základního stavu
+                        else:
+                            # Je to číslovaná položka seznamu.
+                            self.collection[0] = num + '\t' # přidat tabulátor
+                            self.collect()      # zahájit sběr číslované položky
+                            self.status = 5
+                    else:
+                        self.status = 'unknown after {}'.format(self.status)
+
+                elif self.status == 5:          # ------- sběr špatně zalomené 3. item
+                    if self.type == '?':
+                        self.collect()          # pokračovat ve sběru
+                    elif self.type == 'empty':
+                        self.write_collection()
+                        self.collect()          # ukončeno prázdným řádkem
+                        self.write_collection()
+                        self.status = 0
+                    elif self.type == 'pagesep':
+                        self.write_collection()
+                        self.collect('')        # ukončeno prázdným řádkem
+                        self.write_collection()
+                        self.status = 0
+                    elif self.type == 'num':
+                        self.write_collection() # předchozí bod
+                        self.collect()          # jen číslo
+                        self.status = 4
+                    else:
+                        self.status = 'unknown after {}'.format(self.status)
 
                 elif self.status == 888:        # ------- akce po EOF
                     pass
