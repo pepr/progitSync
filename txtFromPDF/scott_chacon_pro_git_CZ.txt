@@ -2570,6 +2570,7 @@ Pracujete na webových stránkách.
 Vytvoříte větev pro novou část stránek, v níž budete pracovat.
 3.
 Vytvoříte práci v této větvi.
+
 V tomto okamžiku vám zavolají, že se vyskytla jiná kritická chyba, která vyžaduje hotfix. Uděláte
 následující:
 
