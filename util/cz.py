@@ -394,6 +394,11 @@ class Pass2Parser:
                         self.collect()
                         self.status = 4        # očekává se řádek s textem
 
+                    elif self.type == 'obrazek':
+                        # Instrukce pro vložení obrázku.
+                        self.collect()
+                        self.write_collection()
+
                     else:
                         # Diagnostický výstup.
                         self.fout.write('{}|{}\n'.format(self.type,
