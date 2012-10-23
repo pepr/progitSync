@@ -846,7 +846,9 @@ příkaz:
 	$ git init
 
 Příkaz vytvoří nový podadresář s názvem .git, který bude obsahovat všechny soubory nezbytné pro repozitář, tzv. kostru repozitáře Git. V tomto okamžiku ještě není nic z vašeho projektu sledováno. (Více
-informací o tom, jaké soubory obsahuje právě vytvořený adresář .git, naleznete v kapitole 9.) Chcete-li
+informací o tom, jaké soubory obsahuje právě vytvořený adresář .git, naleznete v kapitole 9.) 
+
+Chcete-li
 spustit verzování existujících souborů (na rozdíl od prázdného adresáře), měli byste pravděpodobně
 zahájit sledování (tracking) těchto souborů a provést první revizi (commit). Můžete tak učinit pomocí
 několika příkazů git add, jimiž určíte soubory, které chcete sledovat, a provedete revizi:
@@ -883,8 +885,9 @@ další parametr na příkazovém řádku:
 
 $ git clone git://github.com/schacon/grit.git mygrit
 
-Tento příkaz učiní totéž co příkaz předchozí, jen cílový adresář se bude jmenovat „mygrit“. Git nabízí
-celou řadu různých přenosových protokolů. Předchozí příklad využívá protokol git://, můžete se ale
+Tento příkaz učiní totéž co příkaz předchozí, jen cílový adresář se bude jmenovat „mygrit“.
+
+Git nabízí celou řadu různých přenosových protokolů. Předchozí příklad využívá protokol git://, můžete se ale
 setkat také s protokolem http(s):// nebo user@server:/path.git, který používá přenosový protokol
 SSH. V kapitole 4 budou představeny všechny dostupné parametry pro nastavení serveru pro přístup
 do repozitáře Git, včetně jejich předností a nevýhod.
@@ -905,6 +908,8 @@ jejich checkout a dosud jste neudělali žádné změny.
 Jakmile začnete soubory upravovat, Git je bude považovat za „změněné“, protože jste v nich od poslední
 revize provedli změny. Poté všechny tyto změněné soubory připravíte k zapsání a následně všechny připravené změny zapíšete. Cyklus může začít od začátku. Pracovní cyklus je znázorněn na obrázku 2-1.
 
+Obrázek 2-1. Cyklus stavů vašich souborů
+
 2.2.1 Kontrola stavu souborů
 Hlavním nástrojem na zjišťování stavu jednotlivých souborů je příkaz git status. Spustíte-li tento
 
@@ -923,8 +928,6 @@ budou podrobně popsány v následující kapitole.
 
 
 2.2 Nahrávání změn do repozitáře 31
-Obrázek 2-1. Cyklus stavů vašich souborů
-
 Řekněme, že nyní přidáte do projektu nový soubor, například soubor README. Pokud soubor neexistoval
 dříve a vy spustíte příkaz git status, bude nesledovaný soubor uveden takto:
 
@@ -932,9 +935,9 @@ dříve a vy spustíte příkaz git status, bude nesledovaný soubor uveden takt
 	$ git status
 	# On branch master
 	# Untracked files:
-	# (use "git add <file>..." to include in what will be committed)
+	#   (use "git add <file>..." to include in what will be committed)
 	#
-	# README
+	#	README
 	nothing added to commit but untracked files present (use "git add" to track)
 
 Vidíte, že nový soubor README není sledován, protože je ve výpisu stavů uveden v části „Untracked
@@ -955,14 +958,13 @@ a připraven k zapsání:
 
 
 2.2 Nahrávání změn do repozitáře 32
-$ git status
-# On branch master
-# Changes to be committed:
-# (use "git reset HEAD <file>..." to unstage)
-#
-# new file: README
-#
-
+	$ git status
+	# On branch master
+	# Changes to be committed:
+	#   (use "git reset HEAD <file>..." to unstage)
+	#
+	#	new file:   README
+	#
 
 Můžeme říci, že je připraven k zapsání, protože je uveden v části „Changes to be committed“, tedy
 „Změny k zapsání“. Pokud v tomto okamžiku zapíšete revizi, v historickém snímku bude verze
@@ -975,19 +977,18 @@ nebo k adresáři. Pokud se jedná o adresář, příkaz přidá rekurzivně vš
 Nyní provedeme změny v souboru, který už byl sledován. Pokud změníte už dříve sledovaný soubor
 s názvem benchmarks.rb a poté znovu spustíte příkaz status, zobrazí se výpis podobného obsahu:
 
-$ git status
-# On branch master
-# Changes to be committed:
-# (use "git reset HEAD <file>..." to unstage)
-#
-# new file: README
-#
-# Changed but not updated:
-# (use "git add <file>..." to update what will be committed)
-#
-# modified: benchmarks.rb
-#
-
+	$ git status
+	# On branch master
+	# Changes to be committed:
+	#   (use "git reset HEAD <file>..." to unstage)
+	#
+	#	new file:   README
+	#
+	# Changed but not updated:
+	#   (use "git add <file>..." to update what will be committed)
+	#
+	#	modified:   benchmarks.rb
+	#
 
 Soubor benchmarks.rb je uveden v části „Changed but not updated“ (Změněno, ale neaktualizováno).
 Znamená to, že soubor, který je sledován, byl v pracovním adresáři změněn, avšak ještě nebyl připraven
@@ -996,16 +997,15 @@ se k zahájení sledování nových souborů, k připravení souborů a k dalš�
 souborů, které kolidovaly při sloučení, za vyřešené). Spusťme nyní příkaz git add k připravení
 souboru benchmarks.rb k zapsání a následně znovu příkaz git status:
 
-$ git add benchmarks.rb
-$ git status
-# On branch master
-# Changes to be committed:
-# (use "git reset HEAD <file>..." to unstage)
-#
-# new file: README
-# modified: benchmarks.rb
-#
-
+	$ git add benchmarks.rb
+	$ git status
+	# On branch master
+	# Changes to be committed:
+	#   (use "git reset HEAD <file>..." to unstage)
+	#
+	#	new file:   README
+	#	modified:   benchmarks.rb
+	#
 
 Oba soubory jsou nyní připraveny k zapsání a budou zahrnuty do příští revize. Nyní předpokládejme,
 že jste si vzpomněli na jednu malou změnu, kterou chcete ještě před zapsáním revize provést v souboru
@@ -1014,21 +1014,20 @@ však ještě jednou příkaz git status:
 
 
 2.2 Nahrávání změn do repozitáře 33
-$ vim benchmarks.rb
-$ git status
-# On branch master
-# Changes to be committed:
-# (use "git reset HEAD <file>..." to unstage)
-#
-# new file: README
-# modified: benchmarks.rb
-#
-# Changed but not updated:
-# (use "git add <file>..." to update what will be committed)
-#
-# modified: benchmarks.rb
-#
-
+	$ vim benchmarks.rb
+	$ git status
+	# On branch master
+	# Changes to be committed:
+	#   (use "git reset HEAD <file>..." to unstage)
+	#
+	#	new file:   README
+	#	modified:   benchmarks.rb
+	#
+	# Changed but not updated:
+	#   (use "git add <file>..." to update what will be committed)
+	#
+	#	modified:   benchmarks.rb
+	#
 
 Co to má být? Soubor benchmarks.rb je nyní uveden jak v části připraveno k zapsání (Changes to be
 committed), tak v části nepřipraveno k zapsání (Changed but not updated). Jak je tohle možné? Věc
@@ -1038,16 +1037,15 @@ git add, nikoli v té podobě, kterou měl v pracovním adresáři v okamžiku, 
 git commit. Pokud upravíte soubor po provedení příkazu git add, je třeba spustit git add ještě
 jednou, aby byla připravena aktuální verze souboru:
 
-$ git add benchmarks.rb
-$ git status
-# On branch master
-# Changes to be committed:
-# (use "git reset HEAD <file>..." to unstage)
-#
-# new file: README
-# modified: benchmarks.rb
-#
-
+	$ git add benchmarks.rb
+	$ git status
+	# On branch master
+	# Changes to be committed:
+	#   (use "git reset HEAD <file>..." to unstage)
+	#
+	#	new file:   README
+	#	modified:   benchmarks.rb
+	#
 
 2.2.4 Ignorované soubory
 Často se ve vašem adresáři vyskytne skupina souborů, u nichž nebudete chtít, aby je Git automaticky
@@ -1103,14 +1101,14 @@ bez připravení upravíte soubor benchmarks.rb. Po spuštění příkazu status
 	$ git status
 	# On branch master
 	# Changes to be committed:
-	# (use "git reset HEAD <file>..." to unstage)
+	#   (use "git reset HEAD <file>..." to unstage)
 	#
-	# new file: README
+	#	new file:   README
 	#
 	# Changed but not updated:
-	# (use "git add <file>..." to update what will be committed)
+	#   (use "git add <file>..." to update what will be committed)
 	#
-	# modified: benchmarks.rb
+	#	modified:   benchmarks.rb
 	#
 
 Chcete-li vidět, co jste změnili, avšak ještě nepřipravili k zapsání, zadejte příkaz git diff bez dalších
@@ -1133,32 +1131,26 @@ parametrů:
 	           log = git.commits('master', 15)
 	           log.size
 
-Tento příkaz srovná obsah vašeho pracovního adresáře a oblasti připravených změn. Výsledek vám
-ukáže provedené změny, které jste dosud nepřipravili k zapsání. Chcete-li vidět, co jste připravili a co
+Tento příkaz srovná obsah vašeho pracovního adresáře a oblasti připravených změn. Výsledek vám ukáže provedené změny, které jste dosud nepřipravili k zapsání.
+
+Chcete-li vidět, co jste připravili a co
 bude součástí příští revize, použijte a co bude součástí příští revize, použijte příkaz diff --cached.
 (Ve verzích Git 1.6.1 a novějších můžete použít také příkaz git diff –-staged, který se možná snáze
 pamatuje.) Tento příkaz srovná připravené změny s poslední revizí:
 
-$ git diff --cached
+	$ git diff --cached
+	diff --git a/README b/README
+	new file mode 100644
+	index 0000000..03902a1
+	--- /dev/null
+	+++ b/README2
+	@@ -0,0 +1,5 @@
+	+grit
+	+ by Tom Preston-Werner, Chris Wanstrath
+	+ http://github.com/mojombo/grit
+	+
+	+Grit is a Ruby library for extracting information from a Git repository
 
-diff --git a/README b/README
-
-new file mode 100644
-
-index 0000000..03902a1
-
---- /dev/null
-
-+++ b/README2
-
-@@ -0,0 +1,5 @@
-
-+grit
-
-+ by Tom Preston-Werner, Chris Wanstrath
-+ http://github.com/mojombo/grit
-+
-+Grit is a Ruby library for extracting information from a Git repository
 K tomu je třeba poznamenat, že příkaz git diff sám o sobě nezobrazí všechny změny provedené
 od poslední revize, ale jen změny, které zatím nejsou připraveny. To může být občas matoucí, protože
 pokud jste připravili všechny provedené změny, výstup příkazu git diff bude prázdný.
@@ -1167,61 +1159,53 @@ V dalším příkladu ukážeme situaci, kdy jste připravili soubor benchmarks.
 Příkaz git diff můžete nyní použít k zobrazení změn v souboru, které byly připraveny, a změn, které
 nejsou připraveny:
 
-$ git add benchmarks.rb
-$ echo '# test line' >> benchmarks.rb
-$ git status
-# On branch master
-#
-# Changes to be committed:
-#
-#modified: benchmarks.rb
-#
-# Changed but not updated:
-#
-#modified: benchmarks.rb
-#
-
+	$ git add benchmarks.rb
+	$ echo '# test line' >> benchmarks.rb
+	$ git status
+	# On branch master
+	#
+	# Changes to be committed:
+	#
+	#	modified:   benchmarks.rb
+	#
+	# Changed but not updated:
+	#
+	#	modified:   benchmarks.rb
+	#
 
 Příkaz git diff nyní můžete použít k zobrazení změn, které dosud nejsou připraveny:
 
 
 2.2 Nahrávání změn do repozitáře 36
-$ git diff
-diff --git a/benchmarks.rb b/benchmarks.rb
-index e445e28..86b2f7c 100644
---- a/benchmarks.rb
-+++ b/benchmarks.rb
-@@ -127,3 +127,4 @@ end
+	$ git diff
+	diff --git a/benchmarks.rb b/benchmarks.rb
+	index e445e28..86b2f7c 100644
+	--- a/benchmarks.rb
+	+++ b/benchmarks.rb
+	@@ -127,3 +127,4 @@ end
+	 main()
 
-
- main()
-
- ##pp Grit::GitRuby.cache_client.stats
-+# test line
-
+	 ##pp Grit::GitRuby.cache_client.stats
+	+# test line
 
 A příkaz git diff --cached ukáže změny, které už připraveny jsou:
 
-$ git diff --cached
-diff --git a/benchmarks.rb b/benchmarks.rb
-index 3cb747f..e445e28 100644
---- a/benchmarks.rb
-+++ b/benchmarks.rb
-@@ -36,6 +36,10 @@ def main
+	$ git diff --cached
+	diff --git a/benchmarks.rb b/benchmarks.rb
+	index 3cb747f..e445e28 100644
+	--- a/benchmarks.rb
+	+++ b/benchmarks.rb
+	@@ -36,6 +36,10 @@ def main
+	          @commit.parents[0].parents[0].parents[0]
+	        end
 
-
- @commit.parents[0].parents[0].parents[0]
-end
-
-
-+ run_code(x, 'commits 1') do
-+ git.commits.size
-+ end
-+
-run_code(x, 'commits 2') do
-log = git.commits('master', 15)
-log.size
-
+	+        run_code(x, 'commits 1') do
+	+          git.commits.size
+	+        end
+	+
+	        run_code(x, 'commits 2') do
+	          log = git.commits('master', 15)
+	          log.size
 
 2.2.6 Zapisování změn
 Nyní, když jste seznam připravených změn nastavili podle svých představ, můžete začít zapisovat
@@ -1239,24 +1223,22 @@ můžete nastavit i jakýkoli jiný – viz kapitola 1.)
 
 Editor zobrazí následující text (tento příklad je z editoru Vim):
 
-# Please enter the commit message for your changes. Lines starting
-# with '#' will be ignored, and an empty message aborts the commit.
-# On branch master
-# Changes to be committed:
-# (use "git reset HEAD <file>..." to unstage)
+	# Please enter the commit message for your changes. Lines starting
+	# with '#' will be ignored, and an empty message aborts the commit.
+	# On branch master
+	# Changes to be committed:
+	#   (use "git reset HEAD <file>..." to unstage)
+	#
+	#       new file:   README
+	#       modified:   benchmarks.rb
+	~
+	~
+	~
+	".git/COMMIT_EDITMSG" 10L, 283C
 
 
 
 2.2 Nahrávání změn do repozitáře 37
-#
-# new file: README
-# modified: benchmarks.rb
-~
-~
-~
-
-".git/COMMIT_EDITMSG" 10L, 283C
-
 Jak vidíte, výchozí zpráva k revizi (commit message) obsahuje zakomentovaný aktuální výstup příkazu
 git status a nahoře jeden prázdný řádek. Tyto komentáře můžete odstranit a napsat vlastní zprávu
 k revizi, nebo je můžete v souboru ponechat, abyste si lépe vzpomněli, co bylo obsahem dané
@@ -1268,11 +1250,10 @@ napsali (s odstraněnými komentáři a rozdíly).
 Zprávu k revizi můžete rovněž napsat do řádku k příkazu commit. Jako zprávu ji označíte tak, že
 před ni vložíte příznak -m:
 
-$ git commit -m "Story 182: Fix benchmarks for speed"
-
-[master]: created 463dc4f: "Fix benchmarks for speed"
-2 files changed, 3 insertions(+), 0 deletions(-)
-create mode 100644 README
+	$ git commit -m "Story 182: Fix benchmarks for speed"
+	[master]: created 463dc4f: "Fix benchmarks for speed"
+	 2 files changed, 3 insertions(+), 0 deletions(-)
+	 create mode 100644 README
 
 Nyní jste vytvořili svou první revizi! Vidíte, že se po zapsání revize zobrazil výpis s informacemi:
 do jaké větve jste revizi zapsali (hlavní, master), jaký kontrolní součet SHA-1 revize dostala (463dc4f),
@@ -1290,17 +1271,16 @@ změn úplně přeskočit, nabízí Git jednoduchou zkratku. Přidáte-li k př�
 Git do revize automaticky zahrne každý soubor, který je sledován. Zcela tak odpadá potřeba zadávat
 příkaz git add:
 
-$ git status
-# On branch master
-#
-# Changed but not updated:
-#
-#modified: benchmarks.rb
-#
-$ git commit -a -m 'added new benchmarks'
-[master 83e38c7] added new benchmarks
-
- 1 files changed, 5 insertions(+), 0 deletions(-)
+	$ git status
+	# On branch master
+	#
+	# Changed but not updated:
+	#
+	#	modified:   benchmarks.rb
+	#
+	$ git commit -a -m 'added new benchmarks'
+	[master 83e38c7] added new benchmarks
+	 1 files changed, 5 insertions(+), 0 deletions(-)
 
 Tímto způsobem není nutné provádět před zapsáním revize příkaz git add pro soubor benchmarks.rb.
 
@@ -1313,30 +1293,28 @@ odstraní soubor zároveň z vašeho pracovního adresáře, a proto ho už př�
 soubory. Pokud soubor jednoduše odstraníte z pracovního adresáře, zobrazí se ve výpisu git status
 v části „Changed but not updated“ (tedy nepřipraveno):
 
-$ rm grit.gemspec
-$ git status
-# On branch master
-#
-# Changed but not updated:
-# (use "git add/rm <file>..." to update what will be committed)
-#
-# deleted: grit.gemspec
-#
-
+	$ rm grit.gemspec
+	$ git status
+	# On branch master
+	#
+	# Changed but not updated:
+	#   (use "git add/rm <file>..." to update what will be committed)
+	#
+	#       deleted:    grit.gemspec
+	#
 
 Pokud nyní provedete příkaz git rm, bude k zapsání připraveno odstranění souboru:
 
-$ git rm grit.gemspec
-rm 'grit.gemspec'
-$ git status
-# On branch master
-#
-# Changes to be committed:
-# (use "git reset HEAD <file>..." to unstage)
-#
-# deleted: grit.gemspec
-#
-
+	$ git rm grit.gemspec
+	rm 'grit.gemspec'
+	$ git status
+	# On branch master
+	#
+	# Changes to be committed:
+	#   (use "git reset HEAD <file>..." to unstage)
+	#
+	#       deleted:    grit.gemspec
+	#
 
 Po příštím zapsání revize soubor zmizí a nebude sledován. Pokud už jste soubor upravili a přidali do indexu,
 musíte odstranění provést pomocí parametru -f. Jedná se o bezpečnostní funkci, jež má zabránit nechtěnému
@@ -1371,28 +1349,29 @@ v systému Git soubor, neuloží se žádná metadata s informací, že jste sou
 používá jinou fintu, aby zjistil, že byl soubor přejmenován. Na ni se podíváme později.
 
 Může se zdát zvláštní, že Git přesto používá příkaz mv. Chcete-li v systému Git přejmenovat soubor, můžete
-spustit třeba příkaz $ git mv původní_název nový_název a vše funguje na výbornou. A skutečně,
-pokud takový příkaz provedete a podíváte se na stav souboru, uvidíte, že ho Git považuje za přejmenovaný
+spustit třeba příkaz
+
+	$ git mv původní_název nový_název
+	
+a vše funguje na výbornou. A skutečně, pokud takový příkaz provedete a podíváte se na stav souboru, uvidíte, že ho Git považuje za přejmenovaný
 (renamed):
 
-$ git mv README.txt README
-$ git status
-# On branch master
-# Your branch is ahead of 'origin/master' by 1 commit.
-#
-# Changes to be committed:
-# (use "git reset HEAD <file>..." to unstage)
-#
-# renamed: README.txt -> README
-#
-
+	$ git mv README.txt README
+	$ git status
+	# On branch master
+	# Your branch is ahead of 'origin/master' by 1 commit.
+	#
+	# Changes to be committed:
+	#   (use "git reset HEAD <file>..." to unstage)
+	#
+	#       renamed:    README.txt -> README
+	#
 
 Výsledek je však stejný, jako byste provedli následující:
 
-$ mv README.txt README
-$ git rm README.txt
-$ git add README
-
+	$ mv README.txt README
+	$ git rm README.txt
+	$ git add README
 
 Git implicitně zjistí, že se jedná o přejmenování, a proto nehraje roli, zda přejmenujete soubor tímto
 způsobem, nebo pomocí příkazu mv. Jediným skutečným rozdílem je, že mv je jediný příkaz, zatímco
@@ -1405,135 +1384,118 @@ chtít nahlédnout do historie projektu. Nejzákladnějším a nejmocnějším n
 příkaz git log. Následující příklady ukazují velmi jednoduchý projekt pojmenovaný simplegit, který
 pro názornost často používám. Chcete-li si projekt naklonovat, zadejte:
 
-git clone git://github.com/schacon/simplegit-progit.git
+	git clone git://github.com/schacon/simplegit-progit.git
 
 Po zadání příkazu git log v tomto projektu byste měli dostat výstup, který vypadá zhruba následovně:
 
-$ git log
-commit ca82a6dff817ec66f44342007202690a93763949
-Author: Scott Chacon <schacon@gee-mail.com>
-Date: Mon Mar 17 21:52:11 2008 -0700
+	$ git log
+	commit ca82a6dff817ec66f44342007202690a93763949
+	Author: Scott Chacon <schacon@gee-mail.com>
+	Date:   Mon Mar 17 21:52:11 2008 -0700
 
+	    changed the version number
 
- changed the version number
+	commit 085bb3bcb608e1e8451d4b2432f8ecbe6306e7e7
+	Author: Scott Chacon <schacon@gee-mail.com>
+	Date:   Sat Mar 15 16:40:33 2008 -0700
+
+	    removed unnecessary test code
+
+	commit a11bef06a3f659402fe7563abf99ad00de2209e6
+	Author: Scott Chacon <schacon@gee-mail.com>
+	Date:   Sat Mar 15 10:31:28 2008 -0700
+
+	    first commit
 
 
 2.3 Zobrazení historie revizí 40
-commit 085bb3bcb608e1e8451d4b2432f8ecbe6306e7e7
-Author: Scott Chacon <schacon@gee-mail.com>
-Date: Sat Mar 15 16:40:33 2008 -0700
-
-
- removed unnecessary test code
-
-commit a11bef06a3f659402fe7563abf99ad00de2209e6
-Author: Scott Chacon <schacon@gee-mail.com>
-Date: Sat Mar 15 10:31:28 2008 -0700
-
-
- first commit
-
 Ve výchozím nastavení a bez dalších parametrů vypíše příkaz git log revize provedené v daném repozitáři
 v obráceném chronologickém pořadí. Nejnovější revize tak budou uvedeny nahoře. Jak vidíte,
 tento příkaz vypíše všechny revize s jejich kontrolním součtem SHA-1, jménem a e-mailem autora,
 datem zápisu a zprávou k revizi.
 
 K příkazu git log je k dispozici velké množství nejrůznějších parametrů, díky nimž můžete najít přesně
-to, co hledáte. Vyjmenujme některé z nejčastěji používaných parametrů. Jedním z nejužitečnějších
-je parametr -p, který zobrazí rozdíly diff provedené v každé revizi.
+to, co hledáte. Vyjmenujme některé z nejčastěji používaných parametrů.
 
+Jedním z nejužitečnějších
+je parametr -p, který zobrazí rozdíly diff provedené v každé revizi.
 Můžete také použít parametr -2, který omezí výpis pouze na dva poslední záznamy:
 
-$ git log –p -2
-commit ca82a6dff817ec66f44342007202690a93763949
-Author: Scott Chacon <schacon@gee-mail.com>
-Date: Mon Mar 17 21:52:11 2008 -0700
+	$ git log -p -2
+	commit ca82a6dff817ec66f44342007202690a93763949
+	Author: Scott Chacon <schacon@gee-mail.com>
+	Date:   Mon Mar 17 21:52:11 2008 -0700
 
+	    changed the version number
 
- changed the version number
+	diff --git a/Rakefile b/Rakefile
+	index a874b73..8f94139 100644
+	--- a/Rakefile
+	+++ b/Rakefile
+	@@ -5,7 +5,7 @@ require 'rake/gempackagetask'
+	 spec = Gem::Specification.new do |s|
+	-    s.version   =   "0.1.0"
+	+    s.version   =   "0.1.1"
+	     s.author    =   "Scott Chacon"
 
-diff --git a/Rakefile b/Rakefile
-index a874b73..8f94139 100644
---- a/Rakefile
-+++ b/Rakefile
-@@ -5,7 +5,7 @@ require 'rake/gempackagetask'
+	commit 085bb3bcb608e1e8451d4b2432f8ecbe6306e7e7
+	Author: Scott Chacon <schacon@gee-mail.com>
+	Date:   Sat Mar 15 16:40:33 2008 -0700
 
+	    removed unnecessary test code
 
- spec = Gem::Specification.new do |s|
+	diff --git a/lib/simplegit.rb b/lib/simplegit.rb
+	index a0a60ae..47c6340 100644
+	--- a/lib/simplegit.rb
+	+++ b/lib/simplegit.rb
+	@@ -18,8 +18,3 @@ class SimpleGit
+	     end
 
--
-s.version = "0.1.0"
-+
-s.version = "0.1.1"
-s.author = "Scott Chacon"
-commit 085bb3bcb608e1e8451d4b2432f8ecbe6306e7e7
-Author: Scott Chacon <schacon@gee-mail.com>
-Date: Sat Mar 15 16:40:33 2008 -0700
-
-
- removed unnecessary test code
-
-diff --git a/lib/simplegit.rb b/lib/simplegit.rb
-index a0a60ae..47c6340 100644
---- a/lib/simplegit.rb
-+++ b/lib/simplegit.rb
-@@ -18,8 +18,3 @@ class SimpleGit
-
-
- end
+	 end
+	-
+	-if $0 == __FILE__
+	-  git = SimpleGit.new
+	-  puts git.show
+	-end
+	\ No newline at end of file
 
 
 2.3 Zobrazení historie revizí 41
-end
--
--if $0 == __FILE__
-
-
--git = SimpleGit.new
--puts git.show
--end
-\ No newline at end of file
 Tento parametr zobrazí tytéž informace, ale za každým záznamem následuje informace o rozdílech.
 Tato funkce je velmi užitečná při kontrole kódu nebo k rychlému zjištění, co bylo obsahem série revizí,
 které přidal váš spolupracovník. Ve spojení s příkazem git log můžete použít také celou řadu shrnujících
 parametrů. Pokud například chcete zobrazit některé stručné statistiky pro každou revizi, použijte
 parametr --stat:
 
-$ git log --stat
-commit ca82a6dff817ec66f44342007202690a93763949
-Author: Scott Chacon <schacon@gee-mail.com>
-Date: Mon Mar 17 21:52:11 2008 -0700
+	$ git log --stat
+	commit ca82a6dff817ec66f44342007202690a93763949
+	Author: Scott Chacon <schacon@gee-mail.com>
+	Date:   Mon Mar 17 21:52:11 2008 -0700
 
+	    changed the version number
 
- changed the version number
+	 Rakefile |    2 +-
+	 1 files changed, 1 insertions(+), 1 deletions(-)
 
- Rakefile | 2 +1
-files changed, 1 insertions(+), 1 deletions(-)
+	commit 085bb3bcb608e1e8451d4b2432f8ecbe6306e7e7
+	Author: Scott Chacon <schacon@gee-mail.com>
+	Date:   Sat Mar 15 16:40:33 2008 -0700
 
+	    removed unnecessary test code
 
-commit 085bb3bcb608e1e8451d4b2432f8ecbe6306e7e7
-Author: Scott Chacon <schacon@gee-mail.com>
-Date: Sat Mar 15 16:40:33 2008 -0700
+	 lib/simplegit.rb |    5 -----
+	 1 files changed, 0 insertions(+), 5 deletions(-)
 
+	commit a11bef06a3f659402fe7563abf99ad00de2209e6
+	Author: Scott Chacon <schacon@gee-mail.com>
+	Date:   Sat Mar 15 10:31:28 2008 -0700
 
- removed unnecessary test code
+	    first commit
 
- lib/simplegit.rb | 5 ----1
-files changed, 0 insertions(+), 5 deletions(-)
-
-
-commit a11bef06a3f659402fe7563abf99ad00de2209e6
-Author: Scott Chacon <schacon@gee-mail.com>
-Date: Sat Mar 15 10:31:28 2008 -0700
-
-
- first commit
-
- README | 6 ++++++
-Rakefile | 23 +++++++++++++++++++++++
-lib/simplegit.rb | 25 +++++++++++++++++++++++++
-3 files changed, 54 insertions(+), 0 deletions(-)
-
+	 README           |    6 ++++++
+	 Rakefile         |   23 +++++++++++++++++++++++
+	 lib/simplegit.rb |   25 +++++++++++++++++++++++++
+	 3 files changed, 54 insertions(+), 0 deletions(-)
 
 Jak vidíte, parametr --stat vypíše pod každým záznamem revize seznam změněných souborů, kolik
 souborů bylo změněno (changed) a kolik řádků bylo v těchto souborech vloženo (insertions) a smazáno
@@ -1560,26 +1522,24 @@ ca82a6d - Scott Chacon, 11 months ago : changed the version number
 085bb3b - Scott Chacon, 11 months ago : removed unnecessary test code
 a11bef0 - Scott Chacon, 11 months ago : first commit
 
-Tabulka 2.1 uvádí některé užitečné parametry, které format akceptuje.
+Tabulka 2-1 uvádí některé užitečné parametry, které format akceptuje.
 
-Tabulka 2.1
-
-Parametr Popis výstupu
-%H Otisk (hash) revize
-%h Zkrácený otisk revize
-%T Otisk stromu
-%t Zkrácený otisk stromu
-%P Nadřazené otisky
-%p Zkrácené nadřazené otisky
-%an Jméno autora
-%ae E-mail autora
-%ad Datum autora (formát je možné nastavit parametrem --date)
-%ar Datum autora, relativní
-%cn Jméno autora revize
-%ce E-mail autora revize
-%cd Datum autora revize
-%cr Datum autora revize, relativní
-%s Předmět
+	Parametr	Popis výstupu
+	%H	Otisk (hash) revize
+	%h	Zkrácený otisk revize
+	%T	Otisk stromu
+	%t	Zkrácený otisk stromu
+	%P	Nadřazené otisky
+	%p	Zkrácené nadřazené otisky
+	%an	Jméno autora
+	%ae	E-mail autora
+	%ad	Datum autora (formát je možné nastavit parametrem --date)
+	%ar	Datum autora, relativní
+	%cn	Jméno autora revize
+	%ce	E-mail autora revize
+	%cd	Datum autora revize
+	%cr	Datum autora revize, relativní
+	%s	Předmět
 
 Možná se ptáte, jaký je rozdíl mezi autorem a autorem revize. Autor je osoba, která práci původně
 napsala, zatímco autor revize je osoba, která práci zapsala do repozitáře. Pokud tedy pošlete záplatu
@@ -1590,48 +1550,34 @@ Parametry oneline a format jsou zvlášť užitečné ve spojení s další mož
 --graph. Tento parametr vloží pěkný malý ASCII graf, znázorňující historii vaší větve a slučování,
 kterou si ukážeme na naší kopii repozitáře projektu Grit:
 
-$ git log --pretty=format:"%h %s" --graph
+	$ git log --pretty=format:"%h %s" --graph
+	* 2d3acf9 ignore errors from SIGCHLD on trap
+	*  5e3ee11 Merge branch 'master' of git://github.com/dustin/grit
+	|\
+	| * 420eac9 Added a method for getting the current branch.
+	* | 30e367c timeout code and tests
+	* | 5a09431 add timeout protection to grit
+	* | e1193f8 support for heads with slashes in them
+	|/
+	* d6016bc require time for xmlschema
+	*  11d191e Merge branch 'defunkt' into local
 
-* 2d3acf9 ignore errors from SIGCHLD on trap
-* 5e3ee11 Merge branch 'master' of git://github.com/dustin/grit
-|\
-| * 420eac9 Added a method for getting the current branch.
-* | 30e367c timeout code and tests
-* | 5a09431 add timeout protection to grit
-* | e1193f8 support for heads with slashes in them
-|/
 
 2.3 Zobrazení historie revizí 43
-* d6016bc require time for xmlschema
-* 11d191e Merge branch 'defunkt' into local
-To je jen několik základních parametrů k formátování výstupu pro příkaz git log, celkově jich je mnohem více. Tabulka 2.2 uvádí parametry, které jsme už zmínili, a některé další běžné parametry formátování,
+To je jen několik základních parametrů k formátování výstupu pro příkaz git log, celkově jich je mnohem více. Tabulka 2-2 uvádí parametry, které jsme už zmínili, a některé další běžné parametry formátování,
 které mohou být užitečné. Pravý sloupec popisuje, jak který parametr změní výstup logu.
 
-Tabulka 2.2
-
-Parametr Popis
--p
---stat
---shortstat
---name-only
---name-status
-Zobrazí záplatu vytvořenou s každou revizí.
-Zobrazí statistiku pro změněné soubory v každé revizi.
-Zobrazí pouze řádek změněno/vloženo/smazáno z příkazu --stat.
-Za informacemi o revizi zobrazí seznam změněných souborů.
-Zobrazí seznam dotčených souborů spolu s informací
---abbrev-commit
---relative-date
---graph
---pretty
-přidáno/změněno/smazáno.
-Zobrazí pouze prvních několik znaků kontrolního součtu SHA-1 místo všech 40.
-Zobrazí datum v relativním formátu (např. „2 weeks ago“, tj. před 2 týdny)
-místo formátu s úplným datem.
-Zobrazí vedle výstupu logu ASCII graf k historii větve a slučování.
-Zobrazí revize v alternativním formátu. Parametry příkazu jsou oneline,
-short, full, fuller a format (lze zadat vlastní formát).
-
+	Parametr	Popis
+	-p	Zobrazí záplatu vytvořenou s každou revizí.
+	--stat	Zobrazí statistiku pro změněné soubory v každé revizi.
+	--shortstat	Zobrazí pouze řádek změněno/vloženo/smazáno z příkazu --stat.
+	--name-only	Za informacemi o revizi zobrazí seznam změněných souborů.
+	--name-status	Zobrazí seznam dotčených souborů spolu s informací přidáno/změněno/smazáno.
+	--abbrev-commit	Zobrazí pouze prvních několik znaků kontrolního součtu SHA-1 místo všech 40.
+	--relative-date	Zobrazí datum v relativním formátu (např. „2 weeks ago“, tj. před 2 týdny) místo formátu s úplným datem.
+	--graph	Zobrazí vedle výstupu logu ASCII graf k historii větve a slučování.
+	--pretty	Zobrazí revize v alternativním formátu. Parametry příkazu jsou oneline, short, full, fuller a format (lze zadat vlastní formát).
+	
 2.3.1 Omezení výstupu logu
 Kromě parametrů k formátování výstupu lze pro git log použít také celou řadu omezujících parametrů,
 tj. takových, které zobrazí jen definovanou podmnožinu revizí. My už jsme se s jedním takovým
@@ -1661,34 +1607,27 @@ oddělena od ostatních parametrů.
 
 2.3 Zobrazení historie revizí 44
 
-Tabulka 2.3 uvádí pro přehlednost zmíněné parametry a několik málo dalších.
+Tabulka 2-3 uvádí pro přehlednost zmíněné parametry a několik málo dalších.
 Tabulka 2.2
 
-Parametr Popis
--(n) Zobrazí pouze posledních n revizí.
---since, --after Omezí výpis na revize provedené po zadaném datu.
---until, --before Omezí výpis na revize provedené před zadaným datem.
---author Zobrazí pouze revize, v nichž autor odpovídá zadanému řetězci.
---committer Zobrazí pouze revize, v nichž autor revize odpovídá zadanému řetězci.
+	Parametr	Popis
+	-(n)	Zobrazí pouze posledních n revizí.
+	--since, --after	Omezí výpis na revize provedené po zadaném datu.
+	--until, --before	Omezí výpis na revize provedené před zadaným datem.
+	--author	Zobrazí pouze revize, v nichž autor odpovídá zadanému řetězci.
+	--committer	Zobrazí pouze revize, v nichž autor revize odpovídá zadanému řetězci.
 
 Pokud chcete například zjistit, které revize upravující testovací soubory byly v historii zdrojového kódu
 Git zapsány v říjnu 2008 Juniem Hamanem a nebyly sloučením, můžete zadat následující příkaz:
 
-$ git log --pretty=format"%h - %s" --author=gitster --since="2008-10-01" \
-
- --before="2008-11-01" --no-merges -- t/
-
-5610e3b - Fix testcase failure when extended attribute
-
-acd3b9e - Enhance hold_lock_file_for_{update,append}()
-
-f563754 - demonstrate breakage of detached checkout wi
-
-d1a43f2 - reset --hard/read-tree --reset -u: remove un
-
-51a94af - Fix "checkout --track -b newbranch" on detac
-
-b0ad11e - pull: allow "git pull origin $something:$cur
+	$ git log --pretty="%h - %s" --author=gitster --since="2008-10-01" \
+	   --before="2008-11-01" --no-merges -- t/
+	5610e3b - Fix testcase failure when extended attribute
+	acd3b9e - Enhance hold_lock_file_for_{update,append}()
+	f563754 - demonstrate breakage of detached checkout wi
+	d1a43f2 - reset --hard/read-tree --reset -u: remove un
+	51a94af - Fix "checkout --track -b newbranch" on detac
+	b0ad11e - pull: allow "git pull origin $something:$cur
 
 Z téměř 20 000 revizí v historii zdrojového kódu Git zobrazí tento příkaz 6 záznamů, které odpovídají
 zadaným kritériím.
@@ -1700,7 +1639,6 @@ Tcl/Tk program nazvaný „gitk“, který je distribuován spolu se systémem G
 verze příkazu git log a umožňuje téměř všechny možnosti filtrování jako git log. Pokud do příkazového řádku ve svém projektu zadáte příkaz gitk, otevře se okno podobné jako na obrázku 2-2.
 
 Obrázek 2-2. Graficky zpracovaná historie v nástroji „gitk“
-
 
 
 2.4 Rušení změn 45
@@ -1742,17 +1680,15 @@ zrušit nežádoucí změny. Řekněme například, že jste změnili dva soubor
 oddělené změny, jenže omylem jste zadali příkaz git add * a oba soubory jste tím připravili k zapsání.
 Jak lze tyto dva soubory vrátit z oblasti připravených změn? Připomene vám to příkaz git status:
 
-$ git add .
-$ git status
-# On branch master
-# Changes to be committed:
-
-
-# (use "git reset HEAD <file>..." to unstage)
-#
-# modified: README.txt
-# modified: benchmarks.rb
-#
+	$ git add .
+	$ git status
+	# On branch master
+	# Changes to be committed:
+	#   (use "git reset HEAD <file>..." to unstage)
+	#
+	#       modified:   README.txt
+	#       modified:   benchmarks.rb
+	#
 
 Přímo pod nadpisem „Changes to be committed“ (Změny k zapsání) se říká: pro návrat z oblasti
 připravených změn použijte příkaz git reset HEAD <soubor>... Budeme se tedy řídit touto radou
@@ -1760,21 +1696,21 @@ a vrátíme soubor benchmarks.rb z oblasti připravených změn:
 
 
 2.4 Rušení změn 46
-$ git reset HEAD benchmarks.rb
-benchmarks.rb: locally modified
-$ git status
-# On branch master
-# Changes to be committed:
-# (use "git reset HEAD <file>..." to unstage)
-#
-# modified: README.txt
-#
-# Changed but not updated:
-# (use "git add <file>..." to update what will be committed)
-# (use "git checkout -- <file>..." to discard changes in working directory)
-#
-# modified: benchmarks.rb
-#
+	$ git reset HEAD benchmarks.rb
+	benchmarks.rb: locally modified
+	$ git status
+	# On branch master
+	# Changes to be committed:
+	#   (use "git reset HEAD <file>..." to unstage)
+	#
+	#       modified:   README.txt
+	#
+	# Changed but not updated:
+	#   (use "git add <file>..." to update what will be committed)
+	#   (use "git checkout -- <file>..." to discard changes in working directory)
+	#
+	#       modified:   benchmarks.rb
+	#
 
 Příkaz je sice trochu zvláštní, ale funguje. Soubor benchmarks.rb má stav „změněn“, ale už se nenachází
 v oblasti připravených změn.
@@ -1785,27 +1721,25 @@ můžete snadno zrušit a vrátit soubor zpět do podoby při poslední revizi (
 nebo v jakémkoli okamžiku, kdy jste ho zaznamenali v pracovním adresáři)? Příkaz git status vám
 naštěstí řekne, co dělat. U posledního příkladu vypadá oblast připravených změn takto:
 
-# Changed but not updated:
-# (use "git add <file>..." to update what will be committed)
-# (use "git checkout -- <file>..." to discard changes in working directory)
-#
-# modified: benchmarks.rb
-#
-
+	# Changed but not updated:
+	#   (use "git add <file>..." to update what will be committed)
+	#   (use "git checkout -- <file>..." to discard changes in working directory)
+	#
+	#       modified:   benchmarks.rb
+	#
 
 Výpis vám sděluje, jak zahodit změny (discard changes), které jste provedli (přinejmenším tak činí
 novější verze systému Git, od verze 1.6.1; pokud máte starší verzi, doporučujeme ji aktualizovat, čímž
 získáte některé z těchto vylepšených funkcí). Uděláme, co nám výpis radí:
 
-$ git checkout -- benchmarks.rb
-$ git status
-# On branch master
-# Changes to be committed:
-# (use "git reset HEAD <file>..." to unstage)
-#
-# modified: README.txt
-#
-
+	$ git checkout -- benchmarks.rb
+	$ git status
+	# On branch master
+	# Changes to be committed:
+	#   (use "git reset HEAD <file>..." to unstage)
+	#
+	#       modified:   README.txt
+	#
 
 Jak vidíte, změny byly zahozeny. Všimněte si také, že se jedná o nebezpečný příkaz. Veškeré změny,
 které jste v souboru provedli, jsou ztraceny, soubor jste právě překopírovali jiným souborem. Nikdy
@@ -1836,36 +1770,34 @@ vypíše zkrácené názvy všech identifikátorů vzdálených repozitářů, j
 repozitář vytvořen klonováním, měli byste vidět přinejmenším server origin. Origin je výchozí název,
 který Git dává serveru, z nějž jste repozitář klonovali.
 
-$ git clone git://github.com/schacon/ticgit.git
-Initialized empty Git repository in /private/tmp/ticgit/.git/
-remote: Counting objects: 595, done.
-remote: Compressing objects: 100% (269/269), done.
-remote: Total 595 (delta 255), reused 589 (delta 253)
-Receiving objects: 100% (595/595), 73.31 KiB | 1 KiB/s, done.
-Resolving deltas: 100% (255/255), done.
-$ cd ticgit
-$ git remote
-origin
-
+	$ git clone git://github.com/schacon/ticgit.git
+	Initialized empty Git repository in /private/tmp/ticgit/.git/
+	remote: Counting objects: 595, done.
+	remote: Compressing objects: 100% (269/269), done.
+	remote: Total 595 (delta 255), reused 589 (delta 253)
+	Receiving objects: 100% (595/595), 73.31 KiB | 1 KiB/s, done.
+	Resolving deltas: 100% (255/255), done.
+	$ cd ticgit
+	$ git remote
+	origin
 
 Můžete rovněž zadat parametr -v, jenž zobrazí adresu URL, kterou má Git uloženou pro zkrácený
 název, který si přejete rozepsat.
 
-$ git remote -v
-origin git://github.com/schacon/ticgit.git
-
+	$ git remote -v
+	origin  git://github.com/schacon/ticgit.git (fetch)
+	origin  git://github.com/schacon/ticgit.git (push)
 
 Pokud máte více než jeden vzdálený repozitář, příkaz je vypíše všechny. Například můj repozitář Grit
 vypadá takto:
 
-$ cd grit
-$ git remote -v
-bakkdoor git://github.com/bakkdoor/grit.git
-cho45 git://github.com/cho45/grit.git
-defunkt git://github.com/defunkt/grit.git
-koke git://github.com/koke/grit.git
-origin git@github.com:mojombo/grit.git
-
+	$ cd grit
+	$ git remote -v
+	bakkdoor  git://github.com/bakkdoor/grit.git
+	cho45     git://github.com/cho45/grit.git
+	defunkt   git://github.com/defunkt/grit.git
+	koke      git://github.com/koke/grit.git
+	origin    git@github.com:mojombo/grit.git
 
 To znamená, že můžeme velmi snadno stáhnout příspěvky od kteréhokoli z těchto uživatelů. Nezapomeňte
 však, že pouze vzdálený server origin je SSH URL, a je tedy jediným repozitářem, kam lze
@@ -1873,34 +1805,31 @@ posílat soubory (důvod objasníme v kapitole 4).
 
 
 2.5 Práce se vzdálenými repozitáři 48
-
 2.5.2 Přidávání vzdálených repozitářů
 V předchozích částech už jsem se letmo dotkl přidávání vzdálených repozitářů. V této části se dostávám
 k tomu, jak přesně při přidávání postupovat. Chcete-li přidat nový vzdálený repozitář Git ve formě zkráceného
 názvu, na nějž lze snadno odkazovat, spusťte příkaz git remote add [zkrácený název] [url]:
 
-$ git remote
-origin
-$ git remote add pb git://github.com/paulboone/ticgit.git
-$ git remote -v
-origin git://github.com/schacon/ticgit.git
-pb git://github.com/paulboone/ticgit.git
-
+	$ git remote
+	origin
+	$ git remote add pb git://github.com/paulboone/ticgit.git
+	$ git remote -v
+	origin	git://github.com/schacon/ticgit.git
+	pb	git://github.com/paulboone/ticgit.git
 
 Řetězec pb nyní můžete používat na příkazovém řádku místo kompletní adresy URL. Pokud například
 chcete vyzvednout (fetch) všechny informace, které má Paul, ale vy je ještě nemáte ve svém repozitáři,
 můžete spustit příkaz git fetch pb:
 
-$ git fetch pb
-remote: Counting objects: 58, done.
-remote: Compressing objects: 100% (41/41), done.
-remote: Total 44 (delta 24), reused 1 (delta 0)
-Unpacking objects: 100% (44/44), done.
-From git://github.com/paulboone/ticgit
+	$ git fetch pb
+	remote: Counting objects: 58, done.
+	remote: Compressing objects: 100% (41/41), done.
+	remote: Total 44 (delta 24), reused 1 (delta 0)
+	Unpacking objects: 100% (44/44), done.
+	From git://github.com/paulboone/ticgit
+	 * [new branch]      master     -> pb/master
+	 * [new branch]      ticgit     -> pb/ticgit
 
-
- * [new branch] master -> pb/master
-* [new branch] ticgit -> pb/ticgit
 Paulova hlavní větev (master branch) je lokálně dostupná jako pb/master. Můžete ji začlenit do některé
 ze svých větví nebo tu můžete provést checkout lokální větve, jestliže si ji chcete prohlédnout.
 
@@ -1954,15 +1883,14 @@ zkráceným názvem (např. origin), bude výstup vypadat zhruba následovně:
 
 $ git remote show origin
 
-* remote origin
-URL: git://github.com/schacon/ticgit.git
-Remote branch merged with 'git pull' while on branch master
-master
-
- Tracked remote branches
-master
-ticgit
-
+	$ git remote show origin
+	* remote origin
+	  URL: git://github.com/schacon/ticgit.git
+	  Remote branch merged with 'git pull' while on branch master
+	    master
+	  Tracked remote branches
+	    master
+	    ticgit
 
 Bude obsahovat adresu URL vzdáleného repozitáře a informace ke sledování větví. Příkaz vám mimo
 jiné sděluje, že pokud se nacházíte na hlavní větvi (branch master) a spustíte příkaz git pull, automaticky
@@ -1972,42 +1900,30 @@ reference. Součástí výpisu jsou také všechny vzdálené reference, které 
 Toto je jednoduchý příklad, s nímž se můžete setkat. Pokud však Git používáte na pokročilé bázi,
 příkaz git remote show vám patrně zobrazí podstatně více informací:
 
-$ git remote show origin
-
-* remote origin
-URL: git@github.com:defunkt/github.git
-Remote branch merged with 'git pull' while on branch issues
-issues
-Remote branch merged with 'git pull' while on branch master
-master
-New remote branches (next fetch will store in remotes/origin)
-caching
-
- Stale tracking branches (use 'git remote prune')
-libwalker
-walker2
-
+	$ git remote show origin
+	* remote origin
+	  URL: git@github.com:defunkt/github.git
+	  Remote branch merged with 'git pull' while on branch issues
+	    issues
+	  Remote branch merged with 'git pull' while on branch master
+	    master
+	  New remote branches (next fetch will store in remotes/origin)
+	    caching
+	  Stale tracking branches (use 'git remote prune')
+	    libwalker
+	    walker2
+	  Tracked remote branches
+	    acl
+	    apiv2
+	    dashboard2
+	    issues
+	    master
+	    postgres
+	  Local branch pushed with 'git push'
+	    master:master
 
 
 2.6 Značky 50
-Tracked remote branches
-
- acl
-
- apiv2
-
- dashboard2
-
- issues
-
- master
-
- postgres
-
- Local branch pushed with 'git push'
-
- master:master
-
 Tento příkaz vám ukáže, která větev bude automaticky odeslána, pokud spustíte příkaz git push na
 určitých větvích. Příkaz vám také oznámí, které vzdálené větve na serveru ještě nemáte, které vzdálené
 větve máte, jež už byly ze serveru odstraněny, a několik větví, které budou automaticky sloučeny,
@@ -2088,20 +2004,18 @@ nezadáte žádnou zprávu, Git spustí textový editor, v němž zprávu zadát
 
 Informace značky se zobrazí spolu s revizí, kterou značka označuje, po zadání příkazu git show:
 
-$ git show v1.4
-tag v1.4
-Tagger: Scott Chacon <schacon@gee-mail.com>
-Date: Mon Feb 9 14:45:11 2009 -0800
+	$ git show v1.4
+	tag v1.4
+	Tagger: Scott Chacon <schacon@gee-mail.com>
+	Date:   Mon Feb 9 14:45:11 2009 -0800
 
+	my version 1.4
+	commit 15027957951b64cf874c3557a0f3547bd83b3ff6
+	Merge: 4a447f7... a6b4c97...
+	Author: Scott Chacon <schacon@gee-mail.com>
+	Date:   Sun Feb 8 19:02:46 2009 -0800
 
-my version 1.4
-commit 15027957951b64cf874c3557a0f3547bd83b3ff6
-Merge: 4a447f7... a6b4c97...
-Author: Scott Chacon <schacon@gee-mail.com>
-Date: Sun Feb 8 19:02:46 2009 -0800
-
-
- Merge branch 'experiment'
+	    Merge branch 'experiment'
 
 Příkaz zobrazí ještě před informacemi o revizi informace o autorovi značky, datu, kdy byla revize
 označena, a zprávu značky.
@@ -2112,36 +2026,32 @@ je zadat místo parametru -a parametr -s:
 
 
 2.6 Značky 52
-$ git tag -s v1.5 -m 'my signed 1.5 tag'
-You need a passphrase to unlock the secret key for
-user: "Scott Chacon <schacon@gee-mail.com>"
-1024-bit DSA key, ID F721C45A, created 2009-02-09
-
+	$ git tag -s v1.5 -m 'my signed 1.5 tag'
+	You need a passphrase to unlock the secret key for
+	user: "Scott Chacon <schacon@gee-mail.com>"
+	1024-bit DSA key, ID F721C45A, created 2009-02-09
 
 Pokud pro tuto značku spustíte příkaz git show, uvidíte k ní připojen svůj podpis GPG:
 
-$ git show v1.5
-tag v1.5
-Tagger: Scott Chacon <schacon@gee-mail.com>
-Date: Mon Feb 9 15:22:20 2009 -0800
+	$ git show v1.5
+	tag v1.5
+	Tagger: Scott Chacon <schacon@gee-mail.com>
+	Date:   Mon Feb 9 15:22:20 2009 -0800
 
+	my signed 1.5 tag
+	-----BEGIN PGP SIGNATURE-----
+	Version: GnuPG v1.4.8 (Darwin)
 
-my signed 1.5 tag
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.8 (Darwin)
+	iEYEABECAAYFAkmQurIACgkQON3DxfchxFr5cACeIMN+ZxLKggJQf0QYiQBwgySN
+	Ki0An2JeAVUCAiJ7Ox6ZEtK+NvZAj82/
+	=WryJ
+	-----END PGP SIGNATURE-----
+	commit 15027957951b64cf874c3557a0f3547bd83b3ff6
+	Merge: 4a447f7... a6b4c97...
+	Author: Scott Chacon <schacon@gee-mail.com>
+	Date:   Sun Feb 8 19:02:46 2009 -0800
 
-
-iEYEABECAAYFAkmQurIACgkQON3DxfchxFr5cACeIMN+ZxLKggJQf0QYiQBwgySN
-Ki0An2JeAVUCAiJ7Ox6ZEtK+NvZAj82/
-=WryJ
------END PGP SIGNATURE----commit
-15027957951b64cf874c3557a0f3547bd83b3ff6
-Merge: 4a447f7... a6b4c97...
-Author: Scott Chacon <schacon@gee-mail.com>
-Date: Sun Feb 8 19:02:46 2009 -0800
-
-
- Merge branch 'experiment'
+	    Merge branch 'experiment'
 
 V dalších částech se naučíte, jak podepsané značky ověřovat.
 
@@ -2162,14 +2072,13 @@ v1.5
 Pokud spustíte pro značku příkaz git show tentokrát, nezobrazí se k ní žádné další informace. Příkaz
 zobrazí pouze samotnou revizi:
 
-$ git show v1.4-lw
-commit 15027957951b64cf874c3557a0f3547bd83b3ff6
-Merge: 4a447f7... a6b4c97...
-Author: Scott Chacon <schacon@gee-mail.com>
-Date: Sun Feb 8 19:02:46 2009 -0800
+	$ git show v1.4-lw
+	commit 15027957951b64cf874c3557a0f3547bd83b3ff6
+	Merge: 4a447f7... a6b4c97...
+	Author: Scott Chacon <schacon@gee-mail.com>
+	Date:   Sun Feb 8 19:02:46 2009 -0800
 
-
- Merge branch 'experiment'
+	    Merge branch 'experiment'
 
 
 2.6 Značky 53
@@ -2178,113 +2087,101 @@ Chcete-li ověřit podepsanou značku, použijte příkaz git tag -v [název zna
 k ověření podpisu program GPG. Aby příkaz správně fungoval, musíte mít ve své klíčence veřejný
 klíč podepisujícího (signer).
 
-$ git tag -v v1.4.2.1
-object 883653babd8ee7ea23e6a5c392bb739348b1eb61
-type commit
-tag v1.4.2.1
-tagger Junio C Hamano <junkio@cox.net> 1158138501 -0700
+	$ git tag -v v1.4.2.1
+	object 883653babd8ee7ea23e6a5c392bb739348b1eb61
+	type commit
+	tag v1.4.2.1
+	tagger Junio C Hamano <junkio@cox.net> 1158138501 -0700
 
+	GIT 1.4.2.1
 
-GIT 1.4.2.1
-
-Minor fixes since 1.4.2, including git-mv and git-http with alternates.
-gpg: Signature made Wed Sep 13 02:08:25 2006 PDT using DSA key ID F3119B9A
-gpg: Good signature from "Junio C Hamano <junkio@cox.net>"
-gpg: aka "[jpeg image of size 1513]"
-Primary key fingerprint: 3565 2A26 2040 E066 C9A7 4A7D C0C6 D9A4 F311 9B9A
-
+	Minor fixes since 1.4.2, including git-mv and git-http with alternates.
+	gpg: Signature made Wed Sep 13 02:08:25 2006 PDT using DSA key ID F3119B9A
+	gpg: Good signature from "Junio C Hamano <junkio@cox.net>"
+	gpg:                 aka "[jpeg image of size 1513]"
+	Primary key fingerprint: 3565 2A26 2040 E066 C9A7  4A7D C0C6 D9A4 F311 9B9A
 
 Pokud veřejný klíč podepisujícího nemáte, výstup bude vypadat následovně:
 
-gpg: Signature made Wed Sep 13 02:08:25 2006 PDT using DSA key ID F3119B9A
-gpg: Can't check signature: public key not found
-error: could not verify the tag 'v1.4.2.1'
-
+	gpg: Signature made Wed Sep 13 02:08:25 2006 PDT using DSA key ID F3119B9A
+	gpg: Can't check signature: public key not found
+	error: could not verify the tag 'v1.4.2.1'
 
 2.6.7 Dodatečné označení
 Revizi lze označit značkou i poté, co jste ji už opustili. Předpokládejme, že vaše historie revizí vypadá takto:
 
-$ git log --pretty=oneline
-15027957951b64cf874c3557a0f3547bd83b3ff6 Merge branch 'experiment'
-a6b4c97498bd301d84096da251c98a07c7723e65 beginning write support
-0d52aaab4479697da7686c15f77a3d64d9165190 one more thing
-6d52a271eda8725415634dd79daabbc4d9b6008e Merge branch 'experiment'
-0b7434d86859cc7b8c3d5e1dddfed66ff742fcbc added a commit function
-4682c3261057305bdd616e23b64b0857d832627b added a todo file
-166ae0c4d3f420721acbb115cc33848dfcc2121a started write support
-9fceb02d0ae598e95dc970b74767f19372d61af8 updated rakefile
-964f16d36dfccde844893cac5b347e7b3d44abbc commit the todo
-8a5cbc430f1a9c3d00faaeffd07798508422908a updated readme
-
+	$ git log --pretty=oneline
+	15027957951b64cf874c3557a0f3547bd83b3ff6 Merge branch 'experiment'
+	a6b4c97498bd301d84096da251c98a07c7723e65 beginning write support
+	0d52aaab4479697da7686c15f77a3d64d9165190 one more thing
+	6d52a271eda8725415634dd79daabbc4d9b6008e Merge branch 'experiment'
+	0b7434d86859cc7b8c3d5e1dddfed66ff742fcbc added a commit function
+	4682c3261057305bdd616e23b64b0857d832627b added a todo file
+	166ae0c4d3f420721acbb115cc33848dfcc2121a started write support
+	9fceb02d0ae598e95dc970b74767f19372d61af8 updated rakefile
+	964f16d36dfccde844893cac5b347e7b3d44abbc commit the todo
+	8a5cbc430f1a9c3d00faaeffd07798508422908a updated readme
 
 Nyní předpokládejme, že jste zapomněli označit projekt ve verzi 1.2, která byla obsažena v revizi označené
 jako „updated rakefile“. Značku můžete přidat dodatečně. Pro označení revize značkou zadejte
 na konec příkazu kontrolní součet revize (nebo jeho část):
 
-$ git tag -a v1.2 9fceb02
+	$ git tag -a v1.2 9fceb02
 
 Můžete se podívat, že jste revizi označil:
 
-$ git tag
-v0.1
-v1.2
-v1.3
-v1.4
+	$ git tag
+	v0.1
+	v1.2
+	v1.3
+	v1.4
+	v1.4-lw
+	v1.5
 
+	$ git show v1.2
+	tag v1.2
+	Tagger: Scott Chacon <schacon@gee-mail.com>
+	Date:   Mon Feb 9 15:32:16 2009 -0800
+
+	version 1.2
+	commit 9fceb02d0ae598e95dc970b74767f19372d61af8
+	Author: Magnus Chacon <mchacon@gee-mail.com>
+	Date:   Sun Apr 27 20:43:35 2008 -0700
+
+	    updated rakefile
+	...
 
 
 2.7 Tipy a triky 54
-v1.4-lw
-v1.5
-
-
-$ git show v1.2
-tag v1.2
-Tagger: Scott Chacon <schacon@gee-mail.com>
-Date: Mon Feb 9 15:32:16 2009 -0800
-
-
-version 1.2
-commit 9fceb02d0ae598e95dc970b74767f19372d61af8
-Author: Magnus Chacon <mchacon@gee-mail.com>
-Date: Sun Apr 27 20:43:35 2008 -0700
-
-
- updated rakefile
-...
-
-
 2.6.8 Sdílení značek
 Příkaz git push nepřenáší značky na vzdálené servery automaticky. Pokud jste vytvořili značku, budete
 ji muset na sdílený server poslat ručně. Tento proces je stejný jako sdílení vzdálených větví. Spusťte
 příkaz git push origin [název značky].
 
-$ git push origin v1.5
-Counting objects: 50, done.
-Compressing objects: 100% (38/38), done.
-Writing objects: 100% (44/44), 4.56 KiB, done.
-Total 44 (delta 18), reused 8 (delta 1)
-To git@github.com:schacon/simplegit.git
+	$ git push origin v1.5
+	Counting objects: 50, done.
+	Compressing objects: 100% (38/38), done.
+	Writing objects: 100% (44/44), 4.56 KiB, done.
+	Total 44 (delta 18), reused 8 (delta 1)
+	To git@github.com:schacon/simplegit.git
+	* [new tag]         v1.5 -> v1.5
 
-
-* [new tag] v1.5 -> v1.5
 Máte-li značek více a chcete je odeslat všechny najednou, můžete použít také parametr --tags, který se
 přidává k příkazu git push. Tento příkaz přenese na vzdálený server všechny vaše značky, které tam
 ještě nejsou.
 
-$ git push origin --tags
-Counting objects: 50, done.
-Compressing objects: 100% (38/38), done.
-Writing objects: 100% (44/44), 4.56 KiB, done.
-Total 44 (delta 18), reused 8 (delta 1)
-To git@github.com:schacon/simplegit.git
+	$ git push origin --tags
+	Counting objects: 50, done.
+	Compressing objects: 100% (38/38), done.
+	Writing objects: 100% (44/44), 4.56 KiB, done.
+	Total 44 (delta 18), reused 8 (delta 1)
+	To git@github.com:schacon/simplegit.git
+	 * [new tag]         v0.1 -> v0.1
+	 * [new tag]         v1.2 -> v1.2
+	 * [new tag]         v1.4 -> v1.4
+	 * [new tag]         v1.4-lw -> v1.4-lw
+	 * [new tag]         v1.5 -> v1.5
 
-
- * [new tag] v0.1 -> v0.1
-* [new tag] v1.2 -> v1.2
-* [new tag] v1.4 -> v1.4
-* [new tag] v1.4-lw -> v1.4-lw
-* [new tag] v1.5 -> v1.5
 Pokud nyní někdo bude klonovat nebo stahovat z vašeho repozitáře, stáhne rovněž všechny vaše značky.
 
 2.7 Tipy a triky
@@ -2301,7 +2198,7 @@ Stáhněte si zdrojový kód Git a podívejte se do adresáře contrib/completio
 s názvem git-completion.bash. Zkopírujte tento soubor do svého domovského adresáře a přidejte
 ho do souboru .bashrc:
 
-source ~/.git-completion.bash
+	source ~/.git-completion.bash
 
 Chcete-li nastavit Git tak, aby měl automaticky dokončování pro shell Bash pro všechny uživatele, zkopírujte
 tento skript do adresáře /opt/local/etc/bash_completion.d v systémech Mac nebo do adresáře
@@ -2314,9 +2211,8 @@ Git v OS Windows pomocí msysGit), mělo by být automatické dokončování př
 Při zadávání příkazu Git stiskněte klávesu Tab a měla by se objevit nabídka, z níž můžete zvolit příslušné
 dokončení:
 
-$ git co<tab><tab>
-commit config
-
+	$ git co<tab><tab>
+	commit config
 
 Pokud zadáte – stejně jako v našem příkladu nahoře – „git co“ a dvakrát stisknete klávesu Tab, systém
 vám navrhne „commit“ a „config“. Doplníte-li ještě m<tab>, skript automaticky dokončí příkaz na git
@@ -2326,9 +2222,8 @@ Automatické dokončování pravděpodobně více využijete v případě parame
 příkaz git log a nemůžete si vzpomenout na některý z parametrů, můžete zadat jeho začátek
 a stisknout klávesu Tab, aby vám systém navrhl možná dokončení.
 
-$ git log --s<tab>
---shortstat --since= --src-prefix= --stat --summary
-
+	$ git log --s<tab>
+	--shortstat  --since=  --src-prefix=  --stat   --summary
 
 Jedná se o užitečný trik, který vám může ušetřit čas a pročítání dokumentace.
 
@@ -2337,11 +2232,10 @@ Jestliže zadáte systému Git neúplný příkaz, systém ho neakceptuje. Pokud
 příkazů Git, můžete pomocí git config jednoduše nastavit pro každý příkaz tzv. alias. Uveďme několik
 příkladů možného nastavení:
 
-$ git config --global alias.co checkout
-$ git config --global alias.br branch
-$ git config --global alias.ci commit
-$ git config --global alias.st status
-
+	$ git config --global alias.co checkout
+	$ git config --global alias.br branch
+	$ git config --global alias.ci commit
+	$ git config --global alias.st status
 
 To znamená, že například místo kompletního příkazu git commit stačí zadat pouze zkrácené git ci.
 Budete-li pracovat v systému Git častěji, pravděpodobně budete hojně využívat i jiné příkazy. V takovém
@@ -2357,29 +2251,30 @@ $ git config --global alias.unstage 'reset HEAD --'
 
 Po zadání takového příkazu budete mít k dispozici dva ekvivalentní příkazy:
 
-$ git unstage fileA
-$ git reset HEAD fileA
+	$ git unstage fileA
+	$ git reset HEAD fileA
+
 Příkaz unstage je o něco jasnější. Běžně se také přidává příkaz last:
-$ git config --global alias.last 'log -1 HEAD'
+
+	$ git config --global alias.last 'log -1 HEAD'
 
 Tímto způsobem snadno zobrazíte poslední revizi:
 
-$ git last
-commit 66938dae3329c7aebe598c2246a8e6af90d04646
-Author: Josh Goebel <dreamer3@example.com>
-Date: Tue Aug 26 19:48:51 2008 +0800
+	$ git last
+	commit 66938dae3329c7aebe598c2246a8e6af90d04646
+	Author: Josh Goebel <dreamer3@example.com>
+	Date:   Tue Aug 26 19:48:51 2008 +0800
 
+	    test for current head
 
- test for current head
-
- Signed-off-by: Scott Chacon <schacon@example.com>
+	    Signed-off-by: Scott Chacon <schacon@example.com>
 
 Chtělo by se tedy říci, že Git jednoduše nahradí nový příkaz jakýmkoli aliasem, který vytvoříte. Může
 se však stát, že budete chtít spustit externí příkaz, a ne dílčí příkaz Git. V takovém případě zadejte
 na začátek příkazu znak !. Tuto možnost využijete, pokud si píšete své vlastní nástroje, které fungují
 s repozitářem Git. Jako příklad můžeme uvést situaci, kdy nahradíte příkaz git visual aliasem gitk:
 
-$ git config --global alias.visual "!gitk"
+	$ git config --global alias.visual "!gitk"
 
 2.8 Shrnutí
 V tomto okamžiku už tedy umíte v systému Git provádět všechny základní lokální operace: vytvářet
