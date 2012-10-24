@@ -2747,53 +2747,49 @@ zřejmé, můžete okomentovat, co jste udělali a proč právě takto.
 3.3 Správa větví 72
 3.3 Správa větví
 Nyní, když jste vytvořili, sloučili a odstranili své první větve, můžeme se podívat na pár nástrojů
-ke správě větví, které se vám budou hodit, až začnete s větvemi pracovat pravidelně. Příkaz git
+ke správě větví, které se vám budou hodit, až začnete s větvemi pracovat pravidelně.
+
+Příkaz git
 branch umí víc, než jen vytvářet a mazat větve. Pokud ho spustíte bez dalších parametrů, získáte
 prostý výpis všech aktuálních větví:
 
-$ git branch
-iss53
+	$ git branch
+	  iss53
+	* master
+	  testing
 
-
-* master
-testing
 Všimněte si znaku *, který předchází větvi master. Označuje větev, na níž se právě nacházíte. Pokud
 tedy nyní zapíšete revizi, vaše nová práce posune vpřed větev master. Chcete-li zobrazit poslední revizi
 na každé větvi, spusťte příkaz git branch -v:
 
-$ git branch -v
-iss53 93b412c fix javascript issue
+	$ git branch -v
+	  iss53   93b412c fix javascript issue
+	* master  7a98805 Merge branch 'iss53'
+	  testing 782fd34 add scott to the author list in the readmes
 
-
-* master
-7a98805 Merge branch 'iss53'
-testing 782fd34 add scott to the author list in the readmes
 Další užitečnou funkcí ke zjištění stavu vašich větví je filtrování tohoto seznamu podle větví, které
 byly/nebyly začleněny do větve, na níž se právě nacházíte. K tomuto účelu slouží v systému Git
 od verze 1.5.6 užitečné příkazy --merged a --no-merged. Chcete-li zjistit, které větve už byly začleněny
 do větve, na níž se nacházíte, spusťte příkaz git branch --merged:
 
-$ git branch --merged
-iss53
+	$ git branch --merged
+	  iss53
+	* master
 
-
-* master
 Jelikož už jste větev iss53 začlenili, nyní se zobrazí ve výpisu. Větve v tomto seznamu, které nejsou
 označeny *, lze většinou snadno smazat příkazem git branch -d. Jejich obsah už jste převzali
 do jiné větve, a tak jejich odstraněním nepřijdete o žádnou práci. Chcete-li zobrazit větve, které
 obsahují dosud nezačleněnou práci, spusťte příkaz git branch --no-merged:
 
-$ git branch --no-merged
-testing
-
+	$ git branch --no-merged
+	  testing
 
 Nyní se zobrazila jiná větev. Jelikož obsahuje práci, která ještě nebyla začleněna, bude pokus o její
 smazání příkazem git branch -d neúspěšný:
 
-$ git branch -d testing
-error: The branch 'testing' is not an ancestor of your current HEAD.
-If you are sure you want to delete it, run 'git branch -D testing'.
-
+	$ git branch -d testing
+	error: The branch 'testing' is not an ancestor of your current HEAD.
+	If you are sure you want to delete it, run 'git branch -D testing'.
 
 Pokud jste si jistí, že chcete větev smazat, spusťte příkaz git branch -D testing. Pokud chcete větev
 skutečně odstranit a zahodit práci, kterou obsahuje, můžete to provést pomocí parametru -D.
@@ -2829,7 +2825,7 @@ Obrázek 3-18. Stabilnější větve většinou leží v historii revizí níže
 Snáze si je můžeme představit jako pracovní zásobníky, v nichž se sada revizí dostává do stabilnějšího
 zásobníku, když úspěšně absolvovala testování (viz obrázek 3-19).
 
-Obrázek 3-19. Větve si můžeme představit jako zásobníky (stack): master – hlavní větev, develop – větev vývoje, topic – tematická větev.
+Obrázek 3-19. Větve si můžeme představit jako zásobníky
 
 Tento postup lze použít hned pro několik úrovní stability. Některé větší projekty mají také větev
 proposed nebo pu (proposed updates, návrh aktualizací) s integrovanými větvemi, které nemusí
@@ -2867,6 +2863,8 @@ také ukázali svůj nápad ve větvi dumbidea kolegům a ti ho považují za ge
 tak nyní můžete zahodit (s ní i revize C5 a C6) a začlenit zbylé dvě větve. Vaši historii v tomto stavu
 znázorňuje obrázek 3-21.
 
+Obrázek 3-21. Vaše historie po začlenění větví „dumbidea“ a „iss91v2“
+
 
 3.5 Vzdálené větve 75
 Při tom všem, co nyní děláte, je důležité mít na paměti, že všechny tyto větve jsou čistě lokální. Veškeré
@@ -2884,13 +2882,13 @@ větev origin/master. Pokud pracujete s kolegou na stejném problému a on odeš
 s názvem iss53, může se stát, že i vy máte jednu z lokálních větví pojmenovanou jako iss53. Větev
 na serveru však ukazuje na revizi označenou jako origin/iss53.
 
-Obrázek 3-21. Vaše historie po začlenění větví „dumbidea“ a „iss91v2“
-
 Možná to není úplně jasné, a tak uvedeme malý příklad. Řekněme, že máte v síti server Git označený
 git.ourcompany.com. Pokud provedete klonování z tohoto serveru, Git ho automaticky pojmenuje
 origin, stáhne z něj všechna data, vytvoří ukazatel, který bude označovat jeho hlavní větev, a lokálně
 ji pojmenuje origin/master. Tuto větev nemůžete přesouvat. Git vám dá rovněž vaši vlastní hlavní
 větev, která bude začínat ve stejném místě jako hlavní větev serveru origin. Máte tak definován výchozí bod pro svoji práci (viz obrázek 3-22).
+
+Obrázek 3-22. Příkaz git clone vám vytvoří vlastní hlavní větev a větev origin/master, ukazující na hlavní větev serveru origin.
 
 
 3.5 Vzdálené větve 76
@@ -2899,10 +2897,14 @@ na server git.ourcompany.com a aktualizuje jeho hlavní větev, budou se vaše h
 A dokud zůstanete od serveru origin odpojeni, váš ukazatel origin/master se nemůže přemístit
 (viz obrázek 3-23).
 
+Obrázek 3-23. Pokud pracujete lokálně a někdo jiný odešle svou práci na vzdálený server, obě historie se rozejdou.
+
 K synchronizaci své práce použijte příkaz git fetch origin. Tento příkaz zjistí, který server je
 „origin“ (v našem případě je to git.ourcompany.com), vyzvedne z něj všechna data, která ještě nemáte,
 a aktualizuje vaši lokální databázi. Při tom přemístí ukazatel origin/master na novou, aktuálnější
 pozici (viz obrázek 3-24).
+
+Obrázek 3-24. Příkaz git fetch aktualizuje vaše reference na vzdálený server.
 
 Abychom si mohli ukázat, jak se pracuje s několika vzdálenými servery a jak vypadají vzdálené větve
 takových vzdálených projektů, předpokládejme, že máte ještě další interní server Git, který při vývoji
@@ -2911,22 +2913,12 @@ Můžete ho přidat jako novou vzdálenou referenci k projektu, na němž práv�
 git remote add (viz kapitola 2). Pojmenujte tento vzdálený server jako teamone, což bude zkrácený
 název pro celou URL adresu (viz obrázek 3-25).
 
-Obrázek 3-22. Příkaz git clone vám vytvoří vlastní hlavní větev a větev origin/master, ukazující na hlavní větev serveru origin.
+Obrázek 3-25. Přidání dalšího vzdáleného serveru.
 
 Nyní můžete spustit příkaz git fetch teamone, který ze serveru vyzvedne vše, co ještě nemáte. Protože
 je tento server podmnožinou dat, která jsou právě na serveru origin, Git nevyzvedne žádná data,
 ale nastaví vzdálenou větev nazvanou teamone/master tak, aby ukazovala na revizi, kterou má server
 teamone nastavenou jako hlavní větev (viz obrázek 3-26).
-
-
-3.5 Vzdálené větve 77
-Obrázek 3-23. Pokud pracujete lokálně a někdo jiný odešle svou práci na vzdálený server, obě historie se rozejdou.
-
-Obrázek 3-24. Příkaz git fetch aktualizuje vaše reference na vzdálený server.
-
-
-3.5 Vzdálené větve 78
-Obrázek 3-25. Přidání dalšího vzdáleného serveru.
 
 Obrázek 3-26. Lokálně získáte referenci na pozici hlavní větve serveru teamone.
 
@@ -2942,15 +2934,14 @@ chcete spolupracovat.
 Máte-li větev s názvem serverfix, na níž chcete spolupracovat s ostatními, můžete ji odeslat stejným
 způsobem, jakým jste odesílali svou první větev. Spusťte příkaz git push (server) (větev):
 
-$ git push origin serverfix
-Counting objects: 20, done.
-Compressing objects: 100% (14/14), done.
-Writing objects: 100% (15/15), 1.74 KiB, done.
-Total 15 (delta 5), reused 0 (delta 0)
-To git@github.com:schacon/simplegit.git
+	$ git push origin serverfix
+	Counting objects: 20, done.
+	Compressing objects: 100% (14/14), done.
+	Writing objects: 100% (15/15), 1.74 KiB, done.
+	Total 15 (delta 5), reused 0 (delta 0)
+	To git@github.com:schacon/simplegit.git
+	 * [new branch]      serverfix -> serverfix
 
-
- * [new branch] serverfix -> serverfix
 Toto je zkrácená verze příkazu. Git automaticky rozšíří název větve serverfix na refs/heads/serverfix:
 refs/heads/serverfix, což znamená: „Vezmi mou lokální větev serverfix a odešli ji na vzdálený
 server, kde aktualizuje tamní větev serverfix.“ Části refs/heads/ se budeme podrobněji věnovat v kapitole
@@ -2964,15 +2955,14 @@ větev serverfix by byla odeslána do větve awesomebranch ve vzdáleném projek
 Až bude příště některý z vašich spolupracovníků vyzvedávat data ze serveru, obdrží referenci o tom,
 kde se nachází serverová verze větve serverfix ve vzdálené větvi origin/serverfix:
 
-$ git fetch origin
-remote: Counting objects: 20, done.
-remote: Compressing objects: 100% (14/14), done.
-remote: Total 15 (delta 5), reused 0 (delta 0)
-Unpacking objects: 100% (15/15), done.
-From git@github.com:schacon/simplegit
+	$ git fetch origin
+	remote: Counting objects: 20, done.
+	remote: Compressing objects: 100% (14/14), done.
+	remote: Total 15 (delta 5), reused 0 (delta 0)
+	Unpacking objects: 100% (15/15), done.
+	From git@github.com:schacon/simplegit
+	 * [new branch]      serverfix    -> origin/serverfix
 
-
- * [new branch] serverfix -> origin/serverfix
 Tady je důležité upozornit, že pokud vyzvedáváte data a stáhnete s nimi i nové vzdálené větve, nemáte
 automaticky jejich lokální, editovatelné kopie. Jinak řečeno: v tomto případě nebudete mít novou větev
 serverfix, budete mít pouze ukazatel origin/serverfix, který nemůžete měnit.
@@ -2980,10 +2970,9 @@ serverfix, budete mít pouze ukazatel origin/serverfix, který nemůžete měnit
 Chcete-li začlenit tato data do své aktuální pracovní větve, spusťte příkaz git merge origin/serverfix.
 Chcete-li mít vlastní větev serverfix, na níž budete pracovat, můžete ji ze vzdálené větve vyvázat:
 
-$ git checkout -b serverfix origin/serverfix
-Branch serverfix set up to track remote branch refs/remotes/origin/serverfix.
-Switched to a new branch "serverfix"
-
+	$ git checkout -b serverfix origin/serverfix
+	Branch serverfix set up to track remote branch refs/remotes/origin/serverfix.
+	Switched to a new branch "serverfix"
 
 Tímto způsobem získáte lokální větev, na níž můžete pracovat a která začíná na pozici origin/serverfix.
 
@@ -3003,18 +2992,16 @@ a nebudou sledovat hlavní větev master. Jednoduchým případem je příklad, 
 spuštění příkazu git checkout -b [větev] [vzdálený server]/[větev]. Máte-li Git ve verzi 1.6.2
 nebo novější, můžete použít také zkrácenou variantu --track:
 
-$ git checkout --track origin/serverfix
-Branch serverfix set up to track remote branch refs/remotes/origin/serverfix.
-Switched to a new branch "serverfix"
-
+	$ git checkout --track origin/serverfix
+	Branch serverfix set up to track remote branch refs/remotes/origin/serverfix.
+	Switched to a new branch "serverfix"
 
 Chcete-li nastavit lokální větev s jiným názvem, než má vzdálená větev, můžete jednoduše použít
 první variantu s odlišným názvem lokální větve:
 
-$ git checkout -b sf origin/serverfix
-Branch sf set up to track remote branch refs/remotes/origin/serverfix.
-Switched to a new branch "sf"
-
+	$ git checkout -b sf origin/serverfix
+	Branch sf set up to track remote branch refs/remotes/origin/serverfix.
+	Switched to a new branch "sf"
 
 Vaše lokální větev „sf“ bude nyní automaticky stahovat data ze vzdálené větve origin/serverfix
 a bude do ní i odesílat.
@@ -3026,11 +3013,10 @@ jiné větve, kterou používáte pro stabilní kód). Vzdálenou větev tak nyn
 neohrabané syntaxe git push [vzdálený server] :[větev]. Chcete-li ze serveru odstranit větev
 serverfix, můžete to provést takto:
 
-$ git push origin :serverfix
-To git@github.com:schacon/simplegit.git
+	$ git push origin :serverfix
+	To git@github.com:schacon/simplegit.git
+	 - [deleted]         serverfix
 
-
- -[deleted] serverfix
 Šup! A větev je ze serveru pryč. Možná hledáte záložku, abyste si stránku založili, protože příkaz budete
 určitě potřebovat, ale jeho syntax si nemůžete zapamatovat. Dá se ale odvodit z příkazu git push
 [vzdálený server] [lokální větev]:[vzdálená větev], o kterém jsme se zmínili před chvílí. Pokud
@@ -3048,12 +3034,14 @@ nepoužívat.
 3.6.1 Základní přeskládání
 
 Pokud se vrátíme k našemu dřívějšímu příkladu z části o slučování větví (viz obrázek 3-27), vidíme,
-že jsme svoji práci rozdělili a vytvářeli revize ve dvou různých větvích. Víme, že nejjednodušším způsobem,
+že jsme svoji práci rozdělili a vytvářeli revize ve dvou různých větvích.
+
+Obrázek 3-27. Vaše původně rozdělená historie revizí
+
+Víme, že nejjednodušším způsobem,
 jak integrovat větve, je příkaz merge. Ten provede třícestné sloučení mezi dvěma posledními
 snímky (C3 a C4) a jejich nejmladším společným předkem (C2), přičemž vytvoří nový snímek (a novou
 revizi) – viz obrázek 3-28.
-
-Obrázek 3-27. Vaše původně rozdělená historie revizí
 
 Obrázek 3-28. Integrace rozdělené historie sloučením větví
 
@@ -3076,40 +3064,40 @@ Přeskládání funguje takto: systém najde společného předka obou větví (
 a větve, na kterou přeskládáváte), provede příkaz diff pro všechny revize větve, na níž se nacházíte,
 uloží zjištěné rozdíly do dočasných souborů, vrátí aktuální větev na stejnou revizi jako větev, na kterou
 přeskládáváte, a nakonec po jedné aplikuje všechny změny. Tento proces je naznačen na obrázku 3-29.
+
+Obrázek 3-29. Přeskládání změny provedené v revizi C3 na revizi C4
+
 Nyní můžete přejít zpět na hlavní větev a provést sloučení „rychle vpřed“ (viz obrázek 3-30).
+
+Obrázek 3-30. „Rychle vpřed“ po hlavní větvi
 
 Snímek, na který nyní ukazuje revize C3, je zcela totožný se snímkem, na který v příkladu v části
 o slučování ukazovala C5. V koncových produktech integrace není žádný rozdíl, výsledkem přeskládání
 je však čistší historie.
-
-Obrázek 3-29. Přeskládání změny provedené v revizi C3 na revizi C4
-
-Obrázek 3-30. „Rychle vpřed“ po hlavní větvi
-
 Pokud si prohlížíte log přeskládané větve, vypadá jako lineární historie – zdá se, jako by veškerá práce
 probíhala v jedné linii, ačkoli původně byla paralelní.
 
 Tuto metodu budete často používat v situaci, kdy chcete mít jistotu, že byly vaše revize čistě aplikovány
 na vzdálenou větev – např. v projektu, do nějž chcete přidat příspěvek, který ale nespravujete.
-
-
-3.6 Přeskládání 83
 V takovém případě budete pracovat ve své větvi, a až budete mít připraveny záplaty k odeslání
 do hlavního projektu, přeskládáte svou práci na větev origin/master. Správce v tomto případě
 nemusí provádět žádnou integraci, provede pouze posun „rychle vpřed“ nebo čistou aplikaci.
 
+
+3.6 Přeskládání 83
 Ještě jednou bychom chtěli upozornit, že snímek, na který ukazuje závěrečná revize – ať už se jedná
-
 o poslední z přeskládaných revizí po přeskládání, nebo poslední revizi sloučením jako výsledek začlenění
 – je vždy stejný. Jediné, co se liší, je historie. Přeskládání provede změny učiněné v jedné linii
 práce ještě jednou v jiné linii, a to v pořadí, v jakém byly provedeny. Sloučení naproti tomu vezme
 koncové body větví a sloučí je dohromady.
-3.6.2 Zajímavější možnosti přeskládání
-Opětovné provedení změn pomocí příkazu rebase můžete využít i jiným účelům než jen k přeskládání větve. Vezměme například historii na brázku 3.31. Vytvořili jste novou tematickou větev (server),
-pomocí níž chcete do svého projektu přidat funkci na straně serveru, a zapsali jste revizi.
 
+3.6.2 Zajímavější možnosti přeskládání
+Opětovné provedení změn pomocí příkazu rebase můžete využít i jiným účelům než jen k přeskládání větve. Vezměme například historii na obrázku 3-31. Vytvořili jste novou tematickou větev (server),
+pomocí níž chcete do svého projektu přidat funkci na straně serveru, a zapsali jste revizi.
 Poté jste tuto větev opustili a začali pracovat na změnách na straně klienta (client). I tady jste zapsali
 několik revizí. Nakonec jste se vrátili na větev server a zapsali tu další revize.
+
+Obrázek 3-31. Historie s tematickou větví obsahující další tematickou větev.
 
 Předpokládejme, že nyní chcete začlenit změny provedené na straně klienta do své hlavní linie k vydání,
 ale prozatím chcete počkat se změnami na straně serveru, dokud nebudou pečlivě otestovány. Můžete
@@ -3117,8 +3105,6 @@ vzít změny na větvi client, které nejsou na větvi server (C8 a C9), a necha
 větvi. Použijte k tomu příkaz git rebase v kombinaci s parametrem --onto:
 
 $ git rebase --onto master server client
-
-Obrázek 3-31. Historie s tematickou větví obsahující další tematickou větev.
 
 
 3.6 Přeskládání 84
@@ -3164,9 +3150,11 @@ nebudete potřebovat. Vaše historie pak bude vypadat jako na obrázku 3-35:
 Obrázek 3-35. Konečná historie revizí
 
 3.6.3 Rizika spojená s přeskládáním
-
 Přeskládání sice nabízí určité výhody, má však také svá úskalí. Ta se dají shrnout do jedné věty:
-Neprovádějte přeskládání u revizí, které jste odeslali do veřejného repozitáře. Budete-li se touto zásadou
+
+Neprovádějte přeskládání u revizí, které jste odeslali do veřejného repozitáře. 
+
+Budete-li se touto zásadou
 řídit, nemusíte se přeskládání obávat. V opačném případě vás čeká opovržení ostatních, rodina
 a přátelé vás zapřou.
 
@@ -3201,10 +3189,11 @@ V tuto chvíli vám nezbývá, než změny znovu začlenit do své práce, ačko
 Přeskládáním se změnily otisky SHA-1 těchto revizí, a Git je proto považuje za nové revize, přestože
 změny označené jako C4 už jsou ve skutečnosti ve vaší historii obsaženy (viz obrázek 3-39).
 
+Obrázek 3-39. Znovu jste začlenili stejnou práci do nové revize sloučením.
+
 Vy musíte tyto změny ve vhodném okamžiku začlenit do své práce, abyste do budoucna neztratili
 kontakt s ostatními vývojáři. Vaše historie pak bude obsahovat revize C4 i C4’, které mají obě jiný
 otisk SHA-1, ale představují stejnou práci a nesou i stejnou zprávu k revizi.
-
 Pokud s takovouto historií spustíte příkaz git log, nastane zmatečná situace, kdy se zobrazí dvě revize
 se stejným datem autora i stejnou zprávou k revizi. Pokud pak tuto historii odešlete zpět na server,
 znovu provedete všechny tyto přeskládané revize na centrálním serveru, což bude zmatečné i pro vaše
@@ -3217,8 +3206,6 @@ založit svou práci, můžete si tím nepěkně zavařit.
 
 
 3.7 Shrnutí 88
-Obrázek 3-39. Znovu jste začlenili stejnou práci do nové revize sloučením.
-
 3.7 Shrnutí
 
 V této kapitole jsme se věnovali základům větvení a slučování. Neměli byste teď mít problém s vytvářením
