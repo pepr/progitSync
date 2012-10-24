@@ -183,11 +183,15 @@ class Pass2Parser:
         self.rexObrazek = re.compile(patObrazek)
 
         # Řádek reprezentující příklad sázený jako kódový řádek
-        # neproporcionálním písmem. U této aplikace je uvozen jedním tabulátorem.
-        self.rexCode = re.compile(r'^\t(?P<text>.*)$')
+        # neproporcionálním písmem. U této aplikace je uvozen jedním tabulátorem
+        # nebo 8 mezerami.
+        self.rexCode = re.compile(r'^(\t| {8})(?P<text>.*)$')
 
         # Řádek, který má být pravděpodobně změněn na příklad textového řádku.
         self.rexXCode = re.compile(r'^(?P<text>[$#].*)$')
+
+        # Řádek se symbolicky uvedeným nadpisem 4. úrovně (#### Nadpis ####). na příklad textového řádku.
+        self.rexH4Title = re.compile(r'^(?P<h4title>####\s+.+\s+####)\s*$')
 
 
     def png_name(self, num):
@@ -262,6 +266,13 @@ class Pass2Parser:
                 num = m.group('num')
                 self.type = 'num'
                 self.parts = [num]
+                return
+
+            # Symbolicky uvedený nadpis 4. úrovně.
+            m = self.rexH4Title.match(self.line)
+            if m:
+                self.type = 'h4title'
+                self.parts = [m.group('h4title')]
                 return
 
             # Nečíslovaná odrážka (bullet) -- markdown syntaxe.
@@ -359,6 +370,11 @@ class Pass2Parser:
                         # Většině nadpisů chybí oddělení prázdným řádkem.
                         # Přidáme jej natvrdo.
                         self.collect('')
+                        self.write_collection()
+
+                    elif self.type == 'h4title':
+                        # Symbolicky uvedený nadpis čtvrté úrovně.
+                        self.collect()
                         self.write_collection()
 
                     elif self.type == 'xcode':
