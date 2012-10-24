@@ -191,10 +191,10 @@ class Pass2Parser:
 
 
     def png_name(self, num):
-        '''Pro číslo 'x-y' vrací '18333fig0x0y-tn.png'''
+        '''Pro číslo 'x-y' vrací '18333fig0x0y.png'''
 
         n1, n2 = num.split('-')
-        return '18333fig{:02}{:02}-tn.png'.format(int(n1), int(n2))
+        return '18333fig{:02}{:02}.png'.format(int(n1), int(n2))
 
 
     def collect(self, text=None):
