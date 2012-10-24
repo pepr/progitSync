@@ -4458,7 +4458,7 @@ $ git push origin master
 Nyní je váš projekt hostován na serveru GitHub a vy můžete dát adresu URL komukoli, s kým chcete
 svůj projekt sdílet. V tomto případě je adresa http://github.com/testinguser/iphone_project.
 V záhlaví na stránce všech vašich projektů si můžete všimnout, že máte dvě adresy URL (viz obrázek
-4.8). 
+4.8).
 
 Obrázek 4-8. Záhlaví projektu s veřejnou a soukromou adresou URL
 
@@ -4573,7 +4573,6 @@ Mělo by být jasně dáno, které řešení nebo jaká kombinace řešení je v
 
 
 120
-
 
 
 5. Kapitola 121
@@ -4697,7 +4696,7 @@ musí stahovat data. Postup práce je následující (viz obrázek 5-3):
 větve. Hlavní větev je větev diktátora.
 2. Poručíci začleňují tematické větve vývojářů do svých hlavních větví.
 3. Diktátor začleňuje hlavní větve poručíků do své hlavní větve.
-4. Diktátor odesílá svou hlavní větev do referenčního repozitáře, aby si na jeho základně mohli
+4. Diktátor odesílá svou hlavní větev do referenčního repozitáře, aby si na jeho základě mohli
 ostatní vývojáři přeskládat data.
 
 Obrázek 5-3. Pracovní postup s benevolentním diktátorem
@@ -4730,7 +4729,6 @@ a jak často? V mnoha případech budete mít dva nebo tři vývojáře přispí
 denně, u projektů s nízkou prioritou možná i méně. V opravdu velkých společnostech a u velkých
 projektů se může počet vývojářů vyšplhat do tisíců a počet revizí se může pohybovat v desítkách
 i stovkách záplat denně.
-
 To je důležité zejména z toho hlediska, že s rostoucím počtem vývojářů se také zvětšují starosti s tím,
 aby byl kód aplikován čistě a aby ho bylo možné snadno začlenit. U změn, které postoupíte vyšší
 instanci, může docházet k zastarávání nebo vážnému narušení jinými daty, která byla začleněna během
@@ -4765,22 +4763,20 @@ jak tyto chyby zkontrolovat. Před zapsáním revize zadejte příkaz git diff -
 prázdné znaky a vypíše vám jejich seznam. Zde uvádím jeden příklad, v němž jsem červenou
 barvu terminálu nahradil znaky X:
 
-$ git diff --check
-lib/simplegit.rb:5: trailing whitespace.
+	$ git diff --check
+	lib/simplegit.rb:5: trailing whitespace.
+	+    @git_dir = File.expand_path(git_dir)XX
+	lib/simplegit.rb:7: trailing whitespace.
+	+ XXXXXXXXXXX
+	lib/simplegit.rb:26: trailing whitespace.
+	+    def command(git_cmd)XXXX
 
-
-+ @git_dir = File.expand_path(git_dir)XX
-lib/simplegit.rb:7: trailing whitespace.
-+ XXXXXXXXXXX
-lib/simplegit.rb:26: trailing whitespace.
-+ def command(git_cmd)XXXX
 Spustíte-li tento příkaz před zapsáním revize, můžete se rozhodnout, zda chcete zapsat i problematické
-prázdné znaky, které mohou obtěžovat ostatní vývojáře. Dále se snažte provádět každou revizi jako
+prázdné znaky, které mohou obtěžovat ostatní vývojáře.
+
+Dále se snažte provádět každou revizi jako
 logicky samostatný soubor změn. Pokud je to možné, snažte se provádět stravitelné změny. Není právě
 ideální pracovat celý víkend na pěti různých problémech a v pondělí je všechny najednou odeslat
-
-
-5.2 Přispívání do projektu 127
 v jedné velké revizi. I pokud nebudete během víkendu zapisovat revize, využijte v pondělí oblasti
 připravených změn a rozdělte svou práci alespoň do stejného počtu revizí, kolik je řešených problémů,
 a přidejte k nim vysvětlující zprávy. Pokud některé změny modifikují tentýž soubor, zkuste použít
@@ -4792,6 +4788,8 @@ změn, bude-li to třeba. Kapitola 6 popisuje několik užitečných triků, jak
 a jak interaktivně připravovat soubory k zapsání. Používejte tyto nástroje k udržení čisté a srozumitelné
 historie.
 
+
+5.2 Přispívání do projektu 127
 Poslední věcí, na niž se vyplatí soustředit pozornost, jsou zprávy k revizím. Pokud si zvyknete vytvářet
 k revizím kvalitní zprávy, bude pro vás práce a kooperace v systému Git mnohem jednodušší. Zpráva
 by měla obvykle začínat samostatným řádkem o maximálně 50 znacích, v níž stručně popíšete soubor
@@ -4802,20 +4800,23 @@ v angličtině, často se také doporučuje používat rozkazovací způsob, tj.
 nebo „Adding tests for“ používejte raději „Add tests for“. Zde uvádíme vzor, jehož autorem je Tim Pope
 a v originále je k nalezení na stránkách tpope.net:
 
-Krátké (do 50 znaků) shrnutí změn
+	Krátké (do 50 znaků) shrnutí změn
 
-Podrobnější popis revize, je-li třeba. Snažte se nepřesáhnout zhruba 72 znaků. V některých kontextech
-je první řádek koncipován jako předmět e-mailu a zbytek textu jako jeho tělo. Prázdný řádek oddělující
-shrnutí od těla zprávy je nezbytně nutný (pokud nehodláte vypustit celé tělo). Spojení obou částí může
-zmást některé nástroje, např. přeskládání.
+	Podrobnější popis revize, je-li třeba. Snažte se nepřesáhnout
+	zhruba 72 znaků. V některých kontextech	je první řádek koncipován
+	jako předmět e-mailu a zbytek textu jako jeho tělo. Prázdný řádek
+	oddělující shrnutí od těla zprávy je nezbytně nutný (pokud
+	nehodláte vypustit celé tělo). Spojení obou částí může zmást
+	některé nástroje, např. přeskládání.
 
-Další odstavce následují za prázdným řádkem:
+	Další odstavce následují za prázdným řádkem:
 
-•
-Není problém používat odrážky.
-•
-Jako odrážka se nejčastěji používá pomlčka nebo hvězdička, před ně se vkládá jedna mezera,
-mezi body výčtu prázdný řádek, avšak úzus tu není jednotný.
+	 - Můžete používat i odrážky.
+
+	 - Jako odrážka se nejčastěji používá pomlčka nebo hvězdička, 
+	   před ně se vkládá jedna mezera, mezi body výčtu prázdný 
+	   řádek, avšak úzus tu není jednotný.
+	   
 Budou-li takto vypadat všechny vaše zprávy k revizím, usnadníte tím práci sobě i svým spolupracovníkům.
 Projekt Git obsahuje kvalitně naformátované zprávy k revizím. Mohu vám doporučit, abyste
 v něm zkusili zadat příkaz git log --no-merges a podívali se, jak vypadá pěkně naformátovaná historie
@@ -4837,73 +4838,49 @@ Subversion nebo jiného centralizovaného systému. Se systémem Git ale budete 
 takových ohledech, jako je zapisování revizí offline a podstatně snazší větvení a slučování. Pracovní
 postup však bude velmi podobný. Hlavním rozdílem je to, že slučování probíhá na straně klienta, ne
 během zapisování revize na straně serveru. Podívejme se, jak to může vypadat, když dva vývojáři
-
-5.2 Přispívání do projektu 128
 začnou spolupracovat na projektu se sdíleným repozitářem. První vývojář, John, naklonuje repozitář,
 provede změny a zapíše lokální revizi. (V následujících příkladech nahrazuji zprávy protokolů třemi
 tečkami, abych je trochu zkrátil.)
 
-# John's Machine
-
-$ git clone john@githost:simplegit.git
-
-Initialized empty Git repository in /home/john/simplegit/.git/
-
-...
-
-$ cd simplegit/
-
-$ vim lib/simplegit.rb
-
-$ git commit -am 'removed invalid default value'
-
-[master 738ee87] removed invalid default value
-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+
+5.2 Přispívání do projektu 128
+	# John's Machine
+	$ git clone john@githost:simplegit.git
+	Initialized empty Git repository in /home/john/simplegit/.git/
+	...
+	$ cd simplegit/
+	$ vim lib/simplegit.rb 
+	$ git commit -am 'removed invalid default value'
+	[master 738ee87] removed invalid default value
+	 1 files changed, 1 insertions(+), 1 deletions(-)
 
 Druhý vývojář, Jessica, učiní totéž – naklonuje repozitář a zapíše provedené změny:
 
-# Jessica's Machine
-
-$ git clone jessica@githost:simplegit.git
-
-Initialized empty Git repository in /home/jessica/simplegit/.git/
-
-...
-
-$ cd simplegit/
-
-$ vim TODO
-
-$ git commit -am 'add reset task'
-
-[master fbff5bc] add reset task
-
- 1 files changed, 1 insertions(+), 0 deletions(-)
+	# Jessica's Machine
+	$ git clone jessica@githost:simplegit.git
+	Initialized empty Git repository in /home/jessica/simplegit/.git/
+	...
+	$ cd simplegit/
+	$ vim TODO 
+	$ git commit -am 'add reset task'
+	[master fbff5bc] add reset task
+	 1 files changed, 1 insertions(+), 0 deletions(-)
 
 Jessica nyní odešle svou práci na server:
 
-# Jessica's Machine
-
-$ git push origin master
-
-...
-
-To jessica@githost:simplegit.git
-
- 1edee6b..fbff5bc master -> master
+	# Jessica's Machine
+	$ git push origin master
+	...
+	To jessica@githost:simplegit.git
+	   1edee6b..fbff5bc  master -> master
 
 Také John se pokusí odeslat své změny na server:
 
-# John's Machine
-
-$ git push origin master
-
-To john@githost:simplegit.git
-
- ! [rejected] master -> master (non-fast forward)
-
-error: failed to push some refs to 'john@githost:simplegit.git'
+	# John's Machine
+	$ git push origin master
+	To john@githost:simplegit.git
+	 ! [rejected]        master -> master (non-fast forward)
+	error: failed to push some refs to 'john@githost:simplegit.git'
 
 John nyní nesmí odeslat revize, protože mezitím odeslala své změny Jessica. To je třeba si uvědomit,
 zejména pokud jste zvyklí na systém Subversion. Oba vývojáři totiž neupravovali stejný soubor. Přestože
@@ -4911,12 +4888,10 @@ Subversion provádí takové sloučení na serveru automaticky, pokud byly uprav
 v systému Git musíte provést sloučení lokálně. John musí vyzvednout změny, které provedla Jessica,
 a začlenit je do své práce, než ji bude moci odeslat:
 
-$ git fetch origin
-...
-From john@githost:simplegit
-
-
- + 049d078...fbff5bc master -> origin/master
+	$ git fetch origin
+	...
+	From john@githost:simplegit
+	 + 049d078...fbff5bc master     -> origin/master
 
 5.2 Přispívání do projektu 129
 
@@ -4927,28 +4902,26 @@ Obrázek 5-4. Johnův výchozí repozitář
 John má referenci ke změnám, které odeslala Jessica, ale než bude moci sám odeslat svá data, bude
 muset začlenit její práci:
 
-$ git merge origin/master
+	$ git merge origin/master
+	Merge made by recursive.
+	 TODO |    1 +
+	 1 files changed, 1 insertions(+), 0 deletions(-)
 
-Merge made by recursive.
-TODO | 1 +
-1 files changed, 1 insertions(+), 0 deletions(-)
-
-Sloučení probíhá hladce, Johnova historie revizí teď vypadá jako na obrázku 5-.5. John nyní může otestovat
-svůj kód, aby se ujistil, že stále pracuje správně, a pak může odeslat svou novou sloučenou práci
-na server:
-
-$ git push origin master
-...
-To john@githost:simplegit.git
-
-
- fbff5bc..72bbc59 master -> master
+Sloučení probíhá hladce, Johnova historie revizí teď vypadá jako na obrázku 5-5. 
 
 Obrázek 5-5. Johnův repozitář po začlenění větve origin/master
 
+John nyní může otestovat
+svůj kód, aby se ujistil, že stále pracuje správně, a pak může odeslat svou novou sloučenou práci
+na server:
+
+	$ git push origin master
+	...
+	To john@githost:simplegit.git
+	   fbff5bc..72bbc59  master -> master
+
 
 5.2 Přispívání do projektu 130
-
 Johnova historie revizí bude nakonec vypadat jako na obrázku 5-6.
 
 Obrázek 5-6. Johnova historie po odeslání revize na server origin
@@ -4961,15 +4934,11 @@ Obrázek 5-7. Výchozí historie revizí – Jessica
 
 Jessica chce synchronizovat svou práci s Johnem, a proto vyzvedne jeho data:
 
-# Jessica's Machine
-
-$ git fetch origin
-
-...
-
-From jessica@githost:simplegit
-
- fbff5bc..72bbc59 master -> origin/master
+	# Jessica's Machine
+	$ git fetch origin
+	...
+	From jessica@githost:simplegit
+	   fbff5bc..72bbc59  master     -> origin/master
 
 Tím stáhne práci, kterou mezitím odeslal John. Historie revizí Jessicy teď vypadá jako na obrázku 5-8.
 
@@ -4980,67 +4949,54 @@ Obrázek 5-8. Historie Jessicy po vyzvednutí Johnových změn
 Jessica považuje svou tematickou větev za dokončenou, ale chce vědět, do čeho má svou práci začlenit,
 aby mohla změny odeslat. Spustí proto příkaz git log:
 
-$ git log --no-merges origin/master ^issue54
-commit 738ee872852dfaa9d6634e0dea7a324040193016
-Author: John Smith <jsmith@example.com>
-Date: Fri May 29 16:01:27 2009 -0700
+	$ git log --no-merges origin/master ^issue54
+	commit 738ee872852dfaa9d6634e0dea7a324040193016
+	Author: John Smith <jsmith@example.com>
+	Date:   Fri May 29 16:01:27 2009 -0700
 
-
- removed invalid default value
+	    removed invalid default value
 
 Jessica nyní může začlenit tematickou větev do své hlavní větve, tamtéž začlenit i Johnovu práci
 (origin/master) a vše odeslat zpět na server. Nejprve přepne zpět na hlavní větev, aby mohla
 všechnu tuto práci integrovat:
 
-$ git checkout master
-Switched to branch "master"
-Your branch is behind 'origin/master' by 2 commits, and can be fast-forwarded.
-
+	$ git checkout master
+	Switched to branch "master"
+	Your branch is behind 'origin/master' by 2 commits, and can be fast-forwarded.
 
 Jako první může začlenit buď větev origin/master nebo issue54. Obě směřují vpřed, a tak jejich
 pořadí nehraje žádnou roli. Konečný snímek bude stejný, ať zvolí jakékoli pořadí, mírně se bude
 lišit jen historie revizí. Jessica se rozhodne začlenit jako první větev issue54:
 
-$ git merge issue54
-
-Updating fbff5bc..4af4298
-
-Fast forward
-
- README | 1 +
-
- lib/simplegit.rb | 6 +++++
-
-
-2 files changed, 6 insertions(+), 1 deletions(-)
+	$ git merge issue54
+	Updating fbff5bc..4af4298
+	Fast forward
+	 README           |    1 +
+	 lib/simplegit.rb |    6 +++++-
+	 2 files changed, 6 insertions(+), 1 deletions(-)
 
 Tento postup je bezproblémový. Jak vidíte, šlo o jednoduchý posun „rychle vpřed“. Nyní Jessica
 začlení Johnovu práci (origin/master):
 
 
 5.2 Přispívání do projektu 132
-$ git merge origin/master
-Auto-merging lib/simplegit.rb
-Merge made by recursive.
-
-
- lib/simplegit.rb | 2 +1
-files changed, 1 insertions(+), 1 deletions(-)
+	$ git merge origin/master
+	Auto-merging lib/simplegit.rb
+	Merge made by recursive.
+	 lib/simplegit.rb |    2 +-
+	 1 files changed, 1 insertions(+), 1 deletions(-)
 
 Začlenění proběhne čistě a historie Jessicy bude vypadat jako na obrázku 5-9.
 
 Obrázek 5-9. Historie Jessicy po začlenění Johnových změn
 
-738ee72bbc4b0781edee8149aorigin/master23ac64af428059cfbff5masterissue54
 Větev origin/master je nyní dostupná i z hlavní větve Jessicy, a tak může Jessica úspěšně odeslat svou
 práci (za předpokladu, že John mezitím neodeslal další revize):
 
-$ git push origin master
-...
-To jessica@githost:simplegit.git
-
-
- 72bbc59..8059c15 master -> master
+	$ git push origin master
+	...
+	To jessica@githost:simplegit.git
+	   72bbc59..8059c15  master -> master
 
 Všichni vývojáři zapsali několik revizí a úspěšně začlenili práci ostatních do své – viz obrázek 5-10.
 
@@ -5057,7 +5013,6 @@ na obrázku 5-11.
 Obrázek 5-11. Obecná posloupnost kroků u jednoduchého pracovního postupu s více vývojáři v systému Git
 
 5.2.3 Soukromý řízený tým
-
 V následujícím scénáři se podíváme na role přispěvatelů ve větší soukromé skupině. Naučíte se, jak
 pracovat v prostředí, v němž na jednotlivých úkolech spolupracují malé skupiny a tyto týmové příspěvky
 jsou poté integrovány druhou stranou.
@@ -5074,89 +5029,74 @@ na úkolu A – featureA. Vytvoří si pro něj novou větev a udělá v ní ur�
 
 
 5.2 Přispívání do projektu 134
-# Jessica's Machine
-$ git checkout -b featureA
-Switched to a new branch "featureA"
-$ vim lib/simplegit.rb
-$ git commit -am 'add limit to log function'
-[featureA 3300904] add limit to log function
-
-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+	# Jessica's Machine
+	$ git checkout -b featureA
+	Switched to a new branch "featureA"
+	$ vim lib/simplegit.rb
+	$ git commit -am 'add limit to log function'
+	[featureA 3300904] add limit to log function
+	 1 files changed, 1 insertions(+), 1 deletions(-)
 
 V tomto okamžiku potřebuje sdílet svou práci s Johnem, a tak odešle revize své větve featureA
 na server. Jessica nemá oprávnění pro odesílání dat do hlavní větve (ten mají pouze zprostředkovatelé
 integrace), a proto musí své revize odeslat do jiné větve, aby mohla s Johnem spolupracovat:
 
-$ git push origin featureA
-...
-To jessica@githost:simplegit.git
+	$ git push origin featureA
+	...
+	To jessica@githost:simplegit.git
+	 * [new branch]      featureA -> featureA
 
-
- * [new branch] featureA -> featureA
 Jessica pošle Johnovi e-mail s informací, že odeslala svou práci do větve pojmenované featureA a že se
 na ni může podívat. Zatímco čeká na zpětnou vazbu od Johna, rozhodne se, že začne pracovat na úkolu
 B, na němž pracuje i Josie. Začne tím, že založí novou větev pro tento úkol (featureB), která bude
 založena na hlavní větvi serveru:
 
-# Jessica's Machine
-$ git fetch origin
-$ git checkout -b featureB origin/master
-Switched to a new branch "featureB"
-
+	# Jessica's Machine
+	$ git fetch origin
+	$ git checkout -b featureB origin/master
+	Switched to a new branch "featureB"
 
 Jessica nyní vytvoří několik revizí ve větvi featureB:
 
-$ vim lib/simplegit.rb
-$ git commit -am 'made the ls-tree function recursive'
-[featureB e5b0fdc] made the ls-tree function recursive
-
-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-$ vim lib/simplegit.rb
-$ git commit -am 'add ls-files'
-[featureB 8512791] add ls-files
-
-
- 1 files changed, 5 insertions(+), 0 deletions(-)
+	$ vim lib/simplegit.rb
+	$ git commit -am 'made the ls-tree function recursive'
+	[featureB e5b0fdc] made the ls-tree function recursive
+	 1 files changed, 1 insertions(+), 1 deletions(-)
+	$ vim lib/simplegit.rb
+	$ git commit -am 'add ls-files'
+	[featureB 8512791] add ls-files
+	 1 files changed, 5 insertions(+), 0 deletions(-)
 
 Repozitář Jessicy vypadá jako na obrázku 5-12.
+
+Obrázek 5-12. Výchozí historie revizí – Jessica
 
 Jessica je připravena odeslat svou práci, ale dostane e-mail od Josie, že již na server odeslala větev
 featureBee, v níž už je část práce hotová. Než bude Jessica moci odeslat svou práci na server, bude
 do ní nejprve muset začlenit práci Josie. Změny, které Josie provedla, vyzvedne příkazem git fetch:
 
-$ git fetch origin
-...
-From jessica@githost:simplegit
-
-
- * [new branch] featureBee -> origin/featureBee
+	$ git fetch origin
+	...
+	From jessica@githost:simplegit
+	 * [new branch]      featureBee -> origin/featureBee
 
 5.2 Přispívání do projektu 135
-Obrázek 5-12. Výchozí historie revizí – Jessica
-
 Nyní může Jessica začlenit tyto změny do své práce pomocí příkazu git merge:
 
-$ git merge origin/featureBee
-Auto-merging lib/simplegit.rb
-Merge made by recursive.
-
-
- lib/simplegit.rb | 4 ++++
-1 files changed, 4 insertions(+), 0 deletions(-)
-
+	$ git merge origin/featureBee
+	Auto-merging lib/simplegit.rb
+	Merge made by recursive.
+	 lib/simplegit.rb |    4 ++++
+	 1 files changed, 4 insertions(+), 0 deletions(-)
 
 Tady nastává určitý problém. Musí odeslat práci začleněnou ve své větvi featureB do větve featureBee
 na serveru. Může tak učinit příkazem git push s určením lokální větve, za níž bude následovat dvojtečka
 (:) a za ní vzdálená větev:
 
-$ git push origin featureB:featureBee
-...
-To jessica@githost:simplegit.git
-
-
- fba9af8..cd685d1 featureB -> featureBee
+	$ git push origin featureB:featureBee
+	...
+	To jessica@githost:simplegit.git
+	   fba9af8..cd685d1  featureB -> featureBee
 
 Říká se tomu refspec. Více o vzorcích refspec systému Git a různých možnostech, k nimž je lze využít,
 najdete v kapitole 9.
@@ -5164,51 +5104,41 @@ najdete v kapitole 9.
 Poté pošle John Jessice e-mail, že odeslal několik změn do větve featureA, a poprosí ji, aby je ověřila.
 Jessica spustí příkaz git fetch, jímž tyto změny stáhne.
 
-$ git fetch origin
-...
-From jessica@githost:simplegit
-
-
- 3300904..aad881d featureA -> origin/featureA
+	$ git fetch origin
+	...
+	From jessica@githost:simplegit
+	   3300904..aad881d  featureA   -> origin/featureA
 
 Poté si může příkazem git log prohlédnout, co všechno bylo změněno:
 
-$ git log origin/featureA ^featureA
-commit aad881d154acdaeb2b6b18ea0e827ed8a6d671e6
-Author: John Smith <jsmith@example.com>
-Date: Fri May 29 19:57:33 2009 -0700
+	$ git log origin/featureA ^featureA
+	commit aad881d154acdaeb2b6b18ea0e827ed8a6d671e6
+	Author: John Smith <jsmith@example.com>
+	Date:   Fri May 29 19:57:33 2009 -0700
 
-
- changed log output to 30 from 25
+	    changed log output to 30 from 25
 
 
 5.2 Přispívání do projektu 136
 Nakonec začlení Johnovu práci do své vlastní větve featureA:
 
-$ git checkout featureA
-Switched to branch "featureA"
-$ git merge origin/featureA
-Updating 3300904..aad881d
-Fast forward
-
-
- lib/simplegit.rb | 10 +++++++++1
-files changed, 9 insertions(+), 1 deletions(-)
-
+	$ git checkout featureA
+	Switched to branch "featureA"
+	$ git merge origin/featureA
+	Updating 3300904..aad881d
+	Fast forward
+	 lib/simplegit.rb |   10 +++++++++-
+	1 files changed, 9 insertions(+), 1 deletions(-)
 
 Jessica by ráda něco vylepšila, a proto vytvoří novou revizi a odešle ji zpět na server:
 
-$ git commit -am 'small tweak'
-[featureA ed774b3] small tweak
-
-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-$ git push origin featureA
-...
-To jessica@githost:simplegit.git
-
-
- 3300904..ed774b3 featureA -> featureA
+	$ git commit -am 'small tweak'
+	[featureA ed774b3] small tweak
+	 1 files changed, 1 insertions(+), 1 deletions(-)
+	$ git push origin featureA
+	...
+	To jessica@githost:simplegit.git
+	   3300904..ed774b3  featureA -> featureA
 
 Historie revizí Jessicy bude nyní vypadat jako na obrázku 5-13.
 
@@ -5229,6 +5159,8 @@ spolupracovalo prostřednictvím vzdálených větví a aby si práce nevyžáda
 nebránila ostatním v jiné práci, je velkou devízou systému Git. Posloupnost kroků vypadá v případě
 pracovního postupu, který jsme si právě ukázali, jako na obrázku 5-15.
 
+Obrázek 5-15. Základní posloupnost kroků u pracovního postupu v řízeném týmu
+
 5.2.4 Malý veřejný projekt
 Přispívání do veřejných projektů se poněkud liší. Protože nemáte oprávnění aktualizovat větve projektu
 přímo, musíte svou práci doručit správcům jinak. První příklad popisuje, jak se přispívá s využitím
@@ -5248,15 +5180,12 @@ $ git commit
 $ (work)
 $ git commit
 
-
 Možná budete chtít využít příkaz rebase -i a zkomprimovat svou práci do jediné revize nebo přeorganizovat
 práci v revizích tak, aby byla kontrola záplaty pro správce jednodušší – další informace
 o interaktivním přeskládání najdete v kapitole 6.
 
 
 5.2 Přispívání do projektu 138
-Obrázek 5-15. Základní posloupnost kroků u pracovního postupu v řízeném týmu
-
 Až budete s prací ve větvi hotovi a budete ji chtít poslat zpět správcům, přejděte na původní stránku
 projektu a klikněte na tlačítko „Fork“, jímž vytvoříte vlastní odštěpenou větev projektu, do níž budete
 moci zapisovat. Poté bude třeba, abyste tuto novou adresu URL repozitáře přidali jako druhý vzdálený
@@ -5284,23 +5213,21 @@ a adresu URL repozitáře Git, z nějž chcete práci natáhnout, a vytvoří sh
 správce podle vaší žádosti natáhnout. Pokud chce například Jessica poslat Johnovi žádost o natažení
 a vytvořila předtím dvě revize v tematické větvi, kterou právě odeslala, může zadat tento příkaz:
 
-$ git request-pull origin/master myfork
-The following changes since commit 1edee6b1d61823a2de3b09c160d7080b8d1b3a40:
-John Smith (1):
-added a new function
+	$ git request-pull origin/master myfork
+	The following changes since commit 1edee6b1d61823a2de3b09c160d7080b8d1b3a40:
+	  John Smith (1):
+	        added a new function
 
-are available in the git repository at:
+	are available in the git repository at:
 
- git://githost/simplegit.git featureA
+	  git://githost/simplegit.git featureA
 
-Jessica Smith (2):
-add limit to log function
-change log output to 30 from 25
+	Jessica Smith (2):
+	      add limit to log function
+	      change log output to 30 from 25
 
-
- lib/simplegit.rb | 10 +++++++++1
-files changed, 9 insertions(+), 1 deletions(-)
-
+	 lib/simplegit.rb |   10 +++++++++-
+	 1 files changed, 9 insertions(+), 1 deletions(-)
 
 Výstup příkazu lze odeslat správci. Sdělí mu, odkud daná větev pochází, podá mu přehled o revizích
 a řekne mu, odkud lze práci stáhnout.
@@ -5319,8 +5246,9 @@ $ git push myfork featureB
 $ (email maintainer)
 $ git fetch origin
 
-
 Nyní mají obě vaše témata samostatný zásobník – podobně jako řada záplat – které můžete přepsat, přeskládat a upravit, aniž by se tím obě témata navzájem ovlivňovala nebo omezovala (viz obrázek 5-16).
+
+Obrázek 5-16. Výchozí historie revizí s větví featureB
 
 Řekněme, že správce projektu natáhl do projektu několik jiných záplat a nyní vyzkoušel vaši první větev,
 jenže tu už nelze čistě začlenit. V takovém případě můžete zkusit přeskládat tuto větev na vrcholu
@@ -5330,13 +5258,9 @@ $ git checkout featureA
 $ git rebase origin/master
 $ git push –f myfork featureA
 
-
 
 5.2 Přispívání do projektu 140
-
 Tím přepíšete svou historii, která teď bude vypadat jako na obrázku 5-17.
-
-Obrázek 5-16. Výchozí historie revizí s větví featureB
 
 Obrázek 5-17. Historie revizí s větví featureA
 
@@ -5359,7 +5283,6 @@ $ (change implementation)
 $ git commit
 $ git push myfork featureBv2
 
-
 Parametr --squash (komprimovat) vezme všechnu vaši práci v začleněné větvi a zkomprimuje ji
 do jedné revize, která nevznikla jako výsledek sloučení a leží na vrcholu větve, na níž se právě
 nacházíte. Parametr --no-commit říká systému Git, aby revizi automaticky nezaznamenával. To vám
@@ -5370,7 +5293,6 @@ Nyní můžete správci oznámit, že jste provedli požadované změny a že je
 Obrázek 5-18. Historie revizí s větví featureBv2
 
 5.2.5 Velký veřejný projekt
-
 Mnoho větších projektů si vytvořilo vlastní, odlišné procedury k doručování záplat. U každého projektu
 se tak budete muset informovat o konkrétních pravidlech. U mnoha větších veřejných projektů
 se však záplaty doručují na základě poštovní konference vývojářů, a proto se teď zaměřím na tento
@@ -5386,7 +5308,6 @@ $ (work)
 $ git commit
 $ (work)
 $ git commit
-
 
 
 5.2 Přispívání do projektu 142
@@ -5404,34 +5325,33 @@ $ git format-patch -M origin/master
 Příkaz format-patch vypíše názvy souborů záplaty, kterou vytváří. Přepínač -M řekne systému Git, aby
 zkontroloval případné přejmenování. Soubory nakonec vypadají takto:
 
-$ cat 0001-add-limit-to-log-function.patch
-From 330090432754092d704da8e76ca5c05c198e71a8 Mon Sep 17 00:00:00 2001
-From: Jessica Smith <jessica@example.com>
-Date: Sun, 6 Apr 2008 10:17:23 -0700
-Subject: [PATCH 1/2] add limit to log function
+	$ cat 0001-add-limit-to-log-function.patch 
+	From 330090432754092d704da8e76ca5c05c198e71a8 Mon Sep 17 00:00:00 2001
+	From: Jessica Smith <jessica@example.com>
+	Date: Sun, 6 Apr 2008 10:17:23 -0700
+	Subject: [PATCH 1/2] add limit to log function
 
-Limit log functionality to the first 20
+	Limit log functionality to the first 20
 
-lib/simplegit.rb | 2 +1
-files changed, 1 insertions(+), 1 deletions(-)
+	---
+	 lib/simplegit.rb |    2 +-
+	 1 files changed, 1 insertions(+), 1 deletions(-)
 
+	diff --git a/lib/simplegit.rb b/lib/simplegit.rb
+	index 76f47bc..f9815f1 100644
+	--- a/lib/simplegit.rb
+	+++ b/lib/simplegit.rb
+	@@ -14,7 +14,7 @@ class SimpleGit
+	   end
 
-diff --git a/lib/simplegit.rb b/lib/simplegit.rb
-index 76f47bc..f9815f1 100644
---- a/lib/simplegit.rb
-+++ b/lib/simplegit.rb
-@@ -14,7 +14,7 @@ class SimpleGit
+	   def log(treeish = 'master')
+	-    command("git log #{treeish}")
+	+    command("git log -n 20 #{treeish}")
+	   end
 
- end
-
- def log(treeish = 'master')
--command("git log #{treeish}")
-+ command("git log -n 20 #{treeish}")
-end
-
- def ls_tree(treeish = 'master')
-
-1.6.2.rc1.20.g8c5b.dirty
+	   def ls_tree(treeish = 'master')
+	-- 
+	1.6.2.rc1.20.g8c5b.dirty
 
 Tyto soubory záplaty můžete také upravit a přidat k nim další informace určené pro seznam příjemců
 e-mailu, u nichž nechcete, aby byly obsaženy ve zprávě k revizi. Přidáte-li text mezi řádek -- a začátek
@@ -5451,60 +5371,43 @@ Nejprve je třeba nastavit sekci „imap“ v souboru ~/.gitconfig. Každou hodn
 zvlášť pomocí série příkazů git config nebo můžete vložit hodnoty ručně. Na konci by ale měl
 váš soubor config vypadat přibližně takto:
 
-[imap]
-
- folder = "[Gmail]/Drafts"
-
- host = imaps://imap.gmail.com
-
- user = user@gmail.com
-
- pass = p4ssw0rd
-
- port = 993
-
- sslverify = false
+	[imap]
+	  folder = "[Gmail]/Drafts"
+	  host = imaps://imap.gmail.com
+	  user = user@gmail.com
+	  pass = p4ssw0rd
+	  port = 993
+	  sslverify = false
 
 Pokud váš server IMAP nepoužívá SSL, dva poslední řádky zřejmě nebudou vůbec třeba a hodnota
 hostitele bude imap://, a nikoli imaps://. Až toto nastavení dokončíte, můžete použít příkaz git
 send-email, jímž umístíte sérii patchů do složky Koncepty (Drafts) zadaného serveru IMAP:
 
-$ git send-email *.patch
-0001-added-limit-to-log-function.patch
-0002-changed-log-output-to-30-from-25.patch
-Who should the emails appear to be from? [Jessica Smith <jessica@example.com>]
-Emails will be sent from: Jessica Smith <jessica@example.com>
-Who should the emails be sent to? jessica@example.com
-Message-ID to be used as In-Reply-To for the first email? y
+	$ git send-email *.patch
+	0001-added-limit-to-log-function.patch
+	0002-changed-log-output-to-30-from-25.patch
+	Who should the emails appear to be from? [Jessica Smith <jessica@example.com>] 
+	Emails will be sent from: Jessica Smith <jessica@example.com>
+	Who should the emails be sent to? jessica@example.com
+	Message-ID to be used as In-Reply-To for the first email? y
 
 Git poté vytvoří log s určitými informacemi, který bude pro každou záplatu, kterou posíláte, vypadat
 asi takto:
 
-(mbox) Adding cc: Jessica Smith <jessica@example.com> from
+	(mbox) Adding cc: Jessica Smith <jessica@example.com> from 
+	  \line 'From: Jessica Smith <jessica@example.com>'
+	OK. Log says:
+	Sendmail: /usr/sbin/sendmail -i jessica@example.com
+	From: Jessica Smith <jessica@example.com>
+	To: jessica@example.com
+	Subject: [PATCH 1/2] added limit to log function
+	Date: Sat, 30 May 2009 13:29:15 -0700
+	Message-Id: <1243715356-61726-1-git-send-email-jessica@example.com>
+	X-Mailer: git-send-email 1.6.2.rc1.20.g8c5b.dirty
+	In-Reply-To: <y>
+	References: <y>
 
- \line 'From: Jessica Smith <jessica@example.com>'
-
-OK. Log says:
-
-Sendmail: /usr/sbin/sendmail -i jessica@example.com
-
-From: Jessica Smith <jessica@example.com>
-
-To: jessica@example.com
-
-Subject: [PATCH 1/2] added limit to log function
-
-Date: Sat, 30 May 2009 13:29:15 -0700
-
-Message-Id: <1243715356-61726-1-git-send-email-jessica@example.com>
-
-X-Mailer: git-send-email 1.6.2.rc1.20.g8c5b.dirty
-
-In-Reply-To: <y>
-
-References: <y>
-
-Result: OK
+	Result: OK
 
 V tomto okamžiku můžete přejít do své složky Koncepty, změnit pole Komu na adresáty z poštovní
 konference, jimž chcete záplatu odeslat, případně přidat kopii na správce nebo osobu odpovědnou
@@ -5550,7 +5453,7 @@ Jestliže obdržíte e-mailem záplatu, kterou potřebujete integrovat do svého
 nejprve do tematické větve, v níž ho vyhodnotíte. Existují dva způsoby aplikace záplaty z e-mailu:
 příkazem git apply nebo příkazem git am.
 
-Aplikace záplaty příkazem „apply“
+#### Aplikace záplaty příkazem „apply“ ####
 
 Pokud dostanete záplatu od někoho, kdo ji vygeneroval příkazem git diff nebo unixovým
 příkazem diff, můžete ho aplikovat příkazem git apply. Předpokládejme, že jste záplatu uložili
@@ -5572,15 +5475,14 @@ použijte na patch příkaz git apply --check:
 
 
 5.3 Správa projektu 145
-$ git apply --check 0001-seeing-if-this-helps-the-gem.patch
-error: patch failed: ticgit.gemspec:1
-error: ticgit.gemspec: patch does not apply
-
+	$ git apply --check 0001-seeing-if-this-helps-the-gem.patch 
+	error: patch failed: ticgit.gemspec:1
+	error: ticgit.gemspec: patch does not apply
 
 Pokud se nezobrazí žádný výstup, záplata bude aplikována čistě. Jestliže kontrola selže, příkaz vrací
 nenulový návratový kód, a proto ho lze snadno používat ve skriptech.
 
-Aplikace záplaty příkazem „am“
+#### Aplikace záplaty příkazem „am“ ####
 
 Pokud je přispěvatel uživatelem systému Git a byl natolik dobrý, že k vygenerování záplaty použil
 příkaz format-patch, budete mít usnadněnou práci, protože záplata obsahuje informace o autorovi
@@ -5591,13 +5493,12 @@ K aplikaci patche vygenerovaného příkazem format-patch použijte příkaz git
 technicky koncipován tak, aby přečetl soubor mbox, tj. formát prostého textu pro ukládání jedné
 či více e-mailových zpráv do jednoho textového souboru. Vypadá například takto:
 
-From 330090432754092d704da8e76ca5c05c198e71a8 Mon Sep 17 00:00:00 2001
-From: Jessica Smith <jessica@example.com>
-Date: Sun, 6 Apr 2008 10:17:23 -0700
-Subject: [PATCH 1/2] add limit to log function
+	From 330090432754092d704da8e76ca5c05c198e71a8 Mon Sep 17 00:00:00 2001
+	From: Jessica Smith <jessica@example.com>
+	Date: Sun, 6 Apr 2008 10:17:23 -0700
+	Subject: [PATCH 1/2] add limit to log function
 
-
-Limit log functionality to the first 20
+	Limit log functionality to the first 20
 
 Toto je začátek výstupu příkazu format-patch, s nímž jsme se setkali v předchozí části. Zároveň je to
 také platný e-mailový formát mbox. Jestliže vám přispěvatel řádně poslal záplatu e-mailem pomocí
@@ -5613,52 +5514,50 @@ git am. Tímto způsobem záplatu aplikujete:
 $ git am 0001-limit-log-function.patch
 Applying: add limit to log function
 
-
 Jak vidíte, záplata byla aplikována čistě a automaticky byla vytvořena nová revize. Informace o autorovi
 jsou převzaty z polí From a Date v e-mailu a zpráva k revizi je převzata z Subject a těla e-mailu
 (před samotnou záplatou). Pokud byl patch aplikován například ze souboru mbox v předchozím příkladu,
 vygenerovaná revize bude vypadat zhruba takto:
 
-$ git log --pretty=fuller -1
-commit 6c5e70b984a60b3cecd395edd5b48a7575bf58e0
-Author: Jessica Smith <jessica@example.com>
-AuthorDate: Sun Apr 6 10:17:23 2008 -0700
-Commit: Scott Chacon <schacon@gmail.com>
-CommitDate: Thu Apr 9 09:19:06 2009 -0700
+	$ git log --pretty=fuller -1
+	commit 6c5e70b984a60b3cecd395edd5b48a7575bf58e0
+	Author:     Jessica Smith <jessica@example.com>
+	AuthorDate: Sun Apr 6 10:17:23 2008 -0700
+	Commit:     Scott Chacon <schacon@gmail.com>
+	CommitDate: Thu Apr 9 09:19:06 2009 -0700
 
+	   add limit to log function
 
- add limit to log function
-Limit log functionality to the first 20
-
+	   Limit log functionality to the first 20
 
 
 5.3 Správa projektu 146
 Informace Commit uvádí osobu, která patch aplikovala, a čas, kdy se tak stalo. Informace Author naproti
-tomu označuje jedince, který patch původně vytvořil, a kdy tak učinil. Může se ale stát, že záplata
+tomu označuje jedince, který patch původně vytvořil, a kdy tak učinil. 
+
+Může se ale stát, že záplata
 nebude aplikována čistě. Vaše hlavní větev se mohla příliš odchýlit od větve, z níž byla záplata
 vytvořena, nebo je záplata závislá na jiné záplatě, kterou jste ještě neaplikovali. V takovém případě
 proces git am neproběhne a Git se vás zeptá, co chcete udělat dál:
 
-$ git am 0001-seeing-if-this-helps-the-gem.patch
-Applying: seeing if this helps the gem
-error: patch failed: ticgit.gemspec:1
-error: ticgit.gemspec: patch does not apply
-Patch failed at 0001.
-When you have resolved this problem run "git am --resolved".
-If you would prefer to skip this patch, instead run "git am --skip".
-To restore the original branch and stop patching run "git am --abort".
-
+	$ git am 0001-seeing-if-this-helps-the-gem.patch 
+	Applying: seeing if this helps the gem
+	error: patch failed: ticgit.gemspec:1
+	error: ticgit.gemspec: patch does not apply
+	Patch failed at 0001.
+	When you have resolved this problem run "git am --resolved".
+	If you would prefer to skip this patch, instead run "git am --skip".
+	To restore the original branch and stop patching run "git am --abort".
 
 Tento příkaz vloží poznámku o konfliktu (conflict marker) do všech souborů, u nichž došlo k problémům,
 stejně jako u operací sloučení nebo přeskládání, při nichž došlo ke konfliktu. Problém se také
 řeší stejným způsobem. Úpravou souboru odstraňte konflikt, připravte nový soubor k zapsání a spusťte
 příkaz git am --resolved, jímž se přesunete k následující záplatě:
 
-$ (fix the file)
-$ git add ticgit.gemspec
-$ git am --resolved
-Applying: seeing if this helps the gem
-
+	$ (fix the file)
+	$ git add ticgit.gemspec 
+	$ git am --resolved
+	Applying: seeing if this helps the gem
 
 Pokud chcete, aby se Git pokusil vyřešit konflikt inteligentněji, můžete zadat parametr -3. Git se pokusí
 o třícestné sloučení. Tato možnost není nastavena jako výchozí, protože ji nelze použít v situaci,
@@ -5666,14 +5565,13 @@ kdy revize, o níž záplata říká, že je na ní založen, není obsažena ve
 vlastníte – byla-li záplata založena na veřejné revizi – počíná si parametr -3 při aplikaci kolidující
 záplaty většinou mnohem inteligentněji.
 
-$ git am -3 0001-seeing-if-this-helps-the-gem.patch
-Applying: seeing if this helps the gem
-error: patch failed: ticgit.gemspec:1
-error: ticgit.gemspec: patch does not apply
-Using index info to reconstruct a base tree...
-Falling back to patching base and 3-way merge...
-No changes -- Patch already applied.
-
+	$ git am -3 0001-seeing-if-this-helps-the-gem.patch 
+	Applying: seeing if this helps the gem
+	error: patch failed: ticgit.gemspec:1
+	error: ticgit.gemspec: patch does not apply
+	Using index info to reconstruct a base tree...
+	Falling back to patching base and 3-way merge...
+	No changes -- Patch already applied.
 
 V tomto případě jsem se pokoušel aplikovat záplatu, kterou už jsem jednou aplikoval. Bez parametru
 -3 se celá situace tváří jako konflikt.
@@ -5681,13 +5579,12 @@ V tomto případě jsem se pokoušel aplikovat záplatu, kterou už jsem jednou 
 Pokud aplikujete několik záplat z jednoho souboru mbox, můžete příkaz am spustit také v interaktivním
 režimu, který zastaví před každou záplatou, kterou najde, a zeptá se vás, zda ji chcete aplikovat:
 
-$ git am -3 -i mbox
-Commit Body is:
-
-
-seeing if this helps the gem
-
-Apply? [y]es/[n]o/[e]dit/[v]iew patch/[a]ccept all
+	$ git am -3 -i mbox
+	Commit Body is:
+	--------------------------
+	seeing if this helps the gem
+	--------------------------
+	Apply? [y]es/[n]o/[e]dit/[v]iew patch/[a]ccept all 
 
 
 5.3 Správa projektu 147
@@ -5710,7 +5607,6 @@ $ git remote add jessica git://github.com/jessica/myproject.git
 $ git fetch jessica
 $ git checkout -b rubyclient jessica/ruby-client
 
-
 Pokud vám později opět pošle e-mail, že jiná větev obsahuje další skvělou funkci, můžete tuto větev
 vyzvednout a provést její checkout, protože už máte nastaven tento repozitář jako vzdálený.
 
@@ -5730,38 +5626,36 @@ Pokud s někým nespolupracujete dlouhodobě, ale přesto od něj chcete stáhno
 můžete zadat adresu URL vzdáleného repozitáře k příkazu git pull. Příkaz provede jednorázové stažení
 a nebude ukládat URL jako referenci na vzdálený repozitář:
 
-$ git pull git://github.com/onetimeguy/project.git
-From git://github.com/onetimeguy/project
+	$ git pull git://github.com/onetimeguy/project.git
+	From git://github.com/onetimeguy/project
+	 * branch            HEAD       -> FETCH_HEAD
+	Merge made by recursive.
 
-
- * branch HEAD -> FETCH_HEAD
-Merge made by recursive.
 5.3.4 Jak zjistit provedené změny
 Nyní máte tematickou větev s prací, kterou jste obdrželi od jiného vývojáře. V tomto okamžiku můžete
 určit, jak s ní chcete naložit. V této části zopakujeme některé příkazy a podíváme se, jak je můžete
-použít, chcete-li zjistit, co přesně se stane, pokud novou práci začleníte do své hlavní větve. Často
+použít, chcete-li zjistit, co přesně se stane, pokud novou práci začleníte do své hlavní větve. 
+
+Často
 může být užitečné získat přehled o všech revizích, které jsou obsaženy v určité větvi, ale dosud nejsou
 ve vaší hlavní větvi. Revize v hlavní větvi lze vyloučit vložením parametru --not před název větve.
-
 Pokud vám například přispěvatel pošle dvě záplaty a vy vytvoříte větev s názvem contrib, do níž tyto
 záplaty aplikujete, můžete použít tento příkaz:
 
 
 5.3 Správa projektu 148
-$ git log contrib --not master
-commit 5b6235bd297351589efc4d73316f0a68d484f118
-Author: Scott Chacon <schacon@gmail.com>
-Date: Fri Oct 24 09:53:59 2008 -0700
+	$ git log contrib --not master
+	commit 5b6235bd297351589efc4d73316f0a68d484f118
+	Author: Scott Chacon <schacon@gmail.com>
+	Date:   Fri Oct 24 09:53:59 2008 -0700
 
+	    seeing if this helps the gem
 
- seeing if this helps the gem
+	commit 7482e0d16d04bea79d0dba8988cc78df655f16a0
+	Author: Scott Chacon <schacon@gmail.com>
+	Date:   Mon Oct 22 19:38:36 2008 -0700
 
-commit 7482e0d16d04bea79d0dba8988cc78df655f16a0
-Author: Scott Chacon <schacon@gmail.com>
-Date: Mon Oct 22 19:38:36 2008 -0700
-
-
- updated the gemspec to hopefully work better
+	    updated the gemspec to hopefully work better
 
 Chcete-li zjistit, jaké změny byly v jednotlivých revizích provedeny, můžete k příkazu git log přidat
 parametr -p, který ke každé revizi připojí rozdíly ve formátu diff.
@@ -5793,7 +5687,6 @@ $ git merge-base contrib master
 36c7dba2c95e6bbb78dfa822519ecfec6e1ca649
 $ git diff 36c7db
 
-
 To však není příliš pohodlný způsob, a proto Git nabízí jinou možnost, jak lze provést stejnou věc: trojtečkovou
 syntax. V kontextu příkazu diff můžete vložit tři tečky za druhou větev – získáte výpis diff
 mezi poslední revizí větve, na níž se nacházíte, a společným předkem s druhou větví:
@@ -5819,6 +5712,10 @@ a proces může pokračovat. Máme-li repozitář s prací ve dvou větvích poj
 a php_client, který vypadá jako na obrázku 5-19, a začleníme nejprve větev ruby_client a poté
 php_client, bude naše historie vypadat jako na obrázku 5-20.
 
+Obrázek 5-19. Historie s několika tematickými větvemi
+
+Obrázek 5-20. Po začlenění tematické větve
+
 Jedná se patrně o nejjednodušší pracovní postup. Je však problematický, pokud ho používáme u velkých repozitářů nebo projektů.
 
 Máte-li více vývojářů nebo větší projekt, pravděpodobně budete chtít použít přinejmenším dvoufázový
@@ -5829,6 +5726,12 @@ Pokaždé, když máte novou tematickou větev k začlenění (obrázek 5-21), z
 (obrázek 5-22). Když poté označujete vydání, posunete hlavní větev rychle vpřed do místa, kde je nyní
 větev develop stabilní (obrázek 5-23).
 
+Obrázek 5-21. Před začleněním tematické větve
+
+Obrázek 5-22. Po začlenění tematické větve
+
+Obrázek 5-23. Po vydání tematické větve
+
 Pokud někdo při tomto postupu klonuje repozitář vašeho projektu, může provést buď checkout hlavní
 větve, aby získal nejnovější stabilní verzi a udržoval ji aktuální, nebo checkout větve develop, která
 může být ještě o něco napřed. Tento koncept můžete dále rozšířit o integrační větev, v níž budete
@@ -5836,38 +5739,30 @@ veškerou práci slučovat. Teprve pokud je kód v této větvi stabilní a proj
 do větve develop. A až se větev develop ukáže v některém okamžiku jako stabilní, posunete rychle
 vpřed i svou hlavní větev.
 
-Obrázek 5-19. Historie s několika tematickými větvemi
-
 
 5.3 Správa projektu 150
-Obrázek 5-20. Po začlenění tematické větve
-
-Pracovní postupy se začleňováním velkého objemu dat
+#### Pracovní postupy se začleňováním velkého objemu dat ####
 
 Váš projekt Git má čtyři trvalé větve: master, next a pu (proposed updates, tj. návrh aktualizací) pro
 novou práci a maint pro backporty správy. Pokud přispěvatelé vytvoří novou práci, je shromažďována
 v tematických větvích v repozitáři správce podobným způsobem, jaký už jsem popisoval (viz obrázek 5-24).
-
-Obrázek 5-21. Před začleněním tematické větve
-
-
-5.3 Správa projektu 151
-Obrázek 5-22. Po začlenění tematické větve
-
-Obrázek 5-23. Po vydání tematické větve
-
 Nyní budou tematické větve vyhodnoceny, zda jsou bezpečné a mohou být aplikovány, nebo zda
 potřebují další úpravy. Jsou-li vyhodnoceny jako bezpečné, budou začleněny do větve next a ta bude
 následně odeslána do repozitáře, aby mohli všichni vyzkoušet, jak fungují tematické větve po sloučení.
 
+Obrázek 5-24. Správa komplexní série současně zpracovávaných příspěvků v tematických větvích
+
+
+5.3 Správa projektu 151
 Pokud ale tematické větve vyžadují další úpravy, budou začleněny do větve pu. Pokud se ukáže,
 že jsou tyto tematické větve naprosto stabilní, budou začleněny do hlavní větve a poté budou znovu
 sestaveny z tematických větví, které byly ve větvi next, ale ještě se nedostaly do hlavní větve.
 To znamená, že hlavní větev se téměř neustále posouvá vpřed, větev next je čas od času přeskládána
 a větev pu je přeskládávána ještě o něco častěji (viz obrázek 5-25).
 
-Byla-li tematická větev konečně začleněna do hlavní větve, může být odstraněna z repozitáře.
+Obrázek 5-25. Začlenění tematických větví s příspěvky do dlouhodobých integračních větví
 
+Byla-li tematická větev konečně začleněna do hlavní větve, může být odstraněna z repozitáře.
 Projekt Git má kromě toho větev maint, která byla odštěpena z posledního vydání a představuje záplaty
 backportované pro případ, že by bylo třeba vydat opravnou verzi. Pokud tedy klonujete repozitář Git,
 můžete stáhnout až čtyři větve, a hodnotit tak projekt na čtyřech různých úrovních vývoje. Záleží
@@ -5875,14 +5770,8 @@ na vás, do jaké hloubky chcete proniknout nebo jak chcete přispívat. A sprá
 strukturovaný pracovní postup k evaluaci nových příspěvků.
 
 
-5.3 Správa projektu 152
-Obrázek 5-24. Správa komplexní série současně zpracovávaných příspěvků v tematických větvích
-
-Obrázek 5-25. Začlenění tematických větví s příspěvky do dlouhodobých integračních větví
-
-
 5.3 Správa projektu 153
-Pracovní postupy s přeskládáním a částečným převzetím
+#### Pracovní postupy s přeskládáním a částečným převzetím ####
 
 Jiní správci dávají před začleněním práce z příspěvků přednost jejímu přeskládání nebo částečnému
 převzetí na vrchol hlavní větve, čímž udržují historii co nejlineárnější. Máte-li určitou práci v tematické
@@ -5903,16 +5792,16 @@ Obrázek 5-26. Uvažovaná historie před částečným převzetím
 
 Chcete-li do hlavní větve natáhnout revizi e43a6, můžete zadat následující příkaz:
 
-$ git cherry-pick e43a6fd3e94888d76779ad79fb568ed180e5fcdf
-Finished one cherry-pick.
-[master]: created a0a41a9: "More friendly message when locking the index fails."
-
-
- 3 files changed, 17 insertions(+), 3 deletions(-)
+	$ git cherry-pick e43a6fd3e94888d76779ad79fb568ed180e5fcdf
+	Finished one cherry-pick.
+	[master]: created a0a41a9: "More friendly message when locking the index fails."
+	 3 files changed, 17 insertions(+), 3 deletions(-)
 
 Tímto natáhnete stejnou změnu, která byla provedena revizí e43a6, avšak hodnota SHA-1 obou
 revizí se bude lišit, neboť bude rozdílné datum aplikace. Vaše historie revizí bude nyní vypadat
 jako na obrázku 5-27.
+
+Obrázek 5-27. Historie po částečném převzetí revize z tematické větve
 
 Nyní můžete tematickou větev odstranit a zahodit revize, které nehodláte natáhnout do jiné větve.
 
@@ -5923,34 +5812,28 @@ v kapitole 2. Pokud se rozhodnete podepsat značku jako správce, bude označen�
 
 
 5.3 Správa projektu 154
-$ git tag -s v1.5 -m 'my signed 1.5 tag'
-You need a passphrase to unlock the secret key for
-user: "Scott Chacon <schacon@gmail.com>"
-1024-bit DSA key, ID F721C45A, created 2009-02-09
-
-
-Obrázek 5-27. Historie po částečném převzetí revize z tematické větve
+	$ git tag -s v1.5 -m 'my signed 1.5 tag'
+	You need a passphrase to unlock the secret key for
+	user: "Scott Chacon <schacon@gmail.com>"
+	1024-bit DSA key, ID F721C45A, created 2009-02-09
 
 Pokud své značky podepisujete, můžete mít problémy s distribucí veřejného klíče PGP použitého
 k podepsání značky. Správce projektu Git vyřešil tento problém tak, že přidal svůj veřejný klíč
 jako blob do repozitáře a poté vložil značku, která ukazuje přímo na tento obsah. Pomocí příkazu
 gpg --list-keys můžete určit, jaký klíč chcete:
 
-$ gpg --list-keys
-/Users/schacon/.gnupg/pubring.gpg
-
-
-pub 1024D/F721C45A 2009-02-09 [expires: 2010-02-09]
-uid Scott Chacon <schacon@gmail.com>
-sub 2048g/45D02282 2009-02-09 [expires: 2010-02-09]
-
+	$ gpg --list-keys
+	/Users/schacon/.gnupg/pubring.gpg
+	---------------------------------
+	pub   1024D/F721C45A 2009-02-09 [expires: 2010-02-09]
+	uid                  Scott Chacon <schacon@gmail.com>
+	sub   2048g/45D02282 2009-02-09 [expires: 2010-02-09]
 
 Poté můžete klíč přímo importovat do databáze Git: vyexportujte ho a použijte příkaz git hash-object,
 který zapíše nový blob s tímto obsahem do systému Git a vrátí vám otisk SHA-1 tohoto blobu:
 
 $ gpg -a --export F721C45A | git hash-object -w --stdin
 659ef797d181633c87ec71ac3f9ba29fe5775b92
-
 
 Nyní máte obsah svého klíče v systému Git a můžete vytvořit značku, která bude ukazovat přímo
 na něj. Zadejte proto novou hodnotu SHA-1, kterou jste získali příkazem hash-object:
@@ -5976,7 +5859,6 @@ popis vztahuje:
 
 $ git describe master
 v1.6.2-rc1-20-g8c5b85c
-
 
 Díky tomu lze snímek nebo sestavení (build) vyexportovat a přiřadit mu pro člověka srozumitelný
 název. Pokud sestavujete Git ze zdrojového kódu naklonovaného z repozitáře Git, získáte po spuštění
@@ -6017,31 +5899,20 @@ od posledního vydání (pokud bylo vaše poslední vydání pojmenováno v1.0.1
 
 
 5.4 Shrnutí 156
-$ git shortlog --no-merges master --not v1.0.1
+	$ git shortlog --no-merges master --not v1.0.1
+	Chris Wanstrath (8):
+	      Add support for annotated tags to Grit::Tag
+	      Add packed-refs annotated tag support.
+	      Add Grit::Commit#to_patch
+	      Update version and History.txt
+	      Remove stray `puts`
+	      Make ls_tree ignore nils
 
-Chris Wanstrath (8):
-
- Add support for annotated tags to Grit::Tag
-
- Add packed-refs annotated tag support.
-
- Add Grit::Commit#to_patch
-
- Update version and History.txt
-
- Remove stray `puts`
-
- Make ls_tree ignore nils
-
-Tom Preston-Werner (4):
-
- fix dates in history
-
- dynamic version method
-
- Version bump to 1.0.2
-
- Regenerated gemspec for version 1.0.2
+	Tom Preston-Werner (4):
+	      fix dates in history
+	      dynamic version method
+	      Version bump to 1.0.2
+	      Regenerated gemspec for version 1.0.2
 
 Výstupem příkazu je čisté shrnutí všech revizí od v1.0.1, seskupené podle autora, kterého můžete
 přidat do e-mailu své konference.
