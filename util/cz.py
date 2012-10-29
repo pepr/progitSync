@@ -185,7 +185,7 @@ class Pass2Parser:
         # Řádek reprezentující příklad sázený jako kódový řádek
         # neproporcionálním písmem. U této aplikace je uvozen jedním tabulátorem
         # nebo 8 mezerami.
-        self.rexCode = re.compile(r'^(\t| {8})(?P<text>.*)$')
+        self.rexCode = re.compile(r'^(\t| {8}| {4})(?P<text>.*)$')
 
         # Řádek, který má být pravděpodobně změněn na příklad textového řádku.
         self.rexXCode = re.compile(r'^(?P<text>[$#].*)$')
