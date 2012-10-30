@@ -8928,8 +8928,8 @@ Nepřepisujte svou historii a nepokoušejte se ji znovu odeslat a neodesílejte 
 repozitáře Git, přes nějž chcete současně spolupracovat s kolegy používajícími Git. Subversion může
 mít pouze jednu lineární historii a opravdu není těžké uvést ho do rozpaků. Pokud pracujete v týmu,
 v němž část vývojářů používá SVN a část Git, zajistěte, aby všichni spolupracovali na serveru SVN
-
 – váš život bude jednodušší.
+
 
 8.1 Git a Subversion 218
 8.1.2 Vytvoření repozitáře
@@ -8960,14 +8960,13 @@ $ svnsync init file:///tmp/test-svn http://progit-example.googlecode.com/svn/
 
 Tím nastavíte vlastnosti synchronizace. Zdrojový kód pak naklonujete příkazem:
 
-$ svnsync sync file:///tmp/test-svn
-Committed revision 1.
-Copied properties for revision 1.
-Committed revision 2.
-Copied properties for revision 2.
-Committed revision 3.
-...
-
+	$ svnsync sync file:///tmp/test-svn
+	Committed revision 1.
+	Copied properties for revision 1.
+	Committed revision 2.
+	Copied properties for revision 2.
+	Committed revision 3.
+	...
 
 Tato operace bude trvat jen několik minut. Pokud byste se však pokoušeli zkopírovat originální repozitář
 ne do lokálního, nýbrž do jiného vzdáleného repozitáře, protáhne se proces téměř na hodinu, přestože
@@ -8980,30 +8979,24 @@ práce. Začneme příkazem git svn clone, který importuje celý repozitář Su
 repozitáře Git. Nezapomeňte, že pokud import provádíte z reálně hostovaného repozitáře Subversion,
 je třeba nahradit file:///tmp/test-svn adresou URL vašeho repozitáře Subversion:
 
-$ git svn clone file:///tmp/test-svn -T trunk -b branches -t tags
-Initialized empty Git repository in /Users/schacon/projects/testsvnsync/svn/.git/
-r1 = b4e387bc68740b5af56c2a5faf4003ae42bd135c (trunk)
-
-
-A m4/acx_pthread.m4
-A m4/stl_hash.m4
-...
+	$ git svn clone file:///tmp/test-svn -T trunk -b branches -t tags
+	Initialized empty Git repository in /Users/schacon/projects/testsvnsync/svn/.git/
+	r1 = b4e387bc68740b5af56c2a5faf4003ae42bd135c (trunk)
+	      A    m4/acx_pthread.m4
+	      A    m4/stl_hash.m4
+	...
+	r75 = d1957f3b307922124eec6314e15bcda59e3d9610 (trunk)
+	Found possible branch point: file:///tmp/test-svn/trunk => \
+	    file:///tmp/test-svn /branches/my-calc-branch, 75
+	Found branch parent: (my-calc-branch) d1957f3b307922124eec6314e15bcda59e3d9610
+	Following parent with do_switch
+	Successfully followed parent
+	r76 = 8624824ecc0badd73f40ea2f01fce51894189b01 (my-calc-branch)
+	Checked out HEAD:
+	 file:///tmp/test-svn/branches/my-calc-branch r76
 
 
 8.1 Git a Subversion 219
-r75 = d1957f3b307922124eec6314e15bcda59e3d9610 (trunk)
-Found possible branch point: file:///tmp/test-svn/trunk => \
-
-
-file:///tmp/test-svn /branches/my-calc-branch, 75
-Found branch parent: (my-calc-branch) d1957f3b307922124eec6314e15bcda59e3d9610
-Following parent with do_switch
-Successfully followed parent
-r76 = 8624824ecc0badd73f40ea2f01fce51894189b01 (my-calc-branch)
-Checked out HEAD:
-
-file:///tmp/test-svn/branches/my-calc-branch r76
-
 Na adrese URL, kterou jste zadali, tím v podstatě provedete dva příkazy: git svn init a git svn fetch.
 Proces může chvíli trvat. Testovací projekt má pouze kolem 75 revizí a základ kódu není příliš velký,
 takže bude stačit několik minut. Git však musí provést checkout každé verze jednotlivě a po jedné je
@@ -9020,17 +9013,15 @@ $ git svn clone file:///tmp/test-svn -s
 
 V tomto okamžiku byste tedy měli mít platný repozitář Git s importovanými větvemi a značkami:
 
-$
-git branch -a
+	$ git branch -a
+	* master
+	  my-calc-branch
+	  tags/2.0.2
+	  tags/release-2.0.1
+	  tags/release-2.0.2
+	  tags/release-2.0.2rc1
+	  trunk
 
-*
-master
-my-calc-branch
-tags/2.0.2
-tags/release-2.0.1
-tags/release-2.0.2
-tags/release-2.0.2rc1
-trunk
 Doplňme také, že tento nástroj odlišně přiřazuje jmenný prostor vzdálených referencí. Jestliže
 klonujete normální repozitář Git, získáte ze vzdáleného serveru všechny větve, lokálně dostupné
 pod označením origin/[větev] – jmenný prostor se přiřazuje na základě vzdáleného serveru.
@@ -9038,26 +9029,24 @@ git svn však předpokládá, že nebudete mít více vzdálených repozitářů
 na místa na vzdáleném serveru bez jmenného prostoru. Pokud si přejete zobrazit všechny své
 reference s úplným názvem, můžete použít nízkoúrovňový příkaz git show-ref:
 
-$ git show-ref
-1cbd4904d9982f386d87f88fce1c24ad7c0f0471 refs/heads/master
-aee1ecc26318164f355a883f5d99cff0c852d3c4 refs/remotes/my-calc-branch
-03d09b0e2aad427e34a6d50ff147128e76c0e0f5 refs/remotes/tags/2.0.2
-50d02cc0adc9da4319eeba0900430ba219b9c376 refs/remotes/tags/release-2.0.1
-4caaa711a50c77879a91b8b90380060f672745cb refs/remotes/tags/release-2.0.2
-1c4cb508144c513ff1214c3488abe66dcb92916f refs/remotes/tags/release-2.0.2rc1
-1cbd4904d9982f386d87f88fce1c24ad7c0f0471 refs/remotes/trunk
-
+	$ git show-ref
+	1cbd4904d9982f386d87f88fce1c24ad7c0f0471 refs/heads/master
+	aee1ecc26318164f355a883f5d99cff0c852d3c4 refs/remotes/my-calc-branch
+	03d09b0e2aad427e34a6d50ff147128e76c0e0f5 refs/remotes/tags/2.0.2
+	50d02cc0adc9da4319eeba0900430ba219b9c376 refs/remotes/tags/release-2.0.1
+	4caaa711a50c77879a91b8b90380060f672745cb refs/remotes/tags/release-2.0.2
+	1c4cb508144c513ff1214c3488abe66dcb92916f refs/remotes/tags/release-2.0.2rc1
+	1cbd4904d9982f386d87f88fce1c24ad7c0f0471 refs/remotes/trunk
 
 
 8.1 Git a Subversion 220
 Běžný repozitář Git vypadá naproti tomu spíš takto:
 
-$ git show-ref
-83e38c7a0af325a9722f2fdc56b10188806d83a1 refs/heads/master
-3e15e38c198baac84223acfc6224bb8b99ff2281 refs/remotes/gitserver/master
-0a30dd3b0c795b80212ae723640d4e5d48cabdff refs/remotes/origin/master
-25812380387fdd55f916652be4881c6f11600d6f refs/remotes/origin/testing
-
+	$ git show-ref
+	83e38c7a0af325a9722f2fdc56b10188806d83a1 refs/heads/master
+	3e15e38c198baac84223acfc6224bb8b99ff2281 refs/remotes/gitserver/master
+	0a30dd3b0c795b80212ae723640d4e5d48cabdff refs/remotes/origin/master
+	25812380387fdd55f916652be4881c6f11600d6f refs/remotes/origin/testing
 
 Máte dva vzdálené servery: první nese označení gitserver a obsahuje větev master; druhý server je
 origin, který obsahuje větve master atesting.
@@ -9072,27 +9061,23 @@ odeslat revize zpět do repozitáře a použít při tom Git jako klienta SVN. U
 a provedené změny zapíšete, budete mít revizi, která existuje lokálně v systému Git, ale neexistuje
 na serveru Subversion:
 
-$ git commit -am 'Adding git-svn instructions to the README'
-[master 97031e5] Adding git-svn instructions to the README
-1 files changed, 1 insertions(+), 1 deletions(-)
-
+	$ git commit -am 'Adding git-svn instructions to the README'
+	[master 97031e5] Adding git-svn instructions to the README
+	 1 files changed, 1 insertions(+), 1 deletions(-)
 
 Jako další krok tak chcete odeslat provedené změny do vzdáleného repozitáře. Všimněte si, jak se tím
 mění váš způsob práce v systému Subversion. Můžete zapsat několik revizí offline a poté je na server
 Subversion odeslat všechny najednou. Pro odeslání revizí na server Subversion zadejte příkaz
 git svn dcommit:
 
-$ git svn dcommit
-Committing to file:///tmp/test-svn/trunk ...
-M README.txt
-Committed r79
-
-
- M README.txt
-r79 = 938b1a547c2cc92033b74d32030e86468294a5c8 (trunk)
-No changes between current HEAD and refs/remotes/trunk
-Resetting to the latest refs/remotes/trunk
-
+	$ git svn dcommit
+	Committing to file:///tmp/test-svn/trunk ...
+	       M      README.txt
+	Committed r79
+	       M      README.txt
+	r79 = 938b1a547c2cc92033b74d32030e86468294a5c8 (trunk)
+	No changes between current HEAD and refs/remotes/trunk
+	Resetting to the latest refs/remotes/trunk
 
 Příkaz vezme všechny revize, které jste provedli na vrcholu kódu ze serveru Subversion, každou
 jednotlivě zapíše do systému Subversion a přepíše vaši lokální revizi Git tak, aby obsahovala unikátní
@@ -9103,15 +9088,14 @@ přidané git-svn-id:
 
 
 8.1 Git a Subversion 221
-$ git log -1
-commit 938b1a547c2cc92033b74d32030e86468294a5c8
-Author: schacon <schacon@4c93b258-373f-11de-be05-5f7a86268029>
-Date: Sat May 2 22:06:44 2009 +0000
+	$ git log -1
+	commit 938b1a547c2cc92033b74d32030e86468294a5c8
+	Author: schacon <schacon@4c93b258-373f-11de-be05-5f7a86268029>
+	Date:   Sat May 2 22:06:44 2009 +0000
 
+	    Adding git-svn instructions to the README
 
- Adding git-svn instructions to the README
-
- git-svn-id: file:///tmp/test-svn/trunk@79 4c93b258-373f-11de-be05-5f7a86268029
+	    git-svn-id: file:///tmp/test-svn/trunk@79 4c93b258-373f-11de-be05-5f7a86268029
 
 Všimněte si, že kontrolní součet SHA, který před zapsáním revize původně začínal kombinací znaků
 97031e5, nyní začíná 938b1a5. Chcete-li revize odeslat jak na server Git, tak na server Subversion, odešlete
@@ -9132,28 +9116,23 @@ core/git-svn line 482
 Chcete-li tuto situaci vyřešit, spusťte příkaz git svn rebase, jímž stáhnete veškeré změny na serveru,
 které ještě nemáte lokálně, a přeskládáte všechnu práci na vrchol toho, co se nachází na serveru:
 
-$ git svn rebase
-
- M README.txt
-r80 = ff829ab914e8775c7c025d741beb3d523ee30bc4 (trunk)
-First, rewinding head to replay your work on top of it...
-Applying: first user change
-
+	$ git svn rebase
+	       M      README.txt
+	r80 = ff829ab914e8775c7c025d741beb3d523ee30bc4 (trunk)
+	First, rewinding head to replay your work on top of it...
+	Applying: first user change
 
 Nyní je všechna vaše práce na vrcholu revizí, které jsou na serveru Subversion. Příkaz dcommit bude
 nyní úspěšně proveden:
 
-$ git svn dcommit
-Committing to file:///tmp/test-svn/trunk ...
-M README.txt
-Committed r81
-
-
- M README.txt
-r81 = 456cbe6337abe49154db70106d1836bc1332deed (trunk)
-No changes between current HEAD and refs/remotes/trunk
-Resetting to the latest refs/remotes/trunk
-
+	$ git svn dcommit
+	Committing to file:///tmp/test-svn/trunk ...
+	       M      README.txt
+	Committed r81
+	       M      README.txt
+	r81 = 456cbe6337abe49154db70106d1836bc1332deed (trunk)
+	No changes between current HEAD and refs/remotes/trunk
+	Resetting to the latest refs/remotes/trunk
 
 Za zmínku stojí, že na rozdíl od systému Git, který před přijetím odesílaných dat vyžaduje, abyste začlenili
 práci na serveru, kterou ještě nemáte lokálně, nástroj git svn si toto vyžádá pouze v případě, že
@@ -9162,23 +9141,20 @@ změnu provedenou v jiném souboru, příkaz dcommit bude proveden úspěšně:
 
 
 8.1 Git a Subversion 222
-$ git svn dcommit
-Committing to file:///tmp/test-svn/trunk ...
-M configure.ac
-Committed r84
-M autogen.sh
-r83 = 8aa54a74d452f82eee10076ab2584c1fc424853b (trunk)
-M configure.ac
-r84 = cdbac939211ccb18aa744e581e46563af5d962d0 (trunk)
-
-
-W: d2f23b80f67aaaa1f6f5aaef48fce3263ac71a92 and refs/remotes/trunk differ, \
-using rebase:
-:100755 100755 efa5a59965fbbb5b2b0a12890f1b351bb5493c18 \
-015e4c98c482f0fa71e4d5434338014530b37fa6 M autogen.sh
-First, rewinding head to replay your work on top of it...
-Nothing to do.
-
+	$ git svn dcommit
+	Committing to file:///tmp/test-svn/trunk ...
+	       M      configure.ac
+	Committed r84
+	       M      autogen.sh
+	r83 = 8aa54a74d452f82eee10076ab2584c1fc424853b (trunk)
+	       M      configure.ac
+	r84 = cdbac939211ccb18aa744e581e46563af5d962d0 (trunk)
+	W: d2f23b80f67aaaa1f6f5aaef48fce3263ac71a92 and refs/remotes/trunk differ, \
+	  using rebase:
+	:100755 100755 efa5a59965fbbb5b2b0a12890f1b351bb5493c18 \
+	  015e4c98c482f0fa71e4d5434338014530b37fa6 M   autogen.sh
+	First, rewinding head to replay your work on top of it...
+	Nothing to do.
 
 Tuto skutečnost je dobré mít na paměti, neboť výsledkem takového postupu je stav projektu, který
 ve chvíli vašeho odeslání neexistoval na žádném z počítačů. Jsou-li změny nekompatibilní, přestože
@@ -9191,13 +9167,11 @@ Tento příkaz byste proto měli používat ke stažení změn ze serveru Subver
 nehodláte zapsat vlastní revize. Nová data sice můžete vyzvednout i příkazem git svn fetch, avšak
 příkaz git svn rebase data nejen stáhne, ale navíc aktualizuje vaše lokální revize.
 
-$ git svn rebase
-
-M generate_descriptor_proto.sh
-r82 = bd16df9173e424c6f52c337ab6efa7f7643282f1 (trunk)
-First, rewinding head to replay your work on top of it...
-Fast-forwarded master to refs/remotes/trunk.
-
+	$ git svn rebase
+	       M      generate_descriptor_proto.sh
+	r82 = bd16df9173e424c6f52c337ab6efa7f7643282f1 (trunk)
+	First, rewinding head to replay your work on top of it...
+	Fast-forwarded master to refs/remotes/trunk.
 
 Spustíte-li čas od času příkaz git svn rebase, budete mít jistotu, že pracujete s aktuálním kódem.
 Nezapomeňte však, že když příkaz spouštíte, je třeba, abyste měli čistý pracovní adresář. Máte-li
@@ -9218,33 +9192,24 @@ revize a začlenili jste je zpět do hlavní větve. Výstup příkazu dcommit b
 
 
 8.1 Git a Subversion 223
-$ git svn dcommit
-Committing to file:///tmp/test-svn/trunk ...
-M CHANGES.txt
-Committed r85
-
-
-M CHANGES.txt
-r85 = 4bfebeec434d156c36f2bcd18f4e3d97dc3269a2 (trunk)
-No changes between current HEAD and refs/remotes/trunk
-Resetting to the latest refs/remotes/trunk
-COPYING.txt: locally modified
-INSTALL.txt: locally modified
-
-
-M COPYING.txt
-M INSTALL.txt
-
-
-Committed r86
-M INSTALL.txt
-M COPYING.txt
-
-
-r86 = 2647f6b86ccfcaad4ec58c520e369ec81f7c283c (trunk)
-No changes between current HEAD and refs/remotes/trunk
-Resetting to the latest refs/remotes/trunk
-
+	$ git svn dcommit
+	Committing to file:///tmp/test-svn/trunk ...
+	       M      CHANGES.txt
+	Committed r85
+	       M      CHANGES.txt
+	r85 = 4bfebeec434d156c36f2bcd18f4e3d97dc3269a2 (trunk)
+	No changes between current HEAD and refs/remotes/trunk
+	Resetting to the latest refs/remotes/trunk
+	COPYING.txt: locally modified
+	INSTALL.txt: locally modified
+	       M      COPYING.txt
+	       M      INSTALL.txt
+	Committed r86
+	       M      INSTALL.txt
+	       M      COPYING.txt
+	r86 = 2647f6b86ccfcaad4ec58c520e369ec81f7c283c (trunk)
+	No changes between current HEAD and refs/remotes/trunk
+	Resetting to the latest refs/remotes/trunk
 
 Příkaz dcommit na větvi se začleněnou historií bude fungovat bez problémů, pomineme-li, že při
 pohledu na historii projektu Git zjistíme, že nepřepsal žádnou z revizí, kterou jste provedli ve větvi
@@ -9263,17 +9228,14 @@ Vytvoření nové větve SVN
 
 Chcete-li vytvořit novou větev v systému Subversion, spusťte příkaz git svn branch [název větve]:
 
-$ git svn branch opera
-Copying file:///tmp/test-svn/trunk at r87 to file:///tmp/test-svn/branches/opera...
-Found possible branch point: file:///tmp/test-svn/trunk => \
-
-
-file:///tmp/test-svn/branches/opera, 87
-Found branch parent: (opera) 1f6bfe471083cbca06ac8d4176f7ad4de0d62e5f
-Following parent with do_switch
-Successfully followed parent
-r89 = 9b6fe0b90c5c9adf9165f700897518dbc54a7cbf (opera)
-
+	$ git svn branch opera
+	Copying file:///tmp/test-svn/trunk at r87 to file:///tmp/test-svn/branches/opera...
+	Found possible branch point: file:///tmp/test-svn/trunk => \
+	  file:///tmp/test-svn/branches/opera, 87
+	Found branch parent: (opera) 1f6bfe471083cbca06ac8d4176f7ad4de0d62e5f
+	Following parent with do_switch
+	Successfully followed parent
+	r89 = 9b6fe0b90c5c9adf9165f700897518dbc54a7cbf (opera)
 
 Příkaz je ekvivalentní s příkazem svn copy trunk branches/opera v systému Subversion a pracuje
 na serveru Subversion. Měli bychom také dodat, že příkaz neprovede automaticky checkout dané
@@ -9299,7 +9261,6 @@ příkazem git merge. Ve zprávě k revizi však budete muset zadat její popis 
 větev opera“).
 
 Nezapomeňte, že přestože k operaci používáte příkaz git merge a sloučení bude pravděpodobně
-
 o mnoho snazší, než by bylo v systému Subversion (Git automaticky vyhledá vhodnou základu
 pro sloučení), nejedná se o standardní příkaz merge systému Git. Tato data budete muset odeslat
 zpět na server Subversion, který nedokáže pracovat s revizí sledující více než jednoho rodiče.
@@ -9313,29 +9274,32 @@ předejít, Subversion nedokáže tyto informace uchovávat. Dokud tedy budete p
 vždy se budete muset s tímto jeho nedostatkem vyrovnat. Chcete-li se vyhnout možným problémům,
 smažte lokální větev (v našem případě opera) hned poté, co jste ji začlenili do kmenového adresáře
 (trunk).
+
 8.1.9 Příkazy systému Subversion
 Sada nástrojů git svn dává uživateli do ruky celou řadu příkazů, jež jsou svou funkcí podobné příkazům
 v systému Subversion a uživateli tím usnadňují přechod do systému Git. Na tomto místě proto
 uvedu pár příkazů, které jsou podobné jako v systému Subversion.
 
-Historie ve stylu SVN
+#### Historie ve stylu SVN ####
 
 Jestliže jste zvyklí na systém Subversion a chcete historii procházet ve stylu výstupu SVN, můžete
 použít příkaz git svn log. Historie revizí se zobrazí ve formátování SVN:
 
-$ git svn log
+	$ git svn log
+	------------------------------------------------------------------------
+	r87 | schacon | 2009-05-02 16:07:37 -0700 (Sat, 02 May 2009) | 2 lines
 
-r87 | schacon | 2009-05-02 16:07:37 -0700 (Sat, 02 May 2009) | 2 lines
+	autogen change
 
-autogen change
+	------------------------------------------------------------------------
+	r86 | schacon | 2009-05-02 16:00:21 -0700 (Sat, 02 May 2009) | 2 lines
 
-r86 | schacon | 2009-05-02 16:00:21 -0700 (Sat, 02 May 2009) | 2 lines
+	Merge branch 'experiment'
 
-Merge branch ‚experiment‘
-
-r85 | schacon | 2009-05-02 16:00:09 -0700 (Sat, 02 May 2009) | 2 lines
-
-updated the changelog
+	------------------------------------------------------------------------
+	r85 | schacon | 2009-05-02 16:00:09 -0700 (Sat, 02 May 2009) | 2 lines
+	
+	updated the changelog
 
 
 8.1 Git a Subversion 225
@@ -9346,49 +9310,48 @@ které jste nezapsali příkazem dcommit. Stejně tak nezobrazuje revize, které
 Subversion od vašeho posledního připojení. Jedná se tak spíše o poslední známý stav revizí na serveru
 Subversion.
 
-Anotace SVN
+#### Anotace SVN ####
 
 Příkaz git svn log simuluje offline příkaz svn log, ekvivalentem příkazu svn annotate je ale
 git svn blame [SOUBOR]. Jeho výstup vypadá takto:
 
-$ git svn blame README.txt
-
- 2 temporal Protocol Buffers - Google's data interchange format
-2 temporal Copyright 2008 Google Inc.
-2 temporal http://code.google.com/apis/protocolbuffers/
-2 temporal
-22 temporal C++ Installation - Unix
-22 temporal =======================
-2 temporal
-79 schacon Committing in git-svn.
-78 schacon
-2 temporal To build and install the C++ Protocol Buffer runtime and the Protocol
-2 temporal Buffer compiler (protoc) execute the following:
-2 temporal
+	$ git svn blame README.txt 
+	 2   temporal Protocol Buffers - Google's data interchange format
+	 2   temporal Copyright 2008 Google Inc.
+	 2   temporal http://code.google.com/apis/protocolbuffers/
+	 2   temporal 
+	22   temporal C++ Installation - Unix
+	22   temporal =======================
+	 2   temporal 
+	79    schacon Committing in git-svn.
+	78    schacon 
+	 2   temporal To build and install the C++ Protocol Buffer runtime and the Protocol
+	 2   temporal Buffer compiler (protoc) execute the following:
+	 2   temporal 
 
 Ani tento příkaz nezobrazuje revize zapsané lokálně v systému Git a revize odeslané na server Subversion
 od posledního připojení.
 
-Informace o serveru SVN
+#### Informace o serveru SVN ####
 
 Stejné informace, jaké poskytuje příkaz svn info, získáte příkazem git svn info:
 
-$ git svn info
-Path: .
-URL: https://schacon-test.googlecode.com/svn/trunk
-Repository Root: https://schacon-test.googlecode.com/svn
-Repository UUID: 4c93b258-373f-11de-be05-5f7a86268029
-Revision: 87
-Node Kind: directory
-Schedule: normal
-Last Changed Author: schacon
-Last Changed Rev: 87
-Last Changed Date: 2009-05-02 16:07:37 -0700 (Sat, 02 May 2009)
+	$ git svn info
+	Path: .
+	URL: https://schacon-test.googlecode.com/svn/trunk
+	Repository Root: https://schacon-test.googlecode.com/svn
+	Repository UUID: 4c93b258-373f-11de-be05-5f7a86268029
+	Revision: 87
+	Node Kind: directory
+	Schedule: normal
+	Last Changed Author: schacon
+	Last Changed Rev: 87
+	Last Changed Date: 2009-05-02 16:07:37 -0700 (Sat, 02 May 2009)
 
 Stejně jako v případě příkazů blame a log pracuje i tento příkaz offline a zobrazuje stav v okamžiku,
 kdy jste naposledy komunikovali se serverem Subversion.
 
-Ignorování souborů, které ignoruje Subversion
+#### Ignorování souborů, které ignoruje Subversion ####
 
 Jestliže naklonujete repozitář Subversion s nastavenými vlastnostmi svn:ignore, pravděpodobně budete
 chtít nastavit také odpovídající soubory .gitignore, abyste omylem nezapsali nežádoucí soubory. Nástroj
@@ -9405,8 +9368,8 @@ $ git svn show-ignore > .git/info/exclude
 
 Díky tomu si nemusíte projekt znečišťovat soubory .gitignore. Tuto možnost oceníte, jste-li jediným
 uživatelem systému Git v týmu používajícím Subversion a vaši kolegové nestojí ve svém projektu
-
 o soubory .gitignore.
+
 8.1.10 Git-Svn: shrnutí
 Nástroje git svn využijete, jestliže chcete pozvolna přejít ze systému Subversion na systém Git nebo
 pokud pracujete ve vývojovém prostředí, v němž je z nějakého důvodu nutné používat server Subversion.
@@ -9423,6 +9386,7 @@ k urychlení klonování pro nové vývojáře, ale neodesílejte na něj nic, c
 git-svn-id. Možná by nebylo od věci ani vytvořit zásuvný modul pre-receive, který by
 kontroloval všechny zprávy k revizím, zda obsahují git-svn-id, a odmítl by všechna
 odeslání, která obsahují revize bez něj.
+
 Budete-li dodržovat tato pravidla, bude práce se serverem Subversion snesitelnější. Stále však platí,
 že pokud máte možnost přejít na skutečný server Git, získáte vy i váš tým daleko více.
 
@@ -9436,10 +9400,10 @@ vlastní.
 8.2.1
 Import
 Nyní se naučíte, jak importovat data ze dvou větších, profesionálně používaných systémů SCM
-
 – Subversion a Perforce. Oba tyto systémy jsem zvolil proto, že podle mých informací přechází na Git
 nejvíce uživatelů právě z nich, a také proto, že Git obsahuje vysoce kvalitní nástroje právě pro oba
 tyto systémy.
+
 8.2.2
 Subversion
 Pokud jste si přečetli předchozí část o používání nástrojů git svn, můžete získané informace použít.
@@ -9456,13 +9420,12 @@ na autory Git. Vytvořte soubor users.txt, který bude toto mapování obsahovat
 
 
 8.2 Přechod na systém Git 227
-schacon = Scott Chacon <schacon@geemail.com>
-selse = Someo Nelse <selse@geemail.com>
-
+	schacon = Scott Chacon <schacon@geemail.com>
+	selse = Someo Nelse <selse@geemail.com>
 
 Chcete-li získat seznam jmen autorů používaných v SVN, spusťte tento příkaz:
 
-$ svn log --xml | grep author | sort -u | perl -pe 's/.>(.?)<./$1 = /'
+	$ svn log --xml | grep author | sort -u | perl -pe 's/.>(.?)<./$1 = /'
 
 Vytvoříte tím log ve formátu XML. Můžete v něm vyhledávat autory, vytvořit si vlastní seznam a XML
 zase vyjmout. (Tento příkaz pochopitelně funguje pouze na počítačích, v nichž je nainstalován grep,
@@ -9474,42 +9437,38 @@ Nástroji git svn můžete také zadat, aby ignoroval metadata, která systém S
 importuje: zadejte parametr --no-metadata k příkazu clone nebo init. Váš příkaz import pak bude mít
 tuto podobu:
 
-$ git-svn clone http://my-project.googlecode.com/svn/ \
---authors-file=users.txt --no-metadata -s my_project
-
+	$ git-svn clone http://my-project.googlecode.com/svn/ \
+	      --authors-file=users.txt --no-metadata -s my_project
 
 Import ze systému Subversion v adresáři my_project by měl nyní vypadat o něco lépe. Revize už nebudou
 mít tuto podobu:
 
-commit 37efa680e8473b615de980fa935944215428a35a
-Author: schacon <schacon@4c93b258-373f-11de-be05-5f7a86268029>
-Date: Sun May 3 00:12:22 2009 +0000
+	commit 37efa680e8473b615de980fa935944215428a35a
+	Author: schacon <schacon@4c93b258-373f-11de-be05-5f7a86268029>
+	Date:   Sun May 3 00:12:22 2009 +0000
 
+	    fixed install - go to trunk
 
- fixed install - go to trunk
+	    git-svn-id: https://my-project.googlecode.com/svn/trunk@94 4c93b258-373f-11de-
+	    be05-5f7a86268029
+they look like this:
 
- git-svn-id: https://my-project.googlecode.com/svn/trunk@94 4c93b258-373f-11debe05-5f7a86268029
+	commit 03a8785f44c8ea5cdb0e8834b7c8e6c469be2ff2
+	Author: Scott Chacon <schacon@geemail.com>
+	Date:   Sun May 3 00:12:22 2009 +0000
 
-Dostanou tuto podobu:
-
-commit 03a8785f44c8ea5cdb0e8834b7c8e6c469be2ff2
-Author: Scott Chacon <schacon@geemail.com>
-Date: Sun May 3 00:12:22 2009 +0000
-
-
- fixed install - go to trunk
+	    fixed install - go to trunk
 
 Nejenže teď pole Author vypadá podstatně lépe, ale navíc jste se zbavili i záznamu git-svn-id.
+
 Po importu bude nutné data trochu vyčistit. Zaprvé je nutné vyčistit nejasné reference, které vytvořil
 příkaz git svn. Nejprve přesunete značky tak, aby se z nich staly skutečné značky, a ne podivné vzdálené
 větve. V dalším kroku přesunete zbytek větví a uděláte z nich větve lokální.
-
 
 Skutečné značky Git vytvoříte takto:
 
 $ cp -Rf .git/refs/remotes/tags/* .git/refs/tags/
 $ rm -Rf .git/refs/remotes/tags
-
 
 Kombinací těchto příkazů vezmete reference, které byly vzdálenými větvemi a začínaly tag/, a uděláte
 z nich skutečné (prosté) značky.
@@ -9520,7 +9479,6 @@ Ze zbytku referencí vytvořte v repozitáři refs/remotes lokální větve:
 
 $ cp -Rf .git/refs/remotes/* .git/refs/heads/
 $ rm -Rf .git/refs/remotes
-
 
 Všechny staré větve jsou nyní skutečnými větvemi Git a všechny staré značky jsou nyní skutečnými
 značkami Git. Poslední věcí, která ještě zbývá, je přidat nový server Git jako vzdálený repozitář a odeslat
@@ -9535,87 +9493,78 @@ Dalším systémem, z nějž budeme importovat, bude Perforce. Také importér P
 systémem Git, avšak pouze v části contrib zdrojového kódu. Není standardně dostupný jako git svn.
 Abyste ho mohli spustit, budete muset stáhnout zdrojový kód systému Git ze serveru git.kernel.org:
 
-$ git clone git://git.kernel.org/pub/scm/git/git.git
-$ cd git/contrib/fast-import
-
+	$ git clone git://git.kernel.org/pub/scm/git/git.git
+	$ cd git/contrib/fast-import
 
 V adresáři fast-import byste měli najít spustitelný skript napsaný v jazyce Python pojmenovaný git-p4.
 Aby vám import fungoval, musíte mít v počítači nainstalován Python a nástroj p4. Budete chtít například
 importovat projekt Jam z veřejného úložiště Perforce Public Depot. K nastavení svého klienta
 budete muset exportovat proměnnou prostředí P4PORT, která bude ukazovat na depot Perforce:
 
-$ export P4PORT=public.perforce.com:1666
+	$ export P4PORT=public.perforce.com:1666
 
 Spusťte příkaz git-p4 clone, jímž importujete projekt Jam ze serveru Perforce. K příkazu zadejte depot
 a cestu k projektu, kromě toho také cestu, kam chcete projekt importovat:
 
-$ git-p4 clone //public/jam/src@all /opt/p4import
-Importing from //public/jam/src@all into /opt/p4import
-Reinitialized existing Git repository in /opt/p4import/.git/
-Import destination: refs/remotes/p4/master
-Importing revision 4409 (100%)
-
+	$ git-p4 clone //public/jam/src@all /opt/p4import
+	Importing from //public/jam/src@all into /opt/p4import
+	Reinitialized existing Git repository in /opt/p4import/.git/
+	Import destination: refs/remotes/p4/master
+	Importing revision 4409 (100%)
 
 Přejdete-li do adresáře /opt/p4import a spustíte příkaz git log, uvidíte, co jste importovali:
 
-$ git log -2
-commit 1fd4ec126171790efd2db83548b85b1bbbc07dc2
-Author: Perforce staff <support@perforce.com>
-Date: Thu Aug 19 10:18:45 2004 -0800
+	$ git log -2
+	commit 1fd4ec126171790efd2db83548b85b1bbbc07dc2
+	Author: Perforce staff <support@perforce.com>
+	Date:   Thu Aug 19 10:18:45 2004 -0800
 
+	    Drop 'rc3' moniker of jam-2.5.  Folded rc2 and rc3 RELNOTES into
+	    the main part of the document.  Built new tar/zip balls.
 
- Drop 'rc3' moniker of jam-2.5. Folded rc2 and rc3 RELNOTES into
-the main part of the document. Built new tar/zip balls.
+	    Only 16 months later.
 
- Only 16 months later.
+	    [git-p4: depot-paths = "//public/jam/src/": change = 4409]
 
- [git-p4: depot-paths = "//public/jam/src/": change = 4409]
+	commit ca8870db541a23ed867f38847eda65bf4363371d
+	Author: Richard Geiger <rmg@perforce.com>
+	Date:   Tue Apr 22 20:51:34 2003 -0800
+
+	    Update derived jamgram.c
+
+	    [git-p4: depot-paths = "//public/jam/src/": change = 3108]
 
 
 8.2 Přechod na systém Git 229
-commit ca8870db541a23ed867f38847eda65bf4363371d
-Author: Richard Geiger <rmg@perforce.com>
-Date: Tue Apr 22 20:51:34 2003 -0800
-
-
- Update derived jamgram.c
-
- [git-p4: depot-paths = "//public/jam/src/": change = 3108]
-
 V každé revizi si můžete všimnout identifikátoru git-p4. Je dobré ponechat tu identifikátor pro případ,
 že budete někdy v budoucnu potřebovat odkázat na číslo změny Perforce. Pokud ale chcete identifikátor
 přesto odstranit, teď, dokud jste nezačali pracovat na novém repozitáři, je ta správná chvíle.
 K odstranění všech řetězců identifikátoru najednou můžete použít příkaz git filter-branch:
 
-$ git filter-branch --msg-filter '
-
- sed -e "/^\[git-p4:/d"
-'
-Rewrite 1fd4ec126171790efd2db83548b85b1bbbc07dc2 (123/123)
-Ref 'refs/heads/master' was rewritten
-
+	$ git filter-branch --msg-filter '
+	        sed -e "/^\[git-p4:/d"
+	'
+	Rewrite 1fd4ec126171790efd2db83548b85b1bbbc07dc2 (123/123)
+	Ref 'refs/heads/master' was rewritten
 
 Spustíte-li příkaz git log, uvidíte, že se změnily všechny kontrolní součty revizí SHA-1, zato všechny
-
 řetězce git-p4 ze zpráv k revizím zmizely:
 
-$ git log -2
-commit 10a16d60cffca14d454a15c6164378f4082bc5b0
-Author: Perforce staff <support@perforce.com>
-Date: Thu Aug 19 10:18:45 2004 -0800
+	$ git log -2
+	commit 10a16d60cffca14d454a15c6164378f4082bc5b0
+	Author: Perforce staff <support@perforce.com>
+	Date:   Thu Aug 19 10:18:45 2004 -0800
 
+	    Drop 'rc3' moniker of jam-2.5.  Folded rc2 and rc3 RELNOTES into
+	    the main part of the document.  Built new tar/zip balls.
 
- Drop 'rc3' moniker of jam-2.5. Folded rc2 and rc3 RELNOTES into
-the main part of the document. Built new tar/zip balls.
+	    Only 16 months later.
 
- Only 16 months later.
+	commit 2b6c6db311dd76c34c66ec1c40a49405e6b527b2
+	Author: Richard Geiger <rmg@perforce.com>
+	Date:   Tue Apr 22 20:51:34 2003 -0800
 
-commit 2b6c6db311dd76c34c66ec1c40a49405e6b527b2
-Author: Richard Geiger <rmg@perforce.com>
-Date: Tue Apr 22 20:51:34 2003 -0800
-
-
- Update derived jamgram.c
+	    Update derived jamgram.c
 
 Váš import je připraven k odeslání na nový server Git.
 
@@ -9643,7 +9592,6 @@ back_2009_01_14
 back_2009_02_03
 current
 
-
 Chcete-li importovat adresář Git, budeme se muset podívat na to, jak Git ukládá svá data. Jak si možná
 vzpomínáte, říkali jsme, že Git je v podstatě seznam odkazů na objekty revizí, které ukazují na určitý
 snímek obsahu. Jediné, co tedy musíte udělat, je sdělit příkazu fast-import, co je obsahem snímků,
@@ -9660,21 +9608,19 @@ Na začátku přejdete do cílového adresáře a identifikujete všechny podadr
 představovat jeden snímek, který chcete importovat jako revizi. Přejdete do každého podadresáře
 a zadáte příkazy potřebné k jeho exportu. Základní smyčka bude mít tuto podobu:
 
-last_mark = nil
+	last_mark = nil
 
-# loop through the directories
-Dir.chdir(ARGV[0]) do
-Dir.glob("*").each do |dir|
-next if File.file?(dir)
+	# loop through the directories
+	Dir.chdir(ARGV[0]) do
+	  Dir.glob("*").each do |dir|
+	    next if File.file?(dir)
 
-
- # move into the target directory
-Dir.chdir(dir) do
-last_mark = print_export(dir, last_mark)
-end
-end
-end
-
+	    # move into the target directory
+	    Dir.chdir(dir) do 
+	      last_mark = print_export(dir, last_mark)
+	    end
+	  end
+	end
 
 V každém adresáři spustíte soubor print_export, který vezme manifest a známku předchozího snímku
 a poskytne manifest a označovač tohoto snímku. Tímto způsobem je lze řádně spojit. „Označovač“
@@ -9683,46 +9629,37 @@ jednoznačně přiřadíte revizi a lze ho použít k odkazování na tuto reviz
 krokem, který tak při metodě se souborem print_export uděláte, bude vygenerování označovače
 na základě názvu adresáře:
 
-mark = convert_dir_to_mark(dir)
+	mark = convert_dir_to_mark(dir)
 
 Provedete to tak, že vytvoříte skupinu adresářů a jako označovač použijete hodnotu indexu, neboť
 označovač musí být celé číslo. Celý postup vypadá takto:
 
 
 8.2 Přechod na systém Git 231
-$marks = []
-def convert_dir_to_mark(dir)
-if !$marks.include?(dir)
-
-
- $marks << dir
-end
-($marks.index(dir) + 1).to_s
-
-
-end
+	$marks = []
+	def convert_dir_to_mark(dir)
+	  if !$marks.include?(dir)
+	    $marks << dir
+	  end
+	  ($marks.index(dir) + 1).to_s
+	end
 
 Nyní jste označili revizi celým číslem a zbývá stanovit datum pro metadata revize. Protože je datum
 obsaženo v názvu adresáře, lze ho vyčíst odtud. Dalším řádkem v souboru print_export bude
 
-date = convert_dir_to_date(dir)
+	date = convert_dir_to_date(dir)
 
 kde convert_dir_to_date je definováno jako:
 
-def convert_dir_to_date(dir)
-if dir == 'current'
-return Time.now().to_i
-
-
- else
-dir = dir.gsub('back_', '')
-(year, month, day) = dir.split('_')
-return Time.local(year, month, day).to_i
-
-
- end
-end
-
+	def convert_dir_to_date(dir)
+	  if dir == 'current'
+	    return Time.now().to_i
+	  else
+	    dir = dir.gsub('back_', '')
+	    (year, month, day) = dir.split('_')
+	    return Time.local(year, month, day).to_i
+	  end
+	end
 
 Tím dostanete celé číslo pro data každého adresáře. Posledními metadaty, jež budete pro všechny revize
 potřebovat, jsou informace o autorovi revize, které zadáte v globální proměnné:
@@ -9731,29 +9668,27 @@ $author = 'Scott Chacon <schacon@example.com>'
 
 Nyní je už vše připraveno k vygenerování dat revizí pro váš importér. Úvodní informace sděluje, že
 definujete objekt revize a na jaké větvi se nachází. Následuje vygenerovaný označovač, informace
-
 o autorovi revize a zpráva k revizi, po ní následuje eventuální předchozí revize. Kód má tuto podobu:
-# print the import information
-puts 'commit refs/heads/master'
-puts 'mark :' + mark
-puts "committer #{$author} #{date} -0700"
-export_data('imported from ' + dir)
-puts 'from :' + last_mark if last_mark
 
+	# print the import information
+	puts 'commit refs/heads/master'
+	puts 'mark :' + mark
+	puts "committer #{$author} #{date} -0700"
+	export_data('imported from ' + dir)
+	puts 'from :' + last_mark if last_mark
 
 Časové pásmo definujete napevno (--0700), protože je to jednoduché. Pokud importujete z jiného
 systému, musíte zadat časové pásmo jako posun. Zpráva k revizi musí být ve speciálním formátu:
 
-data (size)\n(contents)
+	data (size)\n(contents)
 
 Tento formát tedy obsahuje slovo data, velikost načítaných dat (size), nový řádek a konečně data samotná
 (contents). Protože budete stejný formát potřebovat i později, k určení obsahu souboru vytvoříte
 pomocnou metodu – export_data:
 
-def export_data(string)
-print "data #{string.size}\n#{string}"
-end
-
+	def export_data(string)
+	  print "data #{string.size}\n#{string}"
+	end
 
 
 8.2 Přechod na systém Git 232
@@ -9761,15 +9696,11 @@ Teď už zbývá jen určit obsah souborů všech snímků. To bude snadné, pro
 adresáři. Zadejte příkaz deleteall a k němu přidejte obsah každého souboru v adresáři. Git pak odpovídajícím
 způsobem nahraje všechny snímky:
 
-puts 'deleteall'
-
-Dir.glob("**/*").each do |file|
-
- next if !File.file?(file)
-
- inline_data(file)
-
-end
+	puts 'deleteall'
+	Dir.glob("**/*").each do |file|
+	  next if !File.file?(file)
+	  inline_data(file)
+	end
 
 Poznámka: Vzhledem k tomu, že mnoho systémů chápe revize jako změny od jednoho zapsání k druhému,
 přijímá fast-import také příkazy s každým zapsáním a zjišťuje, které soubory byly přidány, odstraněny
@@ -9780,100 +9711,84 @@ stránku fast-import, kde najdete podrobnosti o tom, jak zadat data tímto způs
 
 Formát pro výpis obsahu nového souboru nebo určení změněného souboru s novým obsahem je následující:
 
-
-M 644 inline path/to/file
-data (size)
-(file contents)
-
+	M 644 inline path/to/file
+	data (size)
+	(file contents)
 
 644 je v tomto případě režim (jde-li o spustitelné soubory, budete je muset vyhledat a zadat režim 755)
 a výraz inline říká, že obsah uvedete bezprostředně po tomto řádku. Metoda inline_data má tuto
 podobu:
 
-def inline_data(file, code = 'M', mode = '644')
-
- content = File.read(file)
-
- puts "#{code} #{mode} inline #{file}"
-
- export_data(content)
-
-end
+	def inline_data(file, code = 'M', mode = '644')
+	  content = File.read(file)
+	  puts "#{code} #{mode} inline #{file}"
+	  export_data(content)
+	end
 
 Znovu tu využijete metodu export_data, kterou jste aplikovali před chvílí. Jedná se totiž o stejný
 způsob, jakým jste specifikovali data zprávy k revizi.
 
 Poslední věcí, kterou musíte udělat, je vrátit aktuální označovač, aby mohl být zadán do příští iterace:
 
-return mark
+	return mark
 
 A to je celé. Spustíte-li tento skript, získáte obsah v následující podobě:
 
-$ ruby import.rb /opt/import_from
-commit refs/heads/master
-mark :1
-committer Scott Chacon <schacon@geemail.com> 1230883200 -0700
-data 29
-imported from back_2009_01_02deleteall
-M 644 inline file.rb
-
+	$ ruby import.rb /opt/import_from 
+	commit refs/heads/master
+	mark :1
+	committer Scott Chacon <schacon@geemail.com> 1230883200 -0700
+	data 29
+	imported from back_2009_01_02deleteall
+	M 644 inline file.rb
+	data 12
+	version two
+	commit refs/heads/master
+	mark :2
+	committer Scott Chacon <schacon@geemail.com> 1231056000 -0700
+	data 29
+	imported from back_2009_01_04from :1
+	deleteall
+	M 644 inline file.rb
+	data 14
+	version three
+	M 644 inline new.rb
+	data 16
+	new version one
+	(...)
 
 
 8.2 Přechod na systém Git 233
-data 12
-version two
-commit refs/heads/master
-mark :2
-committer Scott Chacon <schacon@geemail.com> 1231056000 -0700
-data 29
-imported from back_2009_01_04from :1
-deleteall
-M 644 inline file.rb
-data 14
-version three
-M 644 inline new.rb
-data 16
-new version one
-(...)
-
-
 Pro spuštění importéru přesměrujte tento výstup do příkazu git fast-import. Příkaz spouštějte
 v adresáři Gitu, do nějž chcete data importovat. Můžete vytvořit nový adresář a spustit v něm příkaz
 git init, jímž si vytvoříte nový výchozí bod. Poté spusťte svůj skript:
 
-$ git init
-Initialized empty Git repository in /opt/import_to/.git/
-$ ruby import.rb /opt/import_from | git fast-import
-git-fast-import statistics:
-
-
-Alloc'd objects: 5000
-
-Total objects: 18 ( 1 duplicates )
-blobs : 7 ( 1 duplicates 0 deltas)
-trees : 6 ( 0 duplicates 1 deltas)
-commits: 5 ( 0 duplicates 0 deltas)
-tags : 0 ( 0 duplicates 0 deltas)
-
-
-Total branches: 1 ( 1 loads )
-marks: 1024 ( 5 unique )
-atoms: 3
-
-
-Memory total: 2255 KiB
-pools: 2098 KiB
-objects: 156 KiB
-
-
-pack_report: getpagesize() = 4096
-pack_report: core.packedGitWindowSize = 33554432
-pack_report: core.packedGitLimit = 268435456
-pack_report: pack_used_ctr = 9
-pack_report: pack_mmap_calls = 5
-pack_report: pack_open_windows = 1 / 1
-pack_report: pack_mapped = 1356 / 1356
-
+	$ git init
+	Initialized empty Git repository in /opt/import_to/.git/
+	$ ruby import.rb /opt/import_from | git fast-import
+	git-fast-import statistics:
+	---------------------------------------------------------------------
+	Alloc'd objects:       5000
+	Total objects:           18 (         1 duplicates                  )
+	      blobs  :            7 (         1 duplicates          0 deltas)
+	      trees  :            6 (         0 duplicates          1 deltas)
+	      commits:            5 (         0 duplicates          0 deltas)
+	      tags   :            0 (         0 duplicates          0 deltas)
+	Total branches:           1 (         1 loads     )
+	      marks:           1024 (         5 unique    )
+	      atoms:              3
+	Memory total:          2255 KiB
+	       pools:          2098 KiB
+	     objects:           156 KiB
+	---------------------------------------------------------------------
+	pack_report: getpagesize()            =       4096
+	pack_report: core.packedGitWindowSize =   33554432
+	pack_report: core.packedGitLimit      =  268435456
+	pack_report: pack_used_ctr            =          9
+	pack_report: pack_mmap_calls          =          5
+	pack_report: pack_open_windows        =          1 /          1
+	pack_report: pack_mapped              =       1356 /       1356
+	---------------------------------------------------------------------
 
 Proběhne-li proces úspěšně, podá vám obsáhlou statistiku o tom, co bylo provedeno. V tomto případě
 jsme importovali celkem 18 objektů 5 revizí do 1 větve. Nyní si můžete nechat příkazem git log
@@ -9881,31 +9796,28 @@ zobrazit svoji novou historii:
 
 
 8.3 Shrnutí 234
-$ git log -2
-commit 10bfe7d22ce15ee25b60a824c8982157ca593d41
-Author: Scott Chacon <schacon@example.com>
-Date: Sun May 3 12:57:39 2009 -0700
+	$ git log -2
+	commit 10bfe7d22ce15ee25b60a824c8982157ca593d41
+	Author: Scott Chacon <schacon@example.com>
+	Date:   Sun May 3 12:57:39 2009 -0700
 
+	    imported from current
 
- imported from current
+	commit 7e519590de754d079dd73b44d695a42c9d2df452
+	Author: Scott Chacon <schacon@example.com>
+	Date:   Tue Feb 3 01:00:00 2009 -0700
 
-commit 7e519590de754d079dd73b44d695a42c9d2df452
-Author: Scott Chacon <schacon@example.com>
-Date: Tue Feb 3 01:00:00 2009 -0700
-
-
- imported from back_2009_02_03
+	    imported from back_2009_02_03
 
 A máme to tu — krásný, čistý repozitář Git. Měli bychom také dodat, že nejsou načtena žádná data,
 zatím neproběhl checkout žádných souborů do pracovního adresáře. Chcete-li ho provést, musíte větev
 resetovat a určit, kde je nyní hlavní větev:
 
-$ ls
-$ git reset --hard master
-HEAD is now at 10bfe7d imported from current
-$ ls
-file.rb lib
-
+	$ ls
+	$ git reset --hard master
+	HEAD is now at 10bfe7d imported from current
+	$ ls
+	file.rb  lib
 
 Nástroj fast-import vám nabízí ještě spoustu dalších možností – nastavení různých režimů, práci
 s binárními daty, manipulaci s několika větvemi a jejich slučování, značky, ukazatele postupu atd.
