@@ -52,7 +52,7 @@ def first_pass(fname, aux_dir):
     rexObsah = re.compile(r'^\u2014\s+(?P<title>Obsah.*?)(\s+(?P<pageno>\d+)\s*)$')
     rexKapitola = re.compile(r'^\d+\.\s+Kapitola\s+\d+\s*$')
 
-    with open(os.path.join(aux_dir, 'czTOC.txt'), 'w', encoding='utf-8') as ftoc,       \
+    with open(os.path.join(aux_dir, 'czTOC1.txt'), 'w', encoding='utf-8') as ftoc,       \
          open(os.path.join(aux_dir, 'PageHeaders.txt'), 'w', encoding='utf-8') as fph,  \
          open(os.path.join(aux_dir, 'ignored.txt'), 'w', encoding='utf-8') as fignored, \
          open(os.path.join(aux_dir, 'pass1.txt'), 'w', encoding='utf-8') as fout,       \
