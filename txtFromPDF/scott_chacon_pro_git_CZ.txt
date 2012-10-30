@@ -7553,7 +7553,6 @@ adresy:
 $ git config --global user.name "John Doe"
 $ git config --global user.email johndoe@example.com
 
-
 Nyní se podíváme na pár dalších zajímavých možností, jež můžete tímto způsobem nastavit, a přizpůsobit
 tak systém Git svým individuálním potřebám.
 
@@ -7564,7 +7563,9 @@ obsahující hodnoty pro každého uživatele v systému a všechny jejich repoz
 --system do nástroje git config, bude Git načítat a zapisovat pouze do tohoto souboru.
 
 Dalším místem, kde Git vyhledává, je soubor ~/.gitconfig, který je specifický pro každého uživatele.
-Git bude načítat a zapisovat výhradně do tohoto souboru, jestliže zadáte parametr --global. Nakonec
+Git bude načítat a zapisovat výhradně do tohoto souboru, jestliže zadáte parametr --global.
+
+Nakonec
 vyhledává Git konfigurační hodnoty v konfiguračním souboru v adresáři Git (.git/config) v právě
 používaném repozitáři. Tyto hodnoty platí pouze pro tento konkrétní repozitář. Každá další úroveň
 přepisuje hodnoty z předchozí úrovně, a tak např. hodnoty v souboru .git/config mají přednost
@@ -7586,7 +7587,7 @@ podrobností.
 
 
 7.1 Konfigurace systému Git 190
-core.editor
+#### core.editor ####
 
 Git používá k vytváření a editaci zpráv k revizím a značkám standardně textový editor, který nastavíte
 jako výchozí, nebo použije editor Vi. Chcete-li změnit výchozí hodnotu, použijte nastavení core.editor:
@@ -7596,48 +7597,48 @@ $ git config --global core.editor emacs
 Nyní už nezáleží na tom, jaký editor máte v shellu nastaven jako výchozí, Git bude k editaci zpráv
 spouštět Emacs.
 
-commit.template
+#### commit.template ####
 
 Nastavíte-li tuto hodnotu na konkrétní umístění ve svém systému, Git použije tento soubor jako výchozí
 zprávu pro revize. Řekněme, například, že vytvoříte soubor šablony $HOME/.gitmessage.txt, který
 bude vypadat takto:
 
-řádek předmětu
-co bylo provedeno
-[tiket: X]
+	řádek předmětu
+
+	co bylo provedeno
+
+	[tiket: X]
 
 
 Chcete-li systému Git zadat, aby soubor používal jako výchozí zprávu, která se zobrazí v textovém
 editoru po spuštění příkazu git commit, nastavte konfigurační hodnotu commit.template:
 
-$ git config --global commit.template $HOME/.gitmessage.txt
-$ git commit
-
+	$ git config --global commit.template $HOME/.gitmessage.txt
+	$ git commit
 
 Při zapisování revize váš editor otevře následující šablonu zprávy k revizi:
 
-řádek předmětu
+	řádek předmětu
 
-co bylo provedeno
+	co bylo provedeno
 
-[tiket: X]
-# Please enter the commit message for your changes. Lines starting
-# with '#' will be ignored, and an empty message aborts the commit.
-# On branch master
-# Changes to be committed:
-# (use "git reset HEAD <file>..." to unstage)
-#
-# modified: lib/test.rb
-#
-~
-~
-".git/COMMIT_EDITMSG" 14L, 297C
-
+	[tiket: X]
+	# Please enter the commit message for your changes. Lines starting
+	# with '#' will be ignored, and an empty message aborts the commit.
+	# On branch master
+	# Changes to be committed:
+	#   (use "git reset HEAD <file>..." to unstage)
+	#
+	# modified:   lib/test.rb
+	#
+	~
+	~
+	".git/COMMIT_EDITMSG" 14L, 297C
 
 Máte-li stanoveny standardy pro vytváření zpráv k revizím, může vám vytvoření šablony podle těchto
 standardů a nastavení systému Git na její používání pomoci k dodržování těchto standardů.
 
-core.pager
+#### core.pager ####
 
 Nastavení core.pager určuje, jaký stránkovač bude použit, musí-li Git rozdělit výpis na stránky
 (např. výstup příkazu log nebo diff). Stránkovačů můžete nastavit více nebo jen jeden oblíbený
@@ -7650,7 +7651,7 @@ $ git config --global core.pager ''
 Spustíte-li tento příkaz, Git nebude stránkovat celý výstup všech příkazů, bez ohledu na to, jak
 jsou dlouhé.
 
-user.signingkey
+#### user.signingkey ####
 
 Vytváříte-li podepsané anotované značky (jak je popsáno v kapitole 2), celou věc vám usnadní nastavení
 GPG podpisového klíče v konfiguraci. ID svého klíče nastavíte takto:
@@ -7661,7 +7662,7 @@ Nyní můžete podepisovat značky, aniž byste museli pokaždé znovu zadávat 
 
 $ git tag -s <tag-name>
 
-core.excludesfile
+#### core.excludesfile ####
 
 Do souboru .gitignore ve svém projektu můžete vložit masky souborů, které Git neuvidí jakožto nesledované
 soubory ani se je nepokusí připravit k zapsání, až na ně spustíte příkaz git add, jak jsme
@@ -7669,29 +7670,25 @@ popisovali v kapitole 2. Pokud však chcete, aby tyto hodnoty obsahoval jiný so
 chcete určit dodatečné hodnoty, parametrem core.excludesfile můžete systému Git sdělit, kde má
 tento soubor hledat. Jednoduše nastavte cestu k souboru s obsahem podobným souboru .gitignore.
 
-help.autocorrect
+#### help.autocorrect ####
 
 Tato možnost je dostupná ve verzi systému Git 1.6.1 a novějších. Pokud ve verzi 1.6 uděláte překlep
-
 v příkazu, zobrazí se asi toto:
 
-$ git com
-git: 'com' is not a git-command. See 'git --help'.
+	$ git com
+	git: 'com' is not a git-command. See 'git --help'.
 
-
-Did you mean this?
-commit
-
+	Did you mean this?
+	     commit
 
 Nastavíte-li parametr help.autocorrect na hodnotu 1, Git automaticky spustí příkaz, který by v tomto
-
 dialogu vypsal, najde-li právě jediný takový.
 
 7.1.2 Barvy systému Git
 Git může výstup na vašem terminálu barevně zvýraznit a pomoci vám tak snadno a rychle se ve výpisu
 zorientovat. S individuálním nastavením barev vám pomůže celá řada možností.
 
-color.ui
+#### color.ui ####
 
 Git na přání automaticky barevně zvýrazňuje většinu svých výstupů. Lze přitom velmi podrobně určit,
 co chcete barevně označit a jak. Chcete-li zapnout výchozí barvy terminálu, nastavte parametr color.ui
@@ -7710,17 +7707,16 @@ kódy. Téměř vždy vystačíte s příkazem color.ui = true.
 
 
 7.1 Konfigurace systému Git 192
-color.*
+#### color.* ####
 
 Pokud byste rádi nastavili přesněji jak budou zvýrazněny různé příkazy nebo máte starší verzi, nabízí
 Git nastavení barev pro jednotlivé příkazy. Každý z příslušných parametrů může nabývat hodnoty
 na true (pravda), false (nepravda) nebo always (vždy):
 
-color.branch
-color.diff
-color.interactive
-color.status
-
+	color.branch
+	color.diff
+	color.interactive
+	color.status
 
 Chcete-li sami nastavit jednotlivé barvy, mají všechny tyto parametry navíc dílčí nastavení, které můžete
 použít k určení konkrétních barev pro jednotlivé části výstupu. Budete-li chtít nastavit například
@@ -7734,7 +7730,7 @@ yellow (žlutá), blue (modrá), magenta (purpurová), cyan (azurová) nebo whit
 použít atribut, jakým bylo v předchozím příkladu například tučné písmo, můžete vybírat mezi bold
 (tučné), dim (tlumené), ul (podtržené), blink (blikající) a reverse (obrácené).
 
- Chcete-li použít dílčí nastavení, podrobnější informace naleznete na manuálové stránce git config.
+Chcete-li použít dílčí nastavení, podrobnější informace naleznete na manuálové stránce git config.
 
 7.1.3 Externí nástroje pro diff a slučování
 Ačkoli Git disponuje vlastním nástrojem diff, který jste dosud používali, můžete místo něj nastavit
@@ -7746,9 +7742,11 @@ s výstupy nástroje diff. P4Merge je navíc dostupný zdarma.
 Pokud ho chcete vyzkoušet, nemělo by vám v tom nic bránit, P4Merge funguje na všech hlavních
 platformách. V příkladech budu používat označení cest platné pro systémy Mac a Linux; pro systémy
 Windows budete muset cestu /usr/local/bin nahradit cestou ke spustitelnému souboru ve vašem
-prostředí. P4Merge můžete stáhnout na této adrese:
+prostředí.
 
-http://www.perforce.com/perforce/downloads/component.html
+P4Merge můžete stáhnout na této adrese:
+
+	http://www.perforce.com/perforce/downloads/component.html
 
 Pro začátek je třeba nastavit kvůli spouštění příkazů externí skripty wrapperu. Jako cestu ke spustitelnému
 souboru používám cestu v systému Mac. V ostatních systémech použijte cestu k umístění,
@@ -7759,11 +7757,10 @@ $ cat /usr/local/bin/extMerge
 #!/bin/sh
 /Applications/p4merge.app/Contents/MacOS/p4merge $*
 
-
 Wrapper nástroje diff zkontroluje zda je skutečně zadáno sedm parametrů a předá dva z nich do skriptu
 pro slučování. Standardně Git předává do nástoje diff tyto parametry:
 
-path old-file old-hex old-mode new-file new-hex new-mode
+	path old-file old-hex old-mode new-file new-hex new-mode
 
 
 7.1 Konfigurace systému Git 193
@@ -7774,12 +7771,10 @@ $ cat /usr/local/bin/extDiff
 #!/bin/sh
 [ $# -eq 7 ] && /usr/local/bin/extMerge "$2" "$5"
 
-
 Dále se potřebujete také ujistit, že lze tyto nástroje spustit:
 
 $ sudo chmod +x /usr/local/bin/extMerge
 $ sudo chmod +x /usr/local/bin/extDiff
-
 
 Nyní můžete nastavit konfigurační soubor k používání vlastních nástrojů diff a nástrojů k řešení
 slučování. S tím souvisí celá řada uživatelských nastavení: merge.tool, jímž systému Git sdělíte,
@@ -7788,29 +7783,21 @@ trustExitCode, který systému Git sdělí, zda návratový kód tohoto programu
 úspěšné vyřešení sloučení, a diff.external, který systému Git říká, jakým příkazem se spouští
 nástroj diff. Můžete tedy spustit kterýkoli ze čtyř konfiguračních příkazů:
 
-$ git config --global merge.tool extMerge
-$ git config --global mergetool.extMerge.cmd \
-
-
- 'extMerge "$BASE" "$LOCAL" "$REMOTE" "$MERGED"'
-$ git config --global mergetool.trustExitCode false
-$ git config --global diff.external extDiff
-
+	$ git config --global merge.tool extMerge
+	$ git config --global mergetool.extMerge.cmd \
+	    'extMerge "$BASE" "$LOCAL" "$REMOTE" "$MERGED"'
+	$ git config --global mergetool.trustExitCode false
+	$ git config --global diff.external extDiff
 
 nebo můžete upravit soubor ~/.gitconfig a vložit následující řádky:
 
-[merge]
-tool = extMerge
-
-
-[mergetool "extMerge"]
-cmd = extMerge "$BASE" "$LOCAL" "$REMOTE" "$MERGED"
-trustExitCode = false
-
-
-[diff]
-external = extDiff
-
+	[merge]
+	  tool = extMerge
+	[mergetool "extMerge"]
+	  cmd = extMerge "$BASE" "$LOCAL" "$REMOTE" "$MERGED"
+	  trustExitCode = false
+	[diff]
+	  external = extDiff
 
 Až dokončíte celé nastavení, můžete spustit příkaz diff, např.:
 
@@ -7818,6 +7805,8 @@ $ git diff 32d1776b1^ 32d1776b1
 
 Výstup příkazu diff se nezobrazí na příkazovém řádku, ale Git spustí program P4Merge v podobě,
 jak je zachycen na obrázku 7-1.
+
+Obrázek 7-1. P4Merge
 
 Jestliže se pokusíte sloučit dvě větve a dojde při tom ke konfliktu, můžete spustit příkaz git mergetool.
 Příkaz spustí program P4Merge, v němž budete moci v grafickém uživatelském rozhraní konflikt vyřešit.
@@ -7830,19 +7819,18 @@ $ cat /usr/local/bin/extMerge
 #!/bin/sh
 /Applications/kdiff3.app/Contents/MacOS/kdiff3 $*
 
-
 
 7.1 Konfigurace systému Git 194
 Git bude nyní k zobrazení výstupů nástoje diff a k řešení konfliktů při slučování používat nástroj
-KDiff3. Git je standardně přednastaven tak, aby dokázal používat celou řadu různých nástrojů k řešení
+KDiff3.
+
+Git je standardně přednastaven tak, aby dokázal používat celou řadu různých nástrojů k řešení
 konfliktů při slučování, aniž byste museli nastavovat konfiguraci příkazu. Jako nástroj slučování můžete
 nastavit kdiff3, opendiff, tkdiff, meld, xxdiff, emerge, vimdiff nebo gvimdiff. Pokud nestojíte
-
 o to, aby systém Git používal nástroj KDiff3 pro nástroj diff, ale používal ho jen k řešení konfliktů
 při slučování, a příkaz kdiff3 je ve vašem umístění, spusťte příkaz:
-$ git config --global merge.tool kdiff3
 
-Obrázek 7-1. P4Merge
+	$ git config --global merge.tool kdiff3
 
 Pokud spustíte tento příkaz místo nastavení souborů extMerge a extDiff, Git bude používat KDiff3
 k řešení konfliktů při slučování a interní nástroj diff systému Git pro výpisy nástroje diff.
@@ -7857,7 +7845,7 @@ Git disponuje několika konfiguračními parametry, které vám pomohou tyto pro
 
 
 7.1 Konfigurace systému Git 195
-core.autocrlf
+#### core.autocrlf ####
 
 Pokud programujete v OS Windows nebo používáte jiný systém, ale spolupracujete s lidmi, kteří
 ve Windows programují, pravděpodobně se jednou budete potýkat s problémy způsobené konci řádků.
@@ -7888,7 +7876,7 @@ Nastavíte-li hodnotu konfigurace na false, v repozitáři se budou zaznamenáva
 
 $ git config --global core.autocrlf false
 
-core.whitespace
+#### core.whitespace ####
 
 Git je standardně nastaven na vyhledávání a opravu chyb způsobených prázdnými znaky. Může vyhledávat
 čtyři základní chyby tohoto typu – dvě funkce jsou ve výchozím nastavení zapnuty a lze je
@@ -7906,9 +7894,8 @@ oddělených hodnot do parametru core.whitespace. Funkci vypnete buď tím, že 
 zcela vynecháte, nebo tím, že před hodnotu vložíte znak -. Chcete-li například zapnout všechny funkce
 kromě cr-at-eol, zadejte příkaz v tomto tvaru:
 
-$ git config --global core.whitespace \
-trailing-space,space-before-tab,indent-with-non-tab
-
+	$ git config --global core.whitespace \
+	    trailing-space,space-before-tab,indent-with-non-tab
 
 
 7.1 Konfigurace systému Git 196
@@ -7931,7 +7918,7 @@ prázdnými znaky, ale zatím jste je neodeslali na server, můžete spustit př
 Na straně serveru není ani zdaleka tolik parametrů konfigurace jako na straně klienta, avšak několik
 zajímavých si jistě zaslouží vaši pozornost.
 
-receive.fsckObjects
+#### receive.fsckObjects ####
 
 Git ve výchozím nastavení nekontroluje konzistenci všech objektů, které přijímá při odesílání dat.
 Ačkoli může při každém odesílání ověřit, že všechny objekty stále souhlasí se svým kontrolním
@@ -7945,7 +7932,7 @@ $ git config --system receive.fsckObjects true
 Git nyní bude kontrolovat integritu vašeho repozitáře před přijetím odeslaných souborů, aby zajistil,
 že defektní klienti nedodávají data s chybami.
 
-receive.denyNonFastForwards
+#### receive.denyNonFastForwards ####
 
 Pokud přeskládáte revize, které jste již odeslali, a poté se je pokusíte odeslat ještě jednou nebo pokud
 se pokusíte odeslat revizi do vzdálené větve, která neobsahuje revizi, na niž právě vzdálená větev
@@ -7962,7 +7949,7 @@ Druhou možností, jak to provést, jsou přijímací zásuvné moduly (receive 
 se budu věnovat později. Tato metoda umožňuje pokročilejší nastavení, jako zamítnutí jiných aktualizací
 než „rychle vpřed“ určité skupině uživatelů.
 
-receive.denyDeletes
+#### receive.denyDeletes ####
 
 Jednou z možností, jak může uživatel obejít pravidlo denyNonFastForwards, je odstranit větev a odeslat
 ji zpět s novou referencí. V novějších verzích systému Git (počínaje verzí 1.6.1) lze nastavit možnost
@@ -7996,7 +7983,7 @@ jak s těmito soubory nakládat. Některé textové soubory mohou být napříkl
 a nelze na ně aplikovat nástroj diff, zatímco na jiné binární soubory lze. Ukážeme si, jak systému Git
 sdělit, které jsou které.
 
-Identifikace binárních souborů
+#### Identifikace binárních souborů ####
 
 Některé soubory se tváří jako textové, ale v podstatě je s nimi třeba zacházet jako s binárními daty.
 Například projekty Xcode v systémech Mac obsahují soubory končící na .pbxproj, což je v podstatě
@@ -8010,15 +7997,15 @@ jako s binárním souborem.
 Chcete-li systému Git zadat, aby nakládal se všemi soubory pbxproj jako s binárními daty, vložte
 do souboru .gitattributes následující řádek:
 
-*.pbxproj -crlf -diff
+	*.pbxproj -crlf -diff
 
 Až v projektu spustíte příkaz git show nebo git diff, Git se nebude pokoušet konvertovat nebo
 opravovat chyby CRLF ani vypočítat ani zobrazit rozdíly v tomto souboru pomocí nástroje diff.
 V systému Git verze 1.6 můžete také použít existující makro s významem -crlf -diff:
 
-*.pbxproj binary
+	*.pbxproj binary
 
-Nástroj diff pro binární soubory
+#### Nástroj diff pro binární soubory ####
 
 Ve verzi 1.6 systému Git můžete použít funkci atributů Git k efektivnímu zpracování binárních souborů
 nástrojem diff. Systému Git přitom sdělíte, jak má konvertovat binární data do textového formátu, který
@@ -8033,17 +8020,16 @@ však – bůhví proč – všichni používají. Chcete-li verzovat dokumenty 
 Git a všechny hned zapsat do revize. K čemu to však bude? Spustíte-li příkaz git diff normálně,
 zobrazí se zhruba toto:
 
-$ git diff
-diff --git a/chapter1.doc b/chapter1.doc
-index 88839c4..4afcb7c 100644
-Binary files a/chapter1.doc and b/chapter1.doc differ
-
+	$ git diff
+	diff --git a/chapter1.doc b/chapter1.doc
+	index 88839c4..4afcb7c 100644
+	Binary files a/chapter1.doc and b/chapter1.doc differ
 
 Srovnávat dvě verze přímo nelze, můžete je tak nanejvýš otevřít a ručně je projít, že? Nezapomínejme
 však na atributy Git, v této situaci vám odvedou nanahraditelnou službu. Do souboru .gitattributes
 vložte následující řádek:
 
-*.doc diff=word
+	*.doc diff=word
 
 Systému Git tím sdělíte, že pro všechny soubory, které odpovídají této masce (.doc), by měl být při
 zobrazení rozdílů použít filter word. Co je to filtr „word“? To budete muset nastavit. V našem případě
@@ -8058,36 +8044,25 @@ pokusí porovnat soubory Word nástrojem diff, efektivně vytvoří hezké texto
 malý příklad. Kapitolu 1 této knihy jsem vložil do systému Git, do jednoho odstavce jsem přidal kousek
 textu a dokument jsem uložil. Poté jsem spustil příkaz git diff, abych se podíval, co se změnilo:
 
-$ git diff
-
-diff --git a/chapter1.doc b/chapter1.doc
-
-index c1c8a0a..b93c9e4 100644
-
---- a/chapter1.doc
-
-+++ b/chapter1.doc
-
-@@ -8,7 +8,8 @@ re going to cover Version Control Systems (VCS) and Git basics
-
-re going to cover how to get it and set it up for the first time if you don
-
-t already have it on your system.
-
-In Chapter Two we will go over basic Git usage - how to use Git for the 80%
-
--s going on, modify stuff and contribute changes. If the book spontaneously
-
-+s going on, modify stuff and contribute changes. If the book spontaneously
-
-+Let’s see if this works.
+	$ git diff
+	diff --git a/chapter1.doc b/chapter1.doc
+	index c1c8a0a..b93c9e4 100644
+	--- a/chapter1.doc
+	+++ b/chapter1.doc
+	@@ -8,7 +8,8 @@ re going to cover Version Control Systems (VCS) and Git basics
+	 re going to cover how to get it and set it up for the first time if you don
+	 t already have it on your system.
+	 In Chapter Two we will go over basic Git usage - how to use Git for the 80% 
+	-s going on, modify stuff and contribute changes. If the book spontaneously 
+	+s going on, modify stuff and contribute changes. If the book spontaneously 
+	+Let's see if this works.
 
 Git mi stroze, ale pravdivě sděluje, že jsem přidal řetězec „Let’s see if this works“. Není to sice dokonalé
-
 – na konci je přidáno několik náhodných znaků – ale evidentně to funguje. Pokud se vám podaří najít
 či vytvořit dobře fungující převaděč dokumentů Word na prostý text, bude toto řešení bezpochyby
 velmi účinné. Program strings je však k dispozici ve většině systémů Mac i Linux, a tak možná nejprve
 vyzkoušejte tento program s různými binárními formáty.
+
 
 7.2 Atributy Git 199
 Dalším zajímavým problémem, který lze tímto způsobem řešit, je výpočet rozdílů u obrázkových
@@ -8101,24 +8076,24 @@ $ git config diff.exif.textconv exiftool
 
 Pokud nahradíte některý z obrázků ve svém projektu a spustíte příkaz git diff, zobrazí se asi toto:
 
-diff --git a/image.png b/image.png
-index 88839c4..4afcb7c 100644
---- a/image.png
-+++ b/image.png
-@@ -1,12 +1,12 @@
-ExifTool Version Number : 7.74
--File Size : 70kB
--File Modification Date/Time : 2009:04:21 07:02:45-07:00
-+File Size : 94kB
-+File Modification Date/Time : 2009:04:21 07:02:43-07:00
-File Type : PNG
-MIME Type : image/png
--Image Width : 1058
--Image Height : 889
-+ Image Width : 1056
-+ Image Height : 827
-Bit Depth : 8
-Color Type : RGB with Alpha
+	diff --git a/image.png b/image.png
+	index 88839c4..4afcb7c 100644
+	--- a/image.png
+	+++ b/image.png
+	@@ -1,12 +1,12 @@
+	 ExifTool Version Number         : 7.74
+	-File Size                       : 70 kB
+	-File Modification Date/Time     : 2009:04:21 07:02:45-07:00
+	+File Size                       : 94 kB
+	+File Modification Date/Time     : 2009:04:21 07:02:43-07:00
+	 File Type                       : PNG
+	 MIME Type                       : image/png
+	-Image Width                     : 1058
+	-Image Height                    : 889
+	+Image Width                     : 1056
+	+Image Height                    : 827
+	 Bit Depth                       : 8
+	 Color Type                      : RGB with Alpha
 
 Jasně vidíte, že se změnila jak velikost souboru, tak rozměry obrázku.
 
@@ -8155,15 +8130,15 @@ Jedná se o filtry clean a smudge. V souboru .gitattributes můžete určit filt
 umístění a nastavit skripty, jimiž budou zpracovány soubory těsně před jejich zapsáním („clean“ – viz obrázek 7-2) a těsně před checkoutem („smudge – viz obrázek 7-3). Tyto filtry lze nastavit
 k různým šikovným úkonům.
 
+Obrázek 7-2. Filtr smudge spuštěný při checkoutu – git checkout
+
+Obrázek 7-3. Filtr clean spuštěný při přípravě souborů k zapsání – git add
+
 Původní zpráva k revizi s touto funkcí dává jednoduchý příklad, jak před zapsáním spustit celý váš
 zdrojový kód C programem indent. Tuto možnost lze aplikovat nastavením atributu filter v souboru
 .gitattributes tak, aby filtroval soubory *.c filtrem indent:
 
-*.c filter=indent
-
-Obrázek 7-2. Filtr smudge spuštěný při checkoutu – git checkout
-
-Obrázek 7-3. Filtr clean spuštěný při přípravě souborů k zapsání – git add
+	*.c filter=indent
 
 
 7.2 Atributy Git 201
@@ -8186,7 +8161,6 @@ data = STDIN.read
 last_date = `git log --pretty=format:"%ad" -1`
 puts data.gsub('$Date$', '$Date: ' + last_date.to_s + '$')
 
-
 Skript pouze získá datum nejnovější revize z příkazu git log a rozšíří jím řetezce $Date$, které
 nalezne v standardním vstupu (stdin), a vrátí výsledek – snadno by to mělo jít provést v jakémkoli
 jazyce, který používáte. Tento soubor můžete pojmenovat expand_date a vložit ho do svého umístění.
@@ -8197,14 +8171,12 @@ výraz Perlu:
 $ git config filter.dater.smudge expand_date
 $ git config filter.dater.clean 'perl -pe "s/\\\$Date[^\\\$]*\\\$/\\\$Date\\\$/"'
 
-
 Tento fragment Perl vyjme vše, co najde v řetězci $Date$, čímž se vrátí zpět do stavu, kde jste začali.
 Nyní, když máte filtr hotový, můžete ho otestovat vytvořením souboru s klíčovým slovem $Date$
 a nastavením atributu Git pro tento soubor, jímž nový filtr aktivujete:
 
 $ echo '# $Date$' > date_test.txt
 $ echo 'date*.txt filter=dater' >> .gitattributes
-
 
 Pokud tyto změny zapíšete a provedete nový checkout souboru, uvidíte, že bylo klíčové slovo správně
 substituováno:
@@ -8216,7 +8188,6 @@ $ git checkout date_test.txt
 $ cat date_test.txt
 # $Date: Tue Apr 21 07:26:52 2009 -0700$
 
-
 Zde vidíte, jak může být tato metoda účinná pro uživatelsky nastavené aplikace. Přesto je na místě
 opatrnost. Soubor .gitattributes je zapisován a předáván spolu s projektem, avšak ovladač (v tomto
 případě je to dater) nikoli. Soubor tak nebude fungovat všude. Při navrhování těchto filtrů byste tedy
@@ -8227,7 +8198,7 @@ měli myslet i na to, aby projekt pracoval správně, i když filtr selže.
 7.2.3 Export repozitáře
 Data atributů Git umožňují rovněž některé zajímavé úkony při exportu archivů z vašeho projektu.
 
-export-ignore
+#### export-ignore ####
 
 Systému Git můžete zadat, aby při generování archivu neexportoval určité soubory nebo adresáře. Obsahuje-li projekt podadresář nebo soubor, který nechcete zahrnout do souboru archivu, ale který chcete
 ponechat jako součást projektu, můžete tyto soubory specifikovat atributem export-ignore.
@@ -8236,16 +8207,14 @@ ponechat jako součást projektu, můžete tyto soubory specifikovat atributem e
 zahrnovat do exportu tarballu vašeho projektu. Do souboru s atributy Git můžete přidat následující
 řádek:
 
-test/ export-ignore
+	test/ export-ignore
 
 Až nyní spustíte příkaz git archive k vytvoření tarballu projektu, nebude tento adresář součástí archivu.
 
-export-subst
+#### export-subst ####
 
-Další možností pro archivy je jednoduchá substituce klíčového slova. Git umožňuje vložit řetězec
-
-$Format:$ do libovolného souboru s kterýmkoli ze zkrácených kódů formátování --pretty=format,
-
+Další možností pro archivy je jednoduchá substituce klíčového slova. Git umožňuje vložit 
+řetězec $Format:$ do libovolného souboru s kterýmkoli ze zkrácených kódů formátování --pretty=format,
 z nichž jsme několik poznali v kapitole 2. Chcete-li do projektu zahrnout například soubor s názvem
 LAST_COMMIT a při spuštění příkazu git archive do něj bylo automaticky vloženo datum poslední
 revize, můžete nastavit tento soubor takto:
@@ -8255,12 +8224,10 @@ $ echo "LAST_COMMIT export-subst" >> .gitattributes
 $ git add LAST_COMMIT .gitattributes
 $ git commit -am 'adding LAST_COMMIT file for archives'
 
-
 Spustíte-li příkaz git archive, bude po otevření soubor archivu vypadat obsah tohoto souboru takto:
 
 $ cat LAST_COMMIT
 Last commit date: $Format:Tue Apr 21 08:38:48 2009 -0700$
-
 
 7.2.4 Strategie slučování
 Atributy Git lze použít také k nastavení různých strategií slučování pro různé soubory v projektu.
@@ -8272,14 +8239,13 @@ vy z ní budete chtít začlenit změny zpět a ignorovat přitom určité soubo
 s nastavením databáze database.xml, který se ve dvou větvích liší, a vy sem chcete začlenit jinou svoji
 větev, aniž byste tento soubor změnili. V tom případě můžete nastavit tento atribut:
 
-database.xml merge=ours
+	database.xml merge=ours
 
 Pokud začleníte druhou větev, místo řešení konfliktů u souboru database.xml se zobrazí následující:
 
 $ git merge topic
 Auto-merging database.xml
 Merge made by recursive.
-
 
 V tomto případě zůstane soubor database.xml ve své původní podobě.
 
@@ -8310,7 +8276,7 @@ se budeme věnovat většině nejvýznamnějších názvů souborů zásuvných 
 Na straně klienta existuje mnoho zásuvných modulů. V této části je rozdělíme na zásuvné moduly
 k zapisování revizí, zásuvné moduly pro práci s e-maily a na ostatní zásuvné moduly.
 
-Zásuvné moduly k zapisování revizí
+#### Zásuvné moduly k zapisování revizí ####
 
 První čtyři zásuvné moduly se týkají zapisování revizí. Zásuvný modul pre-commit se spouští jako
 první, ještě než začnete psát zprávu k revizi. Slouží ke kontrole snímku, který hodláte zapsat. Může
@@ -8348,7 +8314,7 @@ odesílané revize, které neodpovídají požadavkům. Záleží však jen na s
 tyto skripty využívat i na straně klienta. Toto jsou tedy skripty, které slouží jako pomůcka pro vývojáře.
 Uživatel je musí nastavit a spravovat, ale kdykoli je může také potlačit nebo upravit.
 
-Zásuvné moduly pro práci s e-maily
+#### Zásuvné moduly pro práci s e-maily ####
 
 Pro pracovní postup založený na e-mailové komunikaci lze nastavit tři zásuvné moduly na straně klienta.
 Všechny tři se spouštějí spolu s příkazem git am, takže pokud tento příkaz nepoužíváte, můžete
@@ -8370,7 +8336,7 @@ Posledním zásuvným modulem, který je během operace git am spuštěn, je pos
 ho použít k tomu, abyste skupině uživatelů nebo autorovi záplaty oznámili, že byla záplata natažena.
 Tímto skriptem nelze proces aplikace záplaty a zapsání revizí zastavit.
 
-Ostatní zásuvné moduly na straně klienta
+#### Ostatní zásuvné moduly na straně klienta ####
 
 Zásuvný modul pre-rebase se spouští před každým přeskládáním a při nenulové hodnotě může tento
 proces zastavit. Zásuvný modul můžete využít i k zakázání přeskládání všech revizí, které už byly
@@ -8392,14 +8358,13 @@ systému Git, které možná budete chtít po změnách v pracovním stromě zko
 Vedle zásuvných modulů na straně klienta můžete jako správce systému využívat také několik důležitých
 zásuvných modulů na straně serveru, které vám pomohou kontrolovat téměř jakýkoli typ standardů
 stanovených pro daný projekt. Tyto skripty se spouštějí před odesíláním revizí na server i po něm.
-
 
 7.4 Příklad standardů kontrolovaných systémem Git 205
 Zásuvné moduly spouštěné před přijetím revizí mohou v případě nenulového výstupu odesílaná data
 kdykoli odmítnout a poslat klientovi chybové hlášení. Díky nim můžete nastavit libovolně komplexní
 požadavky na odesílané revize.
 
-pre-receive a post-receive
+#### pre-receive a post-receive ####
 
 Prvním skriptem, který se při manipulaci s revizemi přijatými od klienta spustí, je pre-receive. Skript
 používá seznam referencí, které jsou odesílány ze standardního vstupu stdin. Je-li návratová hodnota
@@ -8416,7 +8381,7 @@ i analyzovat zprávy k revizím a zjistit, zda je některé tikety třeba otevř
 skript nedokáže zastavit proces odesílání, avšak klient se neodpojí, dokud není dokončen. Buďte
 proto opatrní, pokud se chystáte provést akci, která může dlouho trvat.
 
-update
+#### update ####
 
 Skript update je velice podobný skriptu pre-receive, avšak s tím rozdílem, že se spouští zvlášť
 pro každou větev, kterou chce odesílatel aktualizovat. Pokud se uživatel pokouší odeslat revize do více
@@ -8448,26 +8413,24 @@ prostřednictvím SSH, budete mít přístup také k uživateli, který data ode
 připojení s jedním uživatelem (např. „git“) na základě ověření veřejného klíče, možná budete muset
 poskytnout těmto uživatelům shellový wrapper, který určuje, který uživatel se připojuje na základě
 veřejného klíče, a nastavit proměnnou prostředí, jež tyto uživatele stanoví.
-
 
 7.4 Příklad standardů kontrolovaných systémem Git 206
 V tomto okamžiku předpokládám, že je připojující se uživatel v proměnné prostředí $USER, a skript
 update tak začne shromažďovat všechny potřebné informace:
 
-#!/usr/bin/env ruby
+	#!/usr/bin/env ruby
 
-$refname = ARGV[0]
-$oldrev = ARGV[1]
-$newrev = ARGV[2]
-$user = ENV['USER']
+	$refname = ARGV[0]
+	$oldrev  = ARGV[1]
+	$newrev  = ARGV[2]
+	$user    = ENV['USER']
 
-
-puts "Enforcing Policies... \n(#{$refname}) (#{$oldrev[0,6]}) (#{$newrev[0,6]})"
+	puts "Enforcing Policies... \n(#{$refname}) (#{$oldrev[0,6]}) (#{$newrev[0,6]})"
 
 Ano, je to tak, používám globální proměnné. Ale neodsuzujte mne – náš příklad díky tomu bude
 názornější.
 
-Standardizovaná zpráva k revizi
+#### Standardizovaná zpráva k revizi ####
 
 Vaším prvním úkolem bude zajistit, aby všechny zprávy k revizím splňovaly předepsaný formát.
 Abychom si stanovili nějaký cíl, řekněme, že každá zpráva musí obsahovat řetězec ve tvaru „ref: 1234“,
@@ -8488,7 +8451,6 @@ d14fc7c847ab946ec39590d87783c69b031bdfb7
 dfa04c9ef3d5197182f13fb5b9b1fb7717d2222a
 17716ec0f1ff5c77eff40b7fe912f9f6cfd0e475
 
-
 Tento výstup můžete vzít, projít všechny hodnoty SHA jednotlivých revizí, vzít jejich zprávy a otestovat
 je proti regulárnímu výrazu, který vyhledává vzor.
 
@@ -8497,14 +8459,13 @@ získat syrová data revizí, můžete použít další nízkoúrovňový přík
 příkazům se budu podrobněji věnovat v kapitole 9. Pro tuto chvíli se jen podívejme,
 co příkazem získáme:
 
-$ git cat-file commit ca82a6
-tree cfda3bf379e4f8dba8717dee55aab78aef7f4daf
-parent 085bb3bcb608e1e8451d4b2432f8ecbe6306e7e7
-author Scott Chacon <schacon@gmail.com> 1205815931 -0700
-committer Scott Chacon <schacon@gmail.com> 1240030591 -0700
+	$ git cat-file commit ca82a6
+	tree cfda3bf379e4f8dba8717dee55aab78aef7f4daf
+	parent 085bb3bcb608e1e8451d4b2432f8ecbe6306e7e7
+	author Scott Chacon <schacon@gmail.com> 1205815931 -0700
+	committer Scott Chacon <schacon@gmail.com> 1240030591 -0700
 
-
-changed the version number
+	changed the version number
 
 
 7.4 Příklad standardů kontrolovaných systémem Git 207
@@ -8516,38 +8477,29 @@ V systémech Unix to lze provést příkazem sed:
 $ git cat-file commit ca82a6 | sed '1,/^$/d'
 changed the version number
 
-
 Tento výraz můžete použít k extrakci zpráv ze všech odesílaných revizí a skript ukončit, jestliže najdete
 něco, co neodpovídá požadavkům. Chcete-li skript ukončit a odesílaná data odmítnout, návratová
 hodnota musí být nenulová. Celá metoda vypadá takto:
 
-$regex = /\[ref: (\d+)\]/
+	$regex = /\[ref: (\d+)\]/
 
-# enforced custom commit message format
-
-def check_message_format
-missed_revs = `git rev-list #{$oldrev}..#{$newrev}`.split("\n")
-missed_revs.each do |rev|
-
-
- message = `git cat-file commit #{rev} | sed '1,/^$/d'`
-
- if !$regex.match(message)
-puts "[POLICY] Your message is not formatted correctly"
-exit 1
-
-
- end
-
- end
-end
-check_message_format
-
+	# enforced custom commit message format
+	def check_message_format
+	  missed_revs = `git rev-list #{$oldrev}..#{$newrev}`.split("\n")
+	  missed_revs.each do |rev|
+	    message = `git cat-file commit #{rev} | sed '1,/^$/d'`
+	    if !$regex.match(message)
+	      puts "[POLICY] Your message is not formatted correctly"
+	      exit 1
+	    end
+	  end
+	end
+	check_message_format
 
 Pokud toto vložíte do skriptu update, budou odmítnuty všechny aktualizace s revizemi, které mají
 zprávu neodpovídající zadanému pravidlu.
 
-Systém ACL podle uživatelů
+#### Systém ACL podle uživatelů ####
 
 Předpokládejme, že chcete přidat mechanismus, který bude používat seznam oprávnění ACL (access
 control list), v němž bude stanoveno, kteří uživatelé smějí do které části vašeho projektu odesílat
@@ -8567,11 +8519,10 @@ V našem příkladu máte několik správců, několik tvůrců dokumentace s p�
 a jednoho vývojáře, který má jako jediný přístup do adresářů lib a tests. Soubor ACL proto bude
 vypadat následovně:
 
-avail|nickh,pjhyett,defunkt,tpw
-avail|usinclair,cdickens,ebronte|doc
-avail|schacon|lib
-avail|schacon|tests
-
+	avail|nickh,pjhyett,defunkt,tpw
+	avail|usinclair,cdickens,ebronte|doc
+	avail|schacon|lib
+	avail|schacon|tests
 
 
 7.4 Příklad standardů kontrolovaných systémem Git 208
@@ -8579,104 +8530,73 @@ Začnete načtením těchto dat do struktury, kterou můžete použít. Abychom 
 budete vyžadovat pouze direktivy avail (využít). Používá se tu metoda asociativních polí, kdy klíč
 představuje jméno uživatele a hodnotu tvoří sada umístění, k nimž má uživatel oprávnění pro zápis:
 
-def get_acl_access_data(acl_file)
-# read in ACL data
-acl_file = File.read(acl_file).split("\n").reject { |line| line == '' }
-access = {}
-acl_file.each do |line|
-
- avail, users, path = line.split('|')
-next unless avail == 'avail'
-users.split(',').each do |user|
-
-
- access[user] ||= []
-
- access[user] << path
-
- end
-end
-access
-
-
-end
+	def get_acl_access_data(acl_file)
+	  # read in ACL data
+	  acl_file = File.read(acl_file).split("\n").reject { |line| line == '' }
+	  access = {}
+	  acl_file.each do |line|
+	    avail, users, path = line.split('|')
+	    next unless avail == 'avail'
+	    users.split(',').each do |user|
+	      access[user] ||= []
+	      access[user] << path
+	    end
+	  end
+	  access
+	end
 
 V kombinaci se souborem ACL, který jsme si ukázali před chvílí, poskytne tato metoda
-
 get_acl_access_data datovou strukturu v této podobě:
 
-{"defunkt"=>[nil],
-"tpw"=>[nil],
-"nickh"=>[nil],
-"pjhyett"=>[nil],
-"schacon"=>["lib", "tests"],
-"cdickens"=>["doc"],
-"usinclair"=>["doc"],
-"ebronte"=>["doc"]}
-
+	{"defunkt"=>[nil],
+	 "tpw"=>[nil],
+	 "nickh"=>[nil],
+	 "pjhyett"=>[nil],
+	 "schacon"=>["lib", "tests"],
+	 "cdickens"=>["doc"],
+	 "usinclair"=>["doc"],
+	 "ebronte"=>["doc"]}
 
 Nyní, když jste uspořádali příslušná oprávnění, zbývá zjistit, která umístění odesílané revize změnily,
 abyste měli jistotu, že k nim ke všem má odesílající uživatel přístup.
 
 Zjistit, které soubory byly v jedné revizi změněny, lze velmi snadno pomocí příkazu git log s parametrem --name-only (stručně popsáno v kapitole 2):
 
-$ git log -1 --name-only --pretty=format:'' 9f585d
+	$ git log -1 --name-only --pretty=format:'' 9f585d
 
-README
-lib/test.rb
-
+	README
+	lib/test.rb
 
 Jestliže používáte strukturu ACL získanou metodou get_acl_access_data a kontrolujete ji proti
 seznamu souborů v každé revizi, můžete určit, zda bude mít uživatel oprávnění odesílat všechny
 své revize:
 
-# only allows certain users to modify certain subdirectories in a project
+	# only allows certain users to modify certain subdirectories in a project
+	def check_directory_perms
+	  access = get_acl_access_data('acl')
 
-def check_directory_perms
-access = get_acl_access_data('acl')
+	  # see if anyone is trying to push something they can't
+	  new_commits = `git rev-list #{$oldrev}..#{$newrev}`.split("\n")
+	  new_commits.each do |rev|
+	    files_modified = `git log -1 --name-only --pretty=format:'' #{rev}`.split("\n")
+	    files_modified.each do |path|
+	      next if path.size == 0
+	      has_file_access = false
+	      access[$user].each do |access_path|
+	        if !access_path  # user has access to everything
+	          || (path.index(access_path) == 0) # access to this path
+	          has_file_access = true 
+	        end
+	      end
+	      if !has_file_access
+	        puts "[POLICY] You do not have access to push to #{path}"
+	        exit 1
+	      end
+	    end
+	  end  
+	end
 
-
- # see if anyone is trying to push something they can't
-new_commits = `git rev-list #{$oldrev}..#{$newrev}`.split("\n")
-new_commits.each do |rev|
-
-
-7.4 Příklad standardů kontrolovaných systémem Git 209
-files_modified = `git log -1 --name-only --pretty=format:'' #{rev}`.split("\n")
-
- files_modified.each do |path|
-
- next if path.size == 0
-
- has_file_access = false
-
- access[$user].each do |access_path|
-
- if !access_path # user has access to everything
-
- || (path.index(access_path) == 0) # access to this path
-
- has_file_access = true
-
- end
-
- end
-
- if !has_file_access
-
- puts "[POLICY] You do not have access to push to #{path}"
-
- exit 1
-
- end
-
- end
-
- end
-
-end
-
-check_directory_perms
+	check_directory_perms
 
 Většina uvedeného by měla být jasná. Příkazem git rev-list získáte výpis nových revizí odesílaných
 na váš server. U každé z revizí uvidíte také soubory, které byly změněny, a budete se moci přesvědčit,
@@ -8689,7 +8609,7 @@ nebo adresáře, které začínají tímto řetězcem.
 Vaši uživatelé tak už teď nebudou moci odesílat revize se zprávami v nepatřičném tvaru nebo se soubory
 změněnými mimo umístění jim vyhrazená.
 
-Pouze „rychle vpřed“
+#### Pouze „rychle vpřed“ ####
 
 Poslední věcí, která nám ještě zbývá, je povolit pouze odeslání směřující „rychle vpřed“ (fast forward).
 Ve verzi 1.6 systému Git a novějších lze nastavit možnosti receive.denyDeletes a receive.denyNonFastForwards. Pokud však totéž nastavíte pomocí zásuvného modulu, pochodíte i ve starších verzích
@@ -8700,25 +8620,17 @@ Kontrolu můžete provést tak, že se podíváte, zda jsou některé revize dos
 nejsou dostupné z novějších. Pokud žádná taková revize neexistuje, směřovalo odeslání rychle vpřed.
 V opačném případě můžete odeslané revize odmítnout:
 
-# enforces fast-forward only pushes
+	# enforces fast-forward only pushes 
+	def check_fast_forward
+	  missed_refs = `git rev-list #{$newrev}..#{$oldrev}`
+	  missed_ref_count = missed_refs.split("\n").size
+	  if missed_ref_count > 0
+	    puts "[POLICY] Cannot push a non fast-forward reference"
+	    exit 1
+	  end
+	end
 
-def check_fast_forward
-
- missed_refs = `git rev-list #{$newrev}..#{$oldrev}`
-
- missed_ref_count = missed_refs.split("\n").size
-
- if missed_ref_count > 0
-
- puts "[POLICY] Cannot push a non fast-forward reference"
-
- exit 1
-
- end
-
-end
-
-check_fast_forward
+	check_fast_forward
 
 
 7.4 Příklad standardů kontrolovaných systémem Git 210
@@ -8726,46 +8638,42 @@ Nyní je vše nastaveno. Spustíte-li příkaz chmod u+x .git/hooks/update, což
 měli celý tento kód vložit a poté zkusit odeslat referenci, která nesměřuje rychle vpřed, dostanete
 následující výstup:
 
-$ git push -f origin master
-Counting objects: 5, done.
-Compressing objects: 100% (3/3), done.
-Writing objects: 100% (3/3), 323 bytes, done.
-Total 3 (delta 1), reused 0 (delta 0)
-Unpacking objects: 100% (3/3), done.
-Enforcing Policies...
-(refs/heads/master) (8338c5) (c5b616)
-[POLICY] Cannot push a non-fast-forward reference
-error: hooks/update exited with error code 1
-error: hook declined to update refs/heads/master
-To git@gitserver:project.git
-
-
- ! [remote rejected] master -> master (hook declined)
-error: failed to push some refs to 'git@gitserver:project.git'
-
+	$ git push -f origin master
+	Counting objects: 5, done.
+	Compressing objects: 100% (3/3), done.
+	Writing objects: 100% (3/3), 323 bytes, done.
+	Total 3 (delta 1), reused 0 (delta 0)
+	Unpacking objects: 100% (3/3), done.
+	Enforcing Policies... 
+	(refs/heads/master) (8338c5) (c5b616)
+	[POLICY] Cannot push a non fast-forward reference
+	error: hooks/update exited with error code 1
+	error: hook declined to update refs/heads/master
+	To git@gitserver:project.git
+	 ! [remote rejected] master -> master (hook declined)
+	error: failed to push some refs to 'git@gitserver:project.git'
 
 Výstup obsahuje řadu zajímavých informací. Zaprvé si všimněte místa, kde byl spuštěn zásuvný modul.
 
-Enforcing Policies...
-(refs/heads/master) (fb8c72) (c56860)
-
+	Enforcing Policies... 
+	(refs/heads/master) (8338c5) (c5b616)
 
 Všimněte si, že toto bylo posláno na standardní výstup „stdout“ na samém začátku skriptu update.
 Měli bychom také upozornit, že všechno, co váš skript vypíše do standardního výstupu stdout, bude
-přeneseno také klientovi. Další věcí, jíž si všimnete, je chybové hlášení.
+přeneseno také klientovi.
 
-[POLICY] Cannot push a non fast-forward reference
-error: hooks/update exited with error code 1
-error: hook declined to update refs/heads/master
+Další věcí, jíž si všimnete, je chybové hlášení.
 
+	[POLICY] Cannot push a non fast-forward reference
+	error: hooks/update exited with error code 1
+	error: hook declined to update refs/heads/master
 
 První řádek jste vytvořili vy, dalšími dvěma řádky vám Git sděluje, že je výstup skriptu update nenulový,
 a proto bude odeslání odmítnuto. A na konci stojí následující:
 
-To git@gitserver:project.git
-! [remote rejected] master -> master (hook declined)
-error: failed to push some refs to 'git@gitserver:project.git'
-
+	To git@gitserver:project.git
+	 ! [remote rejected] master -> master (hook declined)
+	error: failed to push some refs to 'git@gitserver:project.git'
 
 Pro každou referenci, kterou váš zásuvný modul odmítne, se zobrazí jedna zpráva o odmítnutí vzdálené
 reference. Ze zprávy vyčtete, že byla reference odmítnuta kvůli chybě zásuvného modulu.
@@ -8773,13 +8681,13 @@ reference. Ze zprávy vyčtete, že byla reference odmítnuta kvůli chybě zás
 Pokud navíc není ukazatel reference v některé z vašich revizí, zobrazí se chybové hlášení, které jste
 pro tento účel určili.
 
-[POLICY] Your message is not formatted correctly
+	[POLICY] Your message is not formatted correctly
 
 Nebo pokud se někdo pokusí upravit soubor, k němuž nemá přístup, a odešle revizi, jejíž součástí bude
 tento soubor, zobrazí se podobná zpráva. Pokud se například autor dokumentace pokusí odeslat revizi,
 která mění obsah adresáře lib, zobrazí se mu upozornění:
 
-[POLICY] You do not have access to push to lib/test.rb
+	[POLICY] You do not have access to push to lib/test.rb
 
 
 7.4 Příklad standardů kontrolovaných systémem Git 211
@@ -8807,36 +8715,29 @@ použít zásuvný modul commit-msg. Necháte-li zásuvný modul přečíst zpr�
 který zadáte jako první parametr, a srovnat se vzorem, můžete systému Git uložit, aby odmítl revize,
 které vzoru neodpovídají:
 
-#!/usr/bin/env ruby
-message_file = ARGV[0]
-message = File.read(message_file)
+	#!/usr/bin/env ruby
+	message_file = ARGV[0]
+	message = File.read(message_file)
 
+	$regex = /\[ref: (\d+)\]/
 
-$regex = /\[ref: (\d+)\]/
-
-if !$regex.match(message)
-
- puts "[POLICY] Your message is not formatted correctly"
-
- exit 1
-
-end
+	if !$regex.match(message)
+	  puts "[POLICY] Your message is not formatted correctly"
+	  exit 1
+	end
 
 Je-li skript na svém místě (.git/hooks/commit-msg) a je spustitelný, pak v případě, že zapíšete revizi se
 zprávou v nedovoleném formátu, zobrazí se následující:
 
-$ git commit -am 'test'
-[POLICY] Your message is not formatted correctly
-
+	$ git commit -am 'test'
+	[POLICY] Your message is not formatted correctly
 
 V takovém případě nebyla zapsána žádná revize. Pokud však zpráva obsahuje správný vzor, Git vám
 umožní revizi zapsat:
 
-$ git commit -am 'test [ref: 132]'
-
-[master e05c914] test [ref: 132]
-
- 1 files changed, 1 insertions(+), 0 deletions(-)
+	$ git commit -am 'test [ref: 132]'
+	[master e05c914] test [ref: 132]
+	 1 files changed, 1 insertions(+), 0 deletions(-)
 
 Dále se budete chtít ujistit, že neměníte soubory, jejichž úpravu vám zakazuje seznam ACL. Pokud
 adresář .git vašeho projektu obsahuje kopii souboru ACL, který jsme používali naposledy, příslušná
@@ -8844,66 +8745,52 @@ omezení přístupu pro vás ohlídá tento skript pre-commit:
 
 
 7.4 Příklad standardů kontrolovaných systémem Git 212
-#!/usr/bin/env ruby
+	#!/usr/bin/env ruby
 
-$user = ENV['USER']
+	$user    = ENV['USER']
 
-# [ insert acl_access_data method from above ]
+	# [ insert acl_access_data method from above ]
 
-# only allows certain users to modify certain subdirectories in a project
-def check_directory_perms
-access = get_acl_access_data('.git/acl')
+	# only allows certain users to modify certain subdirectories in a project
+	def check_directory_perms
+	  access = get_acl_access_data('.git/acl')
 
+	  files_modified = `git diff-index --cached --name-only HEAD`.split("\n")
+	  files_modified.each do |path|
+	    next if path.size == 0
+	    has_file_access = false
+	    access[$user].each do |access_path|
+	    if !access_path || (path.index(access_path) == 0)
+	      has_file_access = true
+	    end
+	    if !has_file_access
+	      puts "[POLICY] You do not have access to push to #{path}"
+	      exit 1
+	    end
+	  end
+	end
 
- files_modified = `git diff-index --cached --name-only HEAD`.split("\n")
-
- files_modified.each do |path|
-
- next if path.size == 0
-
- has_file_access = false
-
- access[$user].each do |access_path|
-
- if !access_path || (path.index(access_path) == 0)
-
- has_file_access = true
-
- end
-
- if !has_file_access
-
- puts "[POLICY] You do not have access to push to #{path}"
-
- exit 1
-
- end
-
- end
-
-end
-
-check_directory_perms
+	check_directory_perms
 
 Jedná se o přibližně stejný skript, jaký funguje na serveru, avšak se dvěma podstatnými rozdíly.
 Zaprvé je soubor ACL na jiném místě, protože se tento skript spouští z vašeho pracovního adresáře,
 a ne z adresáře Git. Cestu k souboru ACL budete muset změnit z
 
-access = get_acl_access_data('acl')
+	access = get_acl_access_data('acl')
 
 na:
 
-access = get_acl_access_data('.git/acl')
+	access = get_acl_access_data('.git/acl')
 
 Druhým důležitým rozdílem je způsob, jak se zobrazí seznam změněných souborů. Protože serverová
 metoda využívá záznam revizí, ale ve vašem případě ještě nebyla revize zaznamenána, musí být
 seznam souborů pořízen na základě oblasti připravených změn. Místo
 
-files_modified = `git log -1 --name-only --pretty=format:'' #{ref}`
+	files_modified = `git log -1 --name-only --pretty=format:'' #{ref}`
 
 budete muset použít:
 
-files_modified = `git diff-index --cached --name-only HEAD`
+	files_modified = `git diff-index --cached --name-only HEAD`
 
 Toto jsou však jediné dvě změny, v ostatních ohledech pracuje skript stejně. Je však třeba upozornit,
 že skript očekává, že lokálně pracujete v roli stejného uživatele jako odesíláte data na vzdálený server.
@@ -8924,35 +8811,32 @@ Jako příklad uvedeme skript pre-rebase, který bude toto pravidlo kontrolovat.
 revizí, které hodláte přepsat, a ověří, zda neexistují už v některé z vašich vzdálených referencí. Pokud
 najde revizi, která je dostupná z některé z vašich vzdálených referencí, proces přeskládání přeruší:
 
-#!/usr/bin/env ruby
+	#!/usr/bin/env ruby
 
-base_branch = ARGV[0]
-if ARGV[1]
-topic_branch = ARGV[1]
-else
-topic_branch = "HEAD"
-end
+	base_branch = ARGV[0]
+	if ARGV[1]
+	  topic_branch = ARGV[1]
+	else
+	  topic_branch = "HEAD"
+	end
 
+	target_shas = `git rev-list #{base_branch}..#{topic_branch}`.split("\n")
+	remote_refs = `git branch -r`.split("\n").map { |r| r.strip }
 
-target_shas = `git rev-list #{base_branch}..#{topic_branch}`.split("\n")
-remote_refs = `git branch -r`.split("\n").map { |r| r.strip }
-
-target_shas.each do |sha|
-
- remote_refs.each do |remote_ref|
-shas_pushed = `git rev-list ^#{sha}^@ refs/remotes/#{remote_ref}`
-if shas_pushed.split(“\n”).include?(sha)
-
- puts "[POLICY] Commit #{sha} has already been pushed to #{remote_ref}"
-exit 1
-end
-end
-end
+	target_shas.each do |sha|
+	  remote_refs.each do |remote_ref|
+	    shas_pushed = `git rev-list ^#{sha}^@ refs/remotes/#{remote_ref}`
+	    if shas_pushed.split(“\n”).include?(sha)
+	      puts "[POLICY] Commit #{sha} has already been pushed to #{remote_ref}"
+	      exit 1
+	    end
+	  end
+	end
 
 Tento skript používá syntax, které jsme se v části Výběr revize v kapitole 6 nevěnovali. Seznam revizí,
 které už byly odeslány, získáte takto:
 
-git rev-list ^#{sha}^@ refs/remotes/#{remote_ref}
+	git rev-list ^#{sha}^@ refs/remotes/#{remote_ref}
 
 Syntax SHA^@ se vztahuje na všechny rodiče této revize. Vyhledáváte všechny revize, které jsou dostupné
 z poslední revize na vzdáleném serveru a nejsou dostupné z žádného rodiče jakékoli hodnoty SHA,
