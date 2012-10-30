@@ -8052,9 +8052,9 @@ textu a dokument jsem uložil. Poté jsem spustil příkaz git diff, abych se po
 	@@ -8,7 +8,8 @@ re going to cover Version Control Systems (VCS) and Git basics
 	 re going to cover how to get it and set it up for the first time if you don
 	 t already have it on your system.
-	 In Chapter Two we will go over basic Git usage - how to use Git for the 80% 
-	-s going on, modify stuff and contribute changes. If the book spontaneously 
-	+s going on, modify stuff and contribute changes. If the book spontaneously 
+	 In Chapter Two we will go over basic Git usage - how to use Git for the 80%
+	-s going on, modify stuff and contribute changes. If the book spontaneously
+	+s going on, modify stuff and contribute changes. If the book spontaneously
 	+Let's see if this works.
 
 Git mi stroze, ale pravdivě sděluje, že jsem přidal řetězec „Let’s see if this works“. Není to sice dokonalé
@@ -8213,7 +8213,7 @@ Až nyní spustíte příkaz git archive k vytvoření tarballu projektu, nebude
 
 #### export-subst ####
 
-Další možností pro archivy je jednoduchá substituce klíčového slova. Git umožňuje vložit 
+Další možností pro archivy je jednoduchá substituce klíčového slova. Git umožňuje vložit
 řetězec $Format:$ do libovolného souboru s kterýmkoli ze zkrácených kódů formátování --pretty=format,
 z nichž jsme několik poznali v kapitole 2. Chcete-li do projektu zahrnout například soubor s názvem
 LAST_COMMIT a při spuštění příkazu git archive do něj bylo automaticky vloženo datum poslední
@@ -8585,7 +8585,7 @@ své revize:
 	      access[$user].each do |access_path|
 	        if !access_path  # user has access to everything
 	          || (path.index(access_path) == 0) # access to this path
-	          has_file_access = true 
+	          has_file_access = true
 	        end
 	      end
 	      if !has_file_access
@@ -8593,7 +8593,7 @@ své revize:
 	        exit 1
 	      end
 	    end
-	  end  
+	  end
 	end
 
 	check_directory_perms
@@ -8620,7 +8620,7 @@ Kontrolu můžete provést tak, že se podíváte, zda jsou některé revize dos
 nejsou dostupné z novějších. Pokud žádná taková revize neexistuje, směřovalo odeslání rychle vpřed.
 V opačném případě můžete odeslané revize odmítnout:
 
-	# enforces fast-forward only pushes 
+	# enforces fast-forward only pushes
 	def check_fast_forward
 	  missed_refs = `git rev-list #{$newrev}..#{$oldrev}`
 	  missed_ref_count = missed_refs.split("\n").size
@@ -8644,7 +8644,7 @@ následující výstup:
 	Writing objects: 100% (3/3), 323 bytes, done.
 	Total 3 (delta 1), reused 0 (delta 0)
 	Unpacking objects: 100% (3/3), done.
-	Enforcing Policies... 
+	Enforcing Policies...
 	(refs/heads/master) (8338c5) (c5b616)
 	[POLICY] Cannot push a non fast-forward reference
 	error: hooks/update exited with error code 1
@@ -8655,7 +8655,7 @@ následující výstup:
 
 Výstup obsahuje řadu zajímavých informací. Zaprvé si všimněte místa, kde byl spuštěn zásuvný modul.
 
-	Enforcing Policies... 
+	Enforcing Policies...
 	(refs/heads/master) (8338c5) (c5b616)
 
 Všimněte si, že toto bylo posláno na standardní výstup „stdout“ na samém začátku skriptu update.
@@ -9298,7 +9298,7 @@ použít příkaz git svn log. Historie revizí se zobrazí ve formátování SV
 
 	------------------------------------------------------------------------
 	r85 | schacon | 2009-05-02 16:00:09 -0700 (Sat, 02 May 2009) | 2 lines
-	
+
 	updated the changelog
 
 
@@ -9315,19 +9315,19 @@ Subversion.
 Příkaz git svn log simuluje offline příkaz svn log, ekvivalentem příkazu svn annotate je ale
 git svn blame [SOUBOR]. Jeho výstup vypadá takto:
 
-	$ git svn blame README.txt 
+	$ git svn blame README.txt
 	 2   temporal Protocol Buffers - Google's data interchange format
 	 2   temporal Copyright 2008 Google Inc.
 	 2   temporal http://code.google.com/apis/protocolbuffers/
-	 2   temporal 
+	 2   temporal
 	22   temporal C++ Installation - Unix
 	22   temporal =======================
-	 2   temporal 
+	 2   temporal
 	79    schacon Committing in git-svn.
-	78    schacon 
+	78    schacon
 	 2   temporal To build and install the C++ Protocol Buffer runtime and the Protocol
 	 2   temporal Buffer compiler (protoc) execute the following:
-	 2   temporal 
+	 2   temporal
 
 Ani tento příkaz nezobrazuje revize zapsané lokálně v systému Git a revize odeslané na server Subversion
 od posledního připojení.
@@ -9616,7 +9616,7 @@ a zadáte příkazy potřebné k jeho exportu. Základní smyčka bude mít tuto
 	    next if File.file?(dir)
 
 	    # move into the target directory
-	    Dir.chdir(dir) do 
+	    Dir.chdir(dir) do
 	      last_mark = print_export(dir, last_mark)
 	    end
 	  end
@@ -9734,7 +9734,7 @@ Poslední věcí, kterou musíte udělat, je vrátit aktuální označovač, aby
 
 A to je celé. Spustíte-li tento skript, získáte obsah v následující podobě:
 
-	$ ruby import.rb /opt/import_from 
+	$ ruby import.rb /opt/import_from
 	commit refs/heads/master
 	mark :1
 	committer Scott Chacon <schacon@geemail.com> 1230883200 -0700
@@ -9906,7 +9906,6 @@ jako „vysokoúrovňové“ (porcelain commands).
 Prvních osm kapitol této knihy se zabývá téměř výhradně vysokoúrovňovými příkazy. V této kapitole
 se však budeme věnovat převážně nízkoúrovňovým příkazům, protože ty vám umožní nahlédnout
 do vnitřního fungování systému Git a pochopit, jak a proč Git dělá to, co dělá. Nepředpokládám, že
-
 
 9.2 Objekty Git 238
 byste chtěli tyto příkazy používat osamoceně na příkazovém řádku. Podíváme se na ně spíše jako
@@ -9918,25 +9917,16 @@ zkopírování tohoto jediného adresáře do jiného umístění vám poskytne 
 potřebovat. Celá tato kapitola se bude zabývat v podstatě jen obsahem tohoto adresáře. Ten má následující
 podobu:
 
-$ ls
-
-HEAD
-
-branches/
-
-config
-
-description
-
-hooks/
-
-index
-
-info/
-
-objects/
-
-refs/
+	$ ls
+	HEAD
+	branches/
+	config
+	description
+	hooks/
+	index
+	info/
+	objects/
+	refs/
 
 Možná ve svém adresáři najdete i další soubory. Toto je však příkazem git init čerstvě vytvořený
 repozitář s výchozím obsahem. Adresář branches se už v novějších verzích systému Git nepoužívá
@@ -9960,37 +9950,34 @@ obsahu. Můžete tak použít například nízkoúrovňový příkaz hash-object
 uloží je v adresáři .git a dá vám klíč, pod nímž jsou tato data uložena. Vytvořme nejprve nový repozitář
 Git. Můžeme se přesvědčit, že je adresář objects prázdný:
 
-$ mkdir test
-$ cd test
-$ git init
-Initialized empty Git repository in /tmp/test/.git/
-$ find .git/objects
-.git/objects
-.git/objects/info
-.git/objects/pack
-$ find .git/objects -type f
-$
-
+	$ mkdir test
+	$ cd test
+	$ git init
+	Initialized empty Git repository in /tmp/test/.git/
+	$ find .git/objects
+	.git/objects
+	.git/objects/info
+	.git/objects/pack
+	$ find .git/objects -type f
+	$
 
 
 9.2 Objekty Git 239
 Git inicializoval adresář objects a vytvořil v něm podadresáře pack a info, nenajdeme tu však žádné
 skutečné soubory. Nyní můžete uložit kousek textu do databáze Git:
 
-$ echo 'test content' | git hash-object -w --stdin
-d670460b4b4aece5915caf5c68d12f560a9fe3e4
-
+	$ echo 'test content' | git hash-object -w --stdin
+	d670460b4b4aece5915caf5c68d12f560a9fe3e4
 
 Parametr -w sděluje příkazu hash-object, aby objekt uložil. Bez parametru by vám příkaz jen sdělil,
 jaký klíč by byl přidělen. Parametr --stdin zase příkazu sděluje, aby načetl obsah ze standardního
 vstupu. Pokud byste parametr nezadali, příkaz hash-object by očekával, že zadáte cestu k souboru.
 Výstupem příkazu je 40znakový otisk kontrolního součtu (checksum hash). Jedná se o otisk SHA-1
-
 – kontrolní součet spojení ukládaného obsahu a záhlaví, o němž si povíme za okamžik.
 Nyní se můžete podívat, jak Git vaše data uložil:
-$ find .git/objects -type f
-.git/objects/d6/70460b4b4aece5915caf5c68d12f560a9fe3e4
 
+	$ find .git/objects -type f
+	.git/objects/d6/70460b4b4aece5915caf5c68d12f560a9fe3e4
 
 Vidíte, že v adresáři objects přibyl nový soubor. Takto Git ukládá nejprve veškerý obsah – jeden
 soubor pro každý kus obsahu, nazvaný kontrolním součtem SHA-1 obsahu a záhlaví. Podadresář je
@@ -10003,7 +9990,6 @@ zjistil typ obsahu a přehledně vám ho zobrazil:
 $ git cat-file -p d670460b4b4aece5915caf5c68d12f560a9fe3e4
 test content
 
-
 Nyní tedy umíte vložit do systému Git určitý obsah a ten poté zase vytáhnout. Totéž můžete udělat
 také s obsahem v souborech. Na souboru můžete například provádět jednoduché verzování. Vytvořte
 nový soubor a uložte jeho obsah do své databáze:
@@ -10012,13 +9998,11 @@ $ echo 'version 1' > test.txt
 $ git hash-object -w test.txt
 83baae61804e65cc73a7201a7252750c76066a30
 
-
 Poté do souboru zapište nový obsah a znovu ho uložte:
 
 $ echo 'version 2' > test.txt
 $ git hash-object -w test.txt
 1f7a7a472abf3dd9643fd615f6da379c4acb3e3a
-
 
 Vaše databáze obsahuje dvě nové verze souboru a počáteční obsah, který jste do ní vložili:
 
@@ -10027,13 +10011,11 @@ $ find .git/objects -type f
 .git/objects/83/baae61804e65cc73a7201a7252750c76066a30
 .git/objects/d6/70460b4b4aece5915caf5c68d12f560a9fe3e4
 
-
 Soubor nyní můžete vrátit do první verze:
 
 $ git cat-file -p 83baae61804e65cc73a7201a7252750c76066a30 > test.txt
 $ cat test.txt
 version 1
-
 
 
 9.2 Objekty Git 240
@@ -10050,7 +10032,6 @@ s klíčem SHA-1 objektu, Git vám sdělí jeho typ, ať se jedná o jakýkoli o
 $ git cat-file -t 1f7a7a472abf3dd9643fd615f6da379c4acb3e3a
 blob
 
-
 9.2.1 Objekty stromu
 Dalším typem objektu, na který se podíváme, je objekt stromu (tree object), jenž řeší problém ukládání
 názvu souboru a zároveň umožňuje uložit skupinu souborů dohromady. Git ukládá obsah podobným
@@ -10060,17 +10041,16 @@ neboli obsahům souborů. Jeden objekt stromu obsahuje jednu nebo více položek
 obsahuje ukazatel SHA-1 na blob nebo podstrom s asociovaným režimem, typem a názvem souboru.
 Nejnovější strom v projektu „simplegit“ může vypadat například takto:
 
-$ git cat-file -p master^{tree}
-100644 blob a906cb2a4a904a152e80877d4088654daad0c859 README
-100644 blob 8f94139338f9404f26296befa88755fc2598c289 Rakefile
-040000 tree 99f1a6d12cb4b6f19c8655fca46c3ecf317074e0 lib
-
+	$ git cat-file -p master^{tree}
+	100644 blob a906cb2a4a904a152e80877d4088654daad0c859      README
+	100644 blob 8f94139338f9404f26296befa88755fc2598c289      Rakefile
+	040000 tree 99f1a6d12cb4b6f19c8655fca46c3ecf317074e0      lib
 
 Syntax master^{tree} specifikuje objekt stromu, na nějž ukazuje poslední revize na hlavní větvi.
 Všimněte si, že podadresář lib není blob, ale ukazatel na jiný strom:
 
-$ git cat-file -p 99f1a6d12cb4b6f19c8655fca46c3ecf317074e0
-100644 blob 47c6340d6459e05787f644c2447d2595f5d3a54b simplegit.rb
+	$ git cat-file -p 99f1a6d12cb4b6f19c8655fca46c3ecf317074e0
+	100644 blob 47c6340d6459e05787f644c2447d2595f5d3a54b      simplegit.rb
 
 Data, která Git ukládá, vypadají v principu jako na obrázku 9-1.
 
@@ -10088,9 +10068,8 @@ změn ještě neexistuje (dokonce ještě nemáte ani vytvořenou oblast připra
 --cacheinfo, protože soubor, který přidáváte, není ve vašem adresáři, je ale ve vaší databázi. K tomu
 všemu přidáte režim, SHA-1 a název souboru:
 
-$ git update-index --add --cacheinfo 100644 \
-83baae61804e65cc73a7201a7252750c76066a30 test.txt
-
+	$ git update-index --add --cacheinfo 100644 \
+	  83baae61804e65cc73a7201a7252750c76066a30 test.txt
 
 V tomto případě jste zadali režim 100644, který znamená, že se jedná o běžný soubor. Dalšími možnostmi
 režimu jsou 100755, který označuje spustitelný soubor, a 120000, který znamená symbolický odkaz.
@@ -10102,53 +10081,47 @@ Nyní můžete použít příkaz write-tree, jímž zapíšete stav oblasti při
 do objektu stromu. Tentokrát se obejdete bez parametru -w. Příkaz write-tree automaticky vytvoří
 objekt stromu ze stavu indexu, pokud tento strom ještě neexistuje:
 
-$ git write-tree
-d8329fc1cc938780ffdd9f94e0d364e0ea74f579
-$ git cat-file -p d8329fc1cc938780ffdd9f94e0d364e0ea74f579
-100644 blob 83baae61804e65cc73a7201a7252750c76066a30 test.txt
-
+	$ git write-tree
+	d8329fc1cc938780ffdd9f94e0d364e0ea74f579
+	$ git cat-file -p d8329fc1cc938780ffdd9f94e0d364e0ea74f579
+	100644 blob 83baae61804e65cc73a7201a7252750c76066a30      test.txt
 
 Můžete si také ověřit, že jde skutečně o objekt stromu:
 
-$ git cat-file -t d8329fc1cc938780ffdd9f94e0d364e0ea74f579
-tree
-
+	$ git cat-file -t d8329fc1cc938780ffdd9f94e0d364e0ea74f579
+	tree
 
 Nyní vytvoříte nový strom s druhou verzí souboru test.txt a jedním novým souborem (new.txt):
 
-$ echo 'new file' > new.txt
-$ git update-index test.txt
-$ git update-index --add new.txt
-
+	$ echo 'new file' > new.txt
+	$ git update-index test.txt
+	$ git update-index --add new.txt
 
 V oblasti připravených změn nyní máte jak novou verzi souboru test.txt, tak nový soubor new.txt.
 Uložte tento strom (zaznamenáním stavu oblasti připravených změn neboli indexu do objektu stromu)
 a prohlédněte si výsledek:
 
-$ git write-tree
-0155eb4229851634a0f03eb265b69f5a2d56f341
-$ git cat-file -p 0155eb4229851634a0f03eb265b69f5a2d56f341
-100644 blob fa49b077972391ad58037050f2a75f74e3671e92 new.txt
-100644 blob 1f7a7a472abf3dd9643fd615f6da379c4acb3e3a test.txt
-
+	$ git write-tree
+	0155eb4229851634a0f03eb265b69f5a2d56f341
+	$ git cat-file -p 0155eb4229851634a0f03eb265b69f5a2d56f341
+	100644 blob fa49b077972391ad58037050f2a75f74e3671e92      new.txt
+	100644 blob 1f7a7a472abf3dd9643fd615f6da379c4acb3e3a      test.txt
 
 Všimněte si, že tento strom má oba záznamy souborů a že hodnota SHA souboru test.txt je SHA původní
-„verze 2“ (1f7a7a). Jen pro zábavu nyní můžete přidat první strom jako podadresář do tohoto stro
-
-
+„verze 2“ (1f7a7a). Jen pro zábavu nyní můžete přidat první strom jako podadresář do tohoto stromu.
 
 9.2 Objekty Git 242
-mu. Stromy můžete do oblasti připravených změn načíst příkazem read-tree. V tomto případě můžete
+Stromy můžete do oblasti připravených změn načíst příkazem read-tree. V tomto případě můžete
 načíst existující strom jako podstrom do oblasti připravených změn pomocí parametru --prefix, který
 zadáte k příkazu read-tree:
 
-$ git read-tree --prefix=bak d8329fc1cc938780ffdd9f94e0d364e0ea74f579
-$ git write-tree
-3c4e9cd789d88d8d89c1073707c3585e41b0e614
-$ git cat-file -p 3c4e9cd789d88d8d89c1073707c3585e41b0e614
-040000 tree d8329fc1cc938780ffdd9f94e0d364e0ea74f579 bak
-100644 blob fa49b077972391ad58037050f2a75f74e3671e92 new.txt
-100644 blob 1f7a7a472abf3dd9643fd615f6da379c4acb3e3a test.txt
+	$ git read-tree --prefix=bak d8329fc1cc938780ffdd9f94e0d364e0ea74f579
+	$ git write-tree
+	3c4e9cd789d88d8d89c1073707c3585e41b0e614
+	$ git cat-file -p 3c4e9cd789d88d8d89c1073707c3585e41b0e614
+	040000 tree d8329fc1cc938780ffdd9f94e0d364e0ea74f579      bak
+	100644 blob fa49b077972391ad58037050f2a75f74e3671e92      new.txt
+	100644 blob 1f7a7a472abf3dd9643fd615f6da379c4acb3e3a      test.txt
 
 Pokud byste vytvořili pracovní adresář z nového stromu, který jste právě zapsali, dostali byste dva soubory
 na nejvyšší úrovni pracovního adresáře a podadresář bak, obsahující první verzi souboru test.txt.
@@ -10157,7 +10130,6 @@ Data, která Git pro tyto struktury obsahuje, si můžete představit jako ilust
 Obrázek 9-2. Struktura obsahu vašich současných dat Git
 
 9.2.2 Objekty revize
-
 Máte vytvořeny tři stromy označující různé snímky vašeho projektu, jež chcete sledovat. Původního
 problému jsme se však stále nezbavili: musíte si pamatovat všechny tři hodnoty SHA-1, abyste mohli
 snímky znovu vyvolat. Nemáte také žádné informace o tom, kdo snímky uložil, kdy byly uloženy
@@ -10166,21 +10138,19 @@ a proč se tak stalo. Toto jsou základní informace, které obsahuje objekt rev
 Pro vytvoření objektu revize zavolejte příkaz commit-tree a zadejte jeden SHA-1 stromu a eventuální
 objekty revize, které mu bezprostředně předcházely. Začněte prvním stromem, který jste zapsali:
 
-$ echo 'first commit' | git commit-tree d8329f
-fdf4fc3344e67ab068f836878b6c4951e3b15f3d
-
+	$ echo 'first commit' | git commit-tree d8329f
+	fdf4fc3344e67ab068f836878b6c4951e3b15f3d
 
 Nyní se můžete podívat na nově vytvořený objekt revize. Použijte příkaz cat-file:
 
 
 9.2 Objekty Git 243
-$ git cat-file -p fdf4fc3
-tree d8329fc1cc938780ffdd9f94e0d364e0ea74f579
-author Scott Chacon <schacon@gmail.com> 1243040974 -0700
-committer Scott Chacon <schacon@gmail.com> 1243040974 -0700
+	$ git cat-file -p fdf4fc3
+	tree d8329fc1cc938780ffdd9f94e0d364e0ea74f579
+	author Scott Chacon <schacon@gmail.com> 1243040974 -0700
+	committer Scott Chacon <schacon@gmail.com> 1243040974 -0700
 
-
-first commit
+	first commit
 
 Formát objektu revize je prostý. Udává strom nejvyšší úrovně pro snímek projektu v tomto místě; informace
 o autorovi řešení/autorovi změny revize získané z konfiguračního nastavení user.name a user.email,
@@ -10189,50 +10159,43 @@ spolu s aktuálním časovým údajem; poté následuje prázdný řádek a za n
 Dále zapíšete i zbylé dva objekty revize. Oba budou odkazovat na revizi, která jim bezprostředně předcházela:
 
 
-$ echo 'second commit' | git commit-tree 0155eb -p fdf4fc3
-cac0cab538b970a37ea1e769cbbde608743bc96d
-$ echo 'third commit' | git commit-tree 3c4e9c -p cac0cab
-1a410efbd13591db07496601ebc7a059dd55cfe9
-
+	$ echo 'second commit' | git commit-tree 0155eb -p fdf4fc3
+	cac0cab538b970a37ea1e769cbbde608743bc96d
+	$ echo 'third commit'  | git commit-tree 3c4e9c -p cac0cab
+	1a410efbd13591db07496601ebc7a059dd55cfe9
 
 Všechny tři tyto objekty revizí ukazují na jeden ze tří stromů snímku, který jste vytvořili. Může se
 to zdát zvláštní, ale nyní máte vytvořenu skutečnou historii revizí Git, kterou lze zobrazit příkazem
 git log spuštěným pro hodnotu SHA-1 poslední revize:
 
-$ git log --stat 1a410e
-commit 1a410efbd13591db07496601ebc7a059dd55cfe9
-Author: Scott Chacon <schacon@gmail.com>
-Date: Fri May 22 18:15:24 2009 -0700
+	$ git log --stat 1a410e
+	commit 1a410efbd13591db07496601ebc7a059dd55cfe9
+	Author: Scott Chacon <schacon@gmail.com>
+	Date:   Fri May 22 18:15:24 2009 -0700
 
+	    third commit
 
- third commit
+	 bak/test.txt |    1 +
+	 1 files changed, 1 insertions(+), 0 deletions(-)
 
- bak/test.txt | 1 +
-1 files changed, 1 insertions(+), 0 deletions(-)
+	commit cac0cab538b970a37ea1e769cbbde608743bc96d
+	Author: Scott Chacon <schacon@gmail.com>
+	Date:   Fri May 22 18:14:29 2009 -0700
 
+	    second commit
 
-commit cac0cab538b970a37ea1e769cbbde608743bc96d
-Author: Scott Chacon <schacon@gmail.com>
-Date: Fri May 22 18:14:29 2009 -0700
+	 new.txt  |    1 +
+	 test.txt |    2 +-
+	 2 files changed, 2 insertions(+), 1 deletions(-)
 
+	commit fdf4fc3344e67ab068f836878b6c4951e3b15f3d
+	Author: Scott Chacon <schacon@gmail.com>
+	Date:   Fri May 22 18:09:34 2009 -0700
 
- second commit
+	    first commit
 
- new.txt | 1 +
-test.txt | 2 +2
-files changed, 2 insertions(+), 1 deletions(-)
-
-
-commit fdf4fc3344e67ab068f836878b6c4951e3b15f3d
-Author: Scott Chacon <schacon@gmail.com>
-Date: Fri May 22 18:09:34 2009 -0700
-
-
- first commit
-
- test.txt | 1 +
-1 files changed, 1 insertions(+), 0 deletions(-)
-
+	 test.txt |    1 +
+	 1 files changed, 1 insertions(+), 0 deletions(-)
 
 
 9.2 Objekty Git 244
@@ -10243,17 +10206,17 @@ odkazují na stromy nejvyšší úrovně a revize, které jim bezprostředně p�
 objekty Git – bloby, stromy a revize – jsou nejprve uloženy jako samostatné soubory do adresáře
 .git/objects. Toto jsou všechny objekty v ukázkovém adresáři spolu s komentářem k tomu co obsahují:
 
-$ find .git/objects -type f
-.git/objects/01/55eb4229851634a0f03eb265b69f5a2d56f341 # tree 2
-.git/objects/1a/410efbd13591db07496601ebc7a059dd55cfe9 # commit 3
-.git/objects/1f/7a7a472abf3dd9643fd615f6da379c4acb3e3a # test.txt v2
-.git/objects/3c/4e9cd789d88d8d89c1073707c3585e41b0e614 # tree 3
-.git/objects/83/baae61804e65cc73a7201a7252750c76066a30 # test.txt v1
-.git/objects/ca/c0cab538b970a37ea1e769cbbde608743bc96d # commit 2
-.git/objects/d6/70460b4b4aece5915caf5c68d12f560a9fe3e4 # 'test content'
-.git/objects/d8/329fc1cc938780ffdd9f94e0d364e0ea74f579 # tree 1
-.git/objects/fa/49b077972391ad58037050f2a75f74e3671e92 # new.txt
-.git/objects/fd/f4fc3344e67ab068f836878b6c4951e3b15f3d # commit 1
+	$ find .git/objects -type f
+	.git/objects/01/55eb4229851634a0f03eb265b69f5a2d56f341 # tree 2
+	.git/objects/1a/410efbd13591db07496601ebc7a059dd55cfe9 # commit 3
+	.git/objects/1f/7a7a472abf3dd9643fd615f6da379c4acb3e3a # test.txt v2
+	.git/objects/3c/4e9cd789d88d8d89c1073707c3585e41b0e614 # tree 3
+	.git/objects/83/baae61804e65cc73a7201a7252750c76066a30 # test.txt v1
+	.git/objects/ca/c0cab538b970a37ea1e769cbbde608743bc96d # commit 2
+	.git/objects/d6/70460b4b4aece5915caf5c68d12f560a9fe3e4 # 'test content'
+	.git/objects/d8/329fc1cc938780ffdd9f94e0d364e0ea74f579 # tree 1
+	.git/objects/fa/49b077972391ad58037050f2a75f74e3671e92 # new.txt
+	.git/objects/fd/f4fc3344e67ab068f836878b6c4951e3b15f3d # commit 1
 
 Pokud byste hledali vztahy mezi všemi interními ukazateli, vyšel by vám celý diagram objektů – viz
 obrázek 9-3.
@@ -10261,45 +10224,40 @@ obrázek 9-3.
 Obrázek 9-3. Všechny objekty v adresáři Git
 
 9.2.3 Ukládání objektů
-
 Už jsem zmínil, že se spolu s obsahem ukládá také záhlaví (header). Zaměřme se teď chvíli na to, jak
 Git ukládá své objekty. Uvidíte, jak lze uložit objekt blobu – v našem případě řetězec „what is up,
 doc?“ – interaktivně v skriptovacím jazyce Ruby. Interaktivní režim Ruby spustíte příkazem irb:
 
-$ irb
->> content = "what is up, doc?"
-=> "what is up, doc?"
-
+	$ irb
+	>> content = "what is up, doc?"
+	=> "what is up, doc?"
 
 
 9.2 Objekty Git 245
 Git vytvoří záhlaví, které bude začínat typem objektu, jímž je v našem případě blob. Poté vloží mezeru,
 za níž bude následovat velikost obsahu a na konec nulový byte:
 
->> header = "blob #{content.length}\0"
-=> "blob 16\000"
-
+	>> header = "blob #{content.length}\0"
+	=> "blob 16\000"
 
 Git vytvoří řetězec ze záhlaví a původního obsahu a vypočítá kontrolní součet SHA-1 tohoto nového
 obsahu. V Ruby můžete hodnotu SHA-1 daného řetězce spočítat tak, že příkazem require připojíte
 knihovnu pro počítání SHA1 a zavoláte Digest::SHA1.hexdigest() s daným řetězcem:
 
->> store = header + content
-=> "blob 16\000what is up, doc?"
->> require 'digest/sha1'
-=> true
->> sha1 = Digest::SHA1.hexdigest(store)
-=> "bd9dbf5aae1a3862dd1526723246b20206e5fc37"
-
+	>> store = header + content
+	=> "blob 16\000what is up, doc?"
+	>> require 'digest/sha1'
+	=> true
+	>> sha1 = Digest::SHA1.hexdigest(store)
+	=> "bd9dbf5aae1a3862dd1526723246b20206e5fc37"
 
 Git zkomprimuje nový obsah metodou zlib, která je obsažena v knihovně zlib. Nejprve je třeba vyžádat
 si knihovnu a poté na obsah spustit příkaz Zlib::Deflate.deflate():
 
->> require 'zlib'
-=> true
->> zlib_content = Zlib::Deflate.deflate(store)
-=> "x\234K\312\311OR04c(\317H,Q\310,V(-\320QH\311O\266\a\000_\034\a\235"
-
+	>> require 'zlib'
+	=> true
+	>> zlib_content = Zlib::Deflate.deflate(store)
+	=> "x\234K\312\311OR04c(\317H,Q\310,V(-\320QH\311O\266\a\000_\034\a\235"
 
 Na závěr zapíšete obsah zkomprimovaný metodou zlib do objektu na disku. Musíte tu určit cestu
 k objektu, který chcete zapsat (první dva znaky hodnoty SHA-1 budou název podadresáře, zbývajících
@@ -10309,15 +10267,14 @@ v jazyce Ruby vytvořit pomocí funkce FileUtils.mkdir_p().
 Poté zadejte File.open() pro otevření souboru a voláním write() na vzniklý identifikátor souboru
 zapište do souboru právě zkomprimovaný (zlib) obsah:
 
->> path = '.git/objects/' + sha1[0,2] + '/' + sha1[2,38]
-=> ".git/objects/bd/9dbf5aae1a3862dd1526723246b20206e5fc37"
->> require 'fileutils'
-=> true
->> FileUtils.mkdir_p(File.dirname(path))
-=> ".git/objects/bd"
->> File.open(path, 'w') { |f| f.write zlib_content }
-=> 32
-
+	>> path = '.git/objects/' + sha1[0,2] + '/' + sha1[2,38]
+	=> ".git/objects/bd/9dbf5aae1a3862dd1526723246b20206e5fc37"
+	>> require 'fileutils'
+	=> true
+	>> FileUtils.mkdir_p(File.dirname(path))
+	=> ".git/objects/bd"
+	>> File.open(path, 'w') { |f| f.write zlib_content }
+	=> 32
 
 A je hotovo. Právě jste vytvořili platný objekt blobu Git. Všechny objekty Git se ukládají stejným způsobem,
 jen s odlišným typem. Místo řetězce blob bude záhlaví začínat řetězcem „commit“ (u revize)
@@ -10336,55 +10293,51 @@ V systému Git se těmto ukazatelům říká reference (angl. „references“ n
 obsahují hodnoty SHA-1, najdete v adresáři .git/refs. V aktuálním projektu nejsou v tomto adresáři
 žádné soubory, zatím tu najdete jen jednoduchou strukturu:
 
-$ find .git/refs
-.git/refs
-.git/refs/heads
-.git/refs/tags
-$ find .git/refs -type f
-$
-
+	$ find .git/refs
+	.git/refs
+	.git/refs/heads
+	.git/refs/tags
+	$ find .git/refs -type f
+	$
 
 Chcete-li vytvořit novou referenci, díky níž si budete pamatovat, kde se nachází vaše poslední revize,
 lze to technicky provést velmi jednoduše:
 
-$ echo "1a410efbd13591db07496601ebc7a059dd55cfe9" > .git/refs/heads/master
+	$ echo "1a410efbd13591db07496601ebc7a059dd55cfe9" > .git/refs/heads/master
 
 Nyní můžete v příkazech Git používat „head“ referenci, kterou jste právě vytvořili, místo hodnoty SHA-1:
 
-$ git log --pretty=oneline master
-1a410efbd13591db07496601ebc7a059dd55cfe9 third commit
-cac0cab538b970a37ea1e769cbbde608743bc96d second commit
-fdf4fc3344e67ab068f836878b6c4951e3b15f3d first commit
-
+	$ git log --pretty=oneline  master
+	1a410efbd13591db07496601ebc7a059dd55cfe9 third commit
+	cac0cab538b970a37ea1e769cbbde608743bc96d second commit
+	fdf4fc3344e67ab068f836878b6c4951e3b15f3d first commit
 
 Tím vás nenabádám, abyste přímo editovali soubory referencí. Git zná bezpečnější metodu, jak referenci
 aktualizovat: příkaz update-ref:
 
-$ git update-ref refs/heads/master 1a410efbd13591db07496601ebc7a059dd55cfe9
+	$ git update-ref refs/heads/master 1a410efbd13591db07496601ebc7a059dd55cfe9
 
 A to je také skutečná podstata větví v systému Git. Jedná se o jednoduché ukazatele, neboli reference
 na „hlavu“ (angl. head) jedné linie práce. Chcete-li vytvořit větev zpětně na druhé revizi, můžete zadat:
 
-$ git update-ref refs/heads/test cac0ca
+	$ git update-ref refs/heads/test cac0ca
 
 Vaše větev bude obsahovat pouze práci od této revize níže:
 
-$ git log --pretty=oneline test
-cac0cab538b970a37ea1e769cbbde608743bc96d second commit
-fdf4fc3344e67ab068f836878b6c4951e3b15f3d first commit
-
+	$ git log --pretty=oneline test
+	cac0cab538b970a37ea1e769cbbde608743bc96d second commit
+	fdf4fc3344e67ab068f836878b6c4951e3b15f3d first commit
 
 Vaše databáze Git bude nyní v principu vypadat tak, jak je znázorněno na obrázku 9-4.
+
+Obrázek 9-4. Objekty v adresáři Git s referencemi větve „head“
 
 Spouštíte-li příkaz typu git branch (název větve), Git ve skutečnosti spustí příkaz update-ref a vloží
 hodnotu SHA-1 poslední revize větve, na níž se nacházíte, do nové reference, kterou chcete vytvořit.
 
 
 9.3 Reference Git 247
-Obrázek 9-4. Objekty v adresáři Git s referencemi větve „head“
-
 9.3.1 Soubor HEAD
-
 Nyní se však nabízí otázka, jak může Git při spuštění příkazu git branch (název větve) znát hodnotu
 SHA-1 poslední revize. Odpověď zní: soubor HEAD. Soubor HEAD je symbolická reference na větev,
 na níž se právě nacházíte. Symbolickou referencí myslím to, že na rozdíl od normálních referencí většinou
@@ -10394,12 +10347,10 @@ můžete v něm najít třeba následující:
 $ cat .git/HEAD
 ref: refs/heads/master
 
-
 Spustíte-li příkaz git checkout test, Git aktualizuje soubor do následující podoby:
 
 $ cat .git/HEAD
 ref: refs/heads/test
-
 
 Spustíte-li příkaz git commit, systém vytvoří objekt revize, jehož rodičem bude hodnota SHA-1, na niž
 ukazuje reference v souboru HEAD. Soubor můžete editovat také ručně, ale opět existuje i bezpečnější
@@ -10408,13 +10359,11 @@ příkaz: symbolic-ref. Hodnotu souboru HEAD můžete načíst tímto příkazem
 $ git symbolic-ref HEAD
 refs/heads/master
 
-
 Hodnotu pro soubor HEAD můžete také nastavit:
 
 $ git symbolic-ref HEAD refs/heads/test
 $ cat .git/HEAD
 ref: refs/heads/test
-
 
 Nelze však zadat symbolickou referenci mimo adresář refs:
 
@@ -10422,7 +10371,6 @@ Nelze však zadat symbolickou referenci mimo adresář refs:
 9.3 Reference Git 248
 $ git symbolic-ref HEAD test
 fatal: Refusing to point HEAD outside of refs/
-
 
 9.3.2 Značky
 Už jsme se seznámili se třemi základními typy objektů. Jenže existuje ještě čtvrtý. Objekt značky se
@@ -10437,8 +10385,8 @@ $ git update-ref refs/tags/v1.0 cac0cab538b970a37ea1e769cbbde608743bc96d
 
 To je celá prostá značka – větev, která se nikdy nepřemisťuje. Anotovaná značka je už složitější. Vytvoříte-li anotovanou značku, Git vytvoří objekt značky a zapíše referenci, která na objekt ukazuje (neukazuje
 tedy na samotnou revizi). To je dobře vidět, vytvoříte-li anotovanou značku (-a udává, že se jedná
-
 o anotovanou značku):
+
 $ git tag -a v1.1 1a410efbd13591db07496601ebc7a059dd55cfe9 –m 'test tag'
 
 Pro objekt byla vytvořena tato hodnota SHA-1:
@@ -10446,16 +10394,15 @@ Pro objekt byla vytvořena tato hodnota SHA-1:
 $ cat .git/refs/tags/v1.1
 9585191f37f7b0fb9444f35a9bf50de191beadc2
 
-
 Nyní pro tuto hodnotu SHA-1 spusťte příkaz cat-file:
 
-$ git cat-file -p 9585191f37f7b0fb9444f35a9bf50de191beadc2
-object 1a410efbd13591db07496601ebc7a059dd55cfe9
-type commit
-tag v1.1
-tagger Scott Chacon <schacon@gmail.com> Sat May 23 16:48:58 2009 -0700
+	$ git cat-file -p 9585191f37f7b0fb9444f35a9bf50de191beadc2
+	object 1a410efbd13591db07496601ebc7a059dd55cfe9
+	type commit
+	tag v1.1
+	tagger Scott Chacon <schacon@gmail.com> Sat May 23 16:48:58 2009 -0700
 
-test tag
+	test tag
 
 Všimněte si, že záznam objektu ukazuje na hodnotu revize SHA-1, k níž jste značku přidali. Měli byste
 také vědět, že nemusí ukazovat na revizi. Značkou můžete označit jakýkoli objekt Git. Ve zdrojovém
@@ -10475,23 +10422,20 @@ do něj větev master:
 
 
 9.4 Balíčkové soubory 249
-$ git remote add origin git@github.com:schacon/simplegit-progit.git
-$ git push origin master
-Counting objects: 11, done.
-Compressing objects: 100% (5/5), done.
-Writing objects: 100% (7/7), 716 bytes, done.
-Total 7 (delta 2), reused 4 (delta 1)
-To git@github.com:schacon/simplegit-progit.git
-
-
- a11bef0..ca82a6d master -> master
+	$ git remote add origin git@github.com:schacon/simplegit-progit.git
+	$ git push origin master
+	Counting objects: 11, done.
+	Compressing objects: 100% (5/5), done.
+	Writing objects: 100% (7/7), 716 bytes, done.
+	Total 7 (delta 2), reused 4 (delta 1)
+	To git@github.com:schacon/simplegit-progit.git
+	   a11bef0..ca82a6d  master -> master
 
 Poté se můžete podívat, jakou podobu měla větev master na vzdáleném serveru origin, když jste s ním
 naposledy komunikovali. Pomůže vám s tím soubor refs/remotes/origin/master:
 
 $ cat .git/refs/remotes/origin/master
 ca82a6dff817ec66f44342007202690a93763949
-
 
 Reference na vzdálené repozitáře se od větví (reference refs/heads) liší zejména tím, že nelze provést
 jejich checkout. Git je přemisťuje jako záložky poslední známé pozice těchto větví na serveru.
@@ -10500,19 +10444,18 @@ jejich checkout. Git je přemisťuje jako záložky poslední známé pozice tě
 Vraťme se zpět do databáze objektů vašeho testovacího repozitáře Git. V současné chvíli máte 11 objektů:
 4 bloby, 3 stromy, 3 revize a 1 značku.
 
-$ find .git/objects -type f
-.git/objects/01/55eb4229851634a0f03eb265b69f5a2d56f341 # tree 2
-.git/objects/1a/410efbd13591db07496601ebc7a059dd55cfe9 # commit 3
-.git/objects/1f/7a7a472abf3dd9643fd615f6da379c4acb3e3a # test.txt v2
-.git/objects/3c/4e9cd789d88d8d89c1073707c3585e41b0e614 # tree 3
-.git/objects/83/baae61804e65cc73a7201a7252750c76066a30 # test.txt v1
-.git/objects/95/85191f37f7b0fb9444f35a9bf50de191beadc2 # tag
-.git/objects/ca/c0cab538b970a37ea1e769cbbde608743bc96d # commit 2
-.git/objects/d6/70460b4b4aece5915caf5c68d12f560a9fe3e4 # 'test content'
-.git/objects/d8/329fc1cc938780ffdd9f94e0d364e0ea74f579 # tree 1
-.git/objects/fa/49b077972391ad58037050f2a75f74e3671e92 # new.txt
-.git/objects/fd/f4fc3344e67ab068f836878b6c4951e3b15f3d # commit 1
-
+	$ find .git/objects -type f
+	.git/objects/01/55eb4229851634a0f03eb265b69f5a2d56f341 # tree 2
+	.git/objects/1a/410efbd13591db07496601ebc7a059dd55cfe9 # commit 3
+	.git/objects/1f/7a7a472abf3dd9643fd615f6da379c4acb3e3a # test.txt v2
+	.git/objects/3c/4e9cd789d88d8d89c1073707c3585e41b0e614 # tree 3
+	.git/objects/83/baae61804e65cc73a7201a7252750c76066a30 # test.txt v1
+	.git/objects/95/85191f37f7b0fb9444f35a9bf50de191beadc2 # tag
+	.git/objects/ca/c0cab538b970a37ea1e769cbbde608743bc96d # commit 2
+	.git/objects/d6/70460b4b4aece5915caf5c68d12f560a9fe3e4 # 'test content'
+	.git/objects/d8/329fc1cc938780ffdd9f94e0d364e0ea74f579 # tree 1
+	.git/objects/fa/49b077972391ad58037050f2a75f74e3671e92 # new.txt
+	.git/objects/fd/f4fc3344e67ab068f836878b6c4951e3b15f3d # commit 1
 
 Git komprimuje obsah těchto souborů metodou zlib a uložená data tak nejsou příliš velká. Všechny
 tyto soubory zabírají dohromady pouhých 925 bytů. Do repozitáře tak nyní přidáme větší objem
@@ -10520,58 +10463,49 @@ dat, na němž si budeme moci ukázat jednu zajímavou funkci systému Git. Z kn
 jsme pracovali před časem, přidejte soubor „repo.rb“. Je to soubor se zdrojovým kódem o velikosti
 asi 12 kB:
 
-$ curl http://github.com/mojombo/grit/raw/master/lib/grit/repo.rb > repo.rb
-$ git add repo.rb
-$ git commit -m 'added repo.rb'
-[master 484a592] added repo.rb
-
-
- 3 files changed, 459 insertions(+), 2 deletions(-)
-delete mode 100644 bak/test.txt
-create mode 100644 repo.rb
-rewrite test.txt (100%)
-
+	$ curl http://github.com/mojombo/grit/raw/master/lib/grit/repo.rb > repo.rb
+	$ git add repo.rb
+	$ git commit -m 'added repo.rb'
+	[master 484a592] added repo.rb
+	 3 files changed, 459 insertions(+), 2 deletions(-)
+	 delete mode 100644 bak/test.txt
+	 create mode 100644 repo.rb
+	 rewrite test.txt (100%)
 
 
 9.4 Balíčkové soubory 250
 Pokud se podíváte na výsledný strom, uvidíte hodnotu SHA-1, kterou soubor repo.rb dostal pro objekt
 blobu:
 
-$ git cat-file -p master^{tree}
-100644 blob fa49b077972391ad58037050f2a75f74e3671e92 new.txt
-100644 blob 9bc1dc421dcd51b4ac296e3e5b6e2a99cf44391e repo.rb
-100644 blob e3f094f522629ae358806b17daf78246c27c007b test.txt
-
+	$ git cat-file -p master^{tree}
+	100644 blob fa49b077972391ad58037050f2a75f74e3671e92      new.txt
+	100644 blob 9bc1dc421dcd51b4ac296e3e5b6e2a99cf44391e      repo.rb
+	100644 blob e3f094f522629ae358806b17daf78246c27c007b      test.txt
 
 Pomocí příkazu git cat-file zjistíte aktuální velikost objektu:
 
-$ git cat-file -s 9bc1dc421dcd51b4ac296e3e5b6e2a99cf44391e
-12898
-
+	$ git cat-file -s 9bc1dc421dcd51b4ac296e3e5b6e2a99cf44391e
+	12898
 
 Nyní soubor trochu upravíme a uvidíme, co se stane:
 
-$ echo '# testing' >> repo.rb
-$ git commit -am 'modified repo a bit'
-[master ab1afef] modified repo a bit
-
-
- 1 files changed, 1 insertions(+), 0 deletions(-)
+	$ echo '# testing' >> repo.rb
+	$ git commit -am 'modified repo a bit'
+	[master ab1afef] modified repo a bit
+	 1 files changed, 1 insertions(+), 0 deletions(-)
 
 Prohlédněte si strom vytvořený touto revizí a uvidíte jednu zajímavou věc:
 
-$ git cat-file -p master^{tree}
-100644 blob fa49b077972391ad58037050f2a75f74e3671e92 new.txt
-100644 blob 05408d195263d853f09dca71d55116663690c27c repo.rb
-100644 blob e3f094f522629ae358806b17daf78246c27c007b test.txt
-
+	$ git cat-file -p master^{tree}
+	100644 blob fa49b077972391ad58037050f2a75f74e3671e92      new.txt
+	100644 blob 05408d195263d853f09dca71d55116663690c27c      repo.rb
+	100644 blob e3f094f522629ae358806b17daf78246c27c007b      test.txt
 
 Nyní jde o úplně jiný blob. Přestože jste na konec 400řádkového souboru vložili jen jeden jediný řádek,
 Git uložil nový obsah jako úplně nový objekt:
 
-$ git cat-file -s 05408d195263d853f09dca71d55116663690c27c
-12908
-
+	$ git cat-file -s 05408d195263d853f09dca71d55116663690c27c
+	12908
 
 Na disku teď máte dva téměř identické 12kB objekty. Nebylo by krásné, kdyby Git mohl uložit jeden
 z nich v plné velikosti, ale druhý už jen jako rozdíl mezi oběma těmito objekty?
@@ -10583,25 +10517,23 @@ výkon. Git k tomuto kroku přistoupí, pokud máte příliš mnoho volných obj
 příkaz git gc nebo jestliže odesíláte revize na vzdálený server. Chcete-li vidět, jak proces probíhá,
 můžete systému Git ručně zadat, aby objekty zabalil. Zadejte příkaz git gc:
 
-$ git gc
-Counting objects: 17, done.
-Delta compression using 2 threads.
-Compressing objects: 100% (13/13), done.
-Writing objects: 100% (17/17), done.
-Total 17 (delta 1), reused 10 (delta 0)
-
+	$ git gc
+	Counting objects: 17, done.
+	Delta compression using 2 threads.
+	Compressing objects: 100% (13/13), done.
+	Writing objects: 100% (17/17), done.
+	Total 17 (delta 1), reused 10 (delta 0)
 
 Podíváte-li se do adresáře s objekty, zjistíte, že většina objektů zmizela. Zato se objevily dva nové:
 
 
 9.4 Balíčkové soubory 251
-$ find .git/objects -type f
-.git/objects/71/08f7ecb345ee9d0084193f147cdad4d2998293
-.git/objects/d6/70460b4b4aece5915caf5c68d12f560a9fe3e4
-.git/objects/info/packs
-.git/objects/pack/pack-7a16e4488ae40c7d2bc56ea2bd43e25212a66c45.idx
-.git/objects/pack/pack-7a16e4488ae40c7d2bc56ea2bd43e25212a66c45.pack
-
+	$ find .git/objects -type f
+	.git/objects/71/08f7ecb345ee9d0084193f147cdad4d2998293
+	.git/objects/d6/70460b4b4aece5915caf5c68d12f560a9fe3e4
+	.git/objects/info/packs
+	.git/objects/pack/pack-7a16e4488ae40c7d2bc56ea2bd43e25212a66c45.idx
+	.git/objects/pack/pack-7a16e4488ae40c7d2bc56ea2bd43e25212a66c45.pack
 
 Objekty, které zůstaly, jsou bloby, na něž neukazuje žádná revize, v našem případě bloby z příkladů
 „what is up, doc?“ a „test content“, které jsme vytvořili před časem. Jelikož jste je nikdy nevložili
@@ -10618,32 +10550,28 @@ a uloží pouze rozdíly mezi jednotlivými verzemi souboru. Do balíčkového s
 nahlédnout a přesvědčit se, čím Git ušetřil místo. Nízkoúrovňový příkaz git verify-pack umožňuje
 prohlížet, co bylo zabaleno:
 
-$ git verify-pack -v \
-
- .git/objects/pack/pack-7a16e4488ae40c7d2bc56ea2bd43e25212a66c45.idx
-0155eb4229851634a0f03eb265b69f5a2d56f341 tree 71 76 5400
-05408d195263d853f09dca71d55116663690c27c blob 12908 3478 874
-09f01cea547666f58d6a8d809583841a7c6f0130 tree 106 107 5086
-1a410efbd13591db07496601ebc7a059dd55cfe9 commit 225 151 322
-1f7a7a472abf3dd9643fd615f6da379c4acb3e3a blob 10 19 5381
-3c4e9cd789d88d8d89c1073707c3585e41b0e614 tree 101 105 5211
-484a59275031909e19aadb7c92262719cfcdf19a commit 226 153 169
-83baae61804e65cc73a7201a7252750c76066a30 blob 10 19 5362
-9585191f37f7b0fb9444f35a9bf50de191beadc2 tag 136 127 5476
-9bc1dc421dcd51b4ac296e3e5b6e2a99cf44391e blob 7 18 5193 1
-05408d195263d853f09dca71d55116663690c27c \
-
-
- ab1afef80fac8e34258ff41fc1b867c702daa24b commit 232 157 12
-cac0cab538b970a37ea1e769cbbde608743bc96d commit 226 154 473
-d8329fc1cc938780ffdd9f94e0d364e0ea74f579 tree 36 46 5316
-e3f094f522629ae358806b17daf78246c27c007b blob 1486 734 4352
-f8f51d7d8a1760462eca26eebafde32087499533 tree 106 107 749
-fa49b077972391ad58037050f2a75f74e3671e92 blob 9 18 856
-fdf4fc3344e67ab068f836878b6c4951e3b15f3d commit 177 122 627
-chain length = 1: 1 object
-pack-7a16e4488ae40c7d2bc56ea2bd43e25212a66c45.pack: ok
-
+	$ git verify-pack -v \
+	  .git/objects/pack/pack-7a16e4488ae40c7d2bc56ea2bd43e25212a66c45.idx
+	0155eb4229851634a0f03eb265b69f5a2d56f341 tree   71 76 5400
+	05408d195263d853f09dca71d55116663690c27c blob   12908 3478 874
+	09f01cea547666f58d6a8d809583841a7c6f0130 tree   106 107 5086
+	1a410efbd13591db07496601ebc7a059dd55cfe9 commit 225 151 322
+	1f7a7a472abf3dd9643fd615f6da379c4acb3e3a blob   10 19 5381
+	3c4e9cd789d88d8d89c1073707c3585e41b0e614 tree   101 105 5211
+	484a59275031909e19aadb7c92262719cfcdf19a commit 226 153 169
+	83baae61804e65cc73a7201a7252750c76066a30 blob   10 19 5362
+	9585191f37f7b0fb9444f35a9bf50de191beadc2 tag    136 127 5476
+	9bc1dc421dcd51b4ac296e3e5b6e2a99cf44391e blob   7 18 5193 1 \
+	  05408d195263d853f09dca71d55116663690c27c
+	ab1afef80fac8e34258ff41fc1b867c702daa24b commit 232 157 12
+	cac0cab538b970a37ea1e769cbbde608743bc96d commit 226 154 473
+	d8329fc1cc938780ffdd9f94e0d364e0ea74f579 tree   36 46 5316
+	e3f094f522629ae358806b17daf78246c27c007b blob   1486 734 4352
+	f8f51d7d8a1760462eca26eebafde32087499533 tree   106 107 749
+	fa49b077972391ad58037050f2a75f74e3671e92 blob   9 18 856
+	fdf4fc3344e67ab068f836878b6c4951e3b15f3d commit 177 122 627
+	chain length = 1: 1 object
+	pack-7a16e4488ae40c7d2bc56ea2bd43e25212a66c45.pack: ok
 
 Blob 9bc1d, který, jak si možná vzpomínáte, byl první verzí souboru repo.rb, odkazuje na blob 05408,
 který byl druhou verzí tohoto souboru. Třetí sloupec výpisu udává velikost objektu v balíčku. Můžete
@@ -10667,11 +10595,9 @@ $ git remote add origin git@github.com:schacon/simplegit-progit.git
 Přidáte tím novou část do souboru .git/config, určíte název vzdáleného serveru (origin), URL
 vzdáleného repozitáře a refspec pro vyzvednutí dat:
 
-[remote "origin"]
-
- url = git@github.com:schacon/simplegit-progit.git
-
- fetch = +refs/heads/*:refs/remotes/origin/*
+	[remote "origin"]
+	       url = git@github.com:schacon/simplegit-progit.git
+	       fetch = +refs/heads/*:refs/remotes/origin/*
 
 Refspec má následující formát: fakultativní znak +, za nímž následuje <src>:<dst>, kde <src> je vzor
 pro referenci na straně vzdáleného serveru a <dst> je lokální umístění, kam mají být tyto reference
@@ -10681,33 +10607,31 @@ Ve výchozím případě, který se automaticky zapisuje příkazem git remote a
 reference z adresáře refs/heads/ na serveru a zapíše je do lokálního adresáře refs/remotes/origin/.
 Je-li tedy na serveru hlavní větev master, lokálně lze získat přístup k jejímu logu některým z příkazů:
 
-$ git log origin/master
-$ git log remotes/origin/master
-$ git log refs/remotes/origin/master
-
+	$ git log origin/master
+	$ git log remotes/origin/master
+	$ git log refs/remotes/origin/master
 
 Všechny tři jsou přitom ekvivalentní, protože Git vždy rozšíří jejich podobu na refs/remotes/origin/
 master. Pokud ale raději chcete, aby Git pokaždé stáhl pouze hlavní větev a nestahoval žádné jiné
 větve na vzdáleném serveru, změňte řádek příkazu fetch na:
 
-fetch = +refs/heads/master:refs/remotes/origin/master
+	fetch = +refs/heads/master:refs/remotes/origin/master
 
 Toto je výchozí vzorec refspec pro příkaz git fetch pro tento vzdálený server. Chcete-li nějakou akci
 provést pouze jednou, můžete použít refspec také na příkazovém řádku. Chcete-li stáhnout hlavní
 větev ze vzdáleného serveru do lokálního adresáře origin/mymaster, můžete zadat příkaz:
 
-$ git fetch origin master:refs/remotes/origin/mymaster
+	$ git fetch origin master:refs/remotes/origin/mymaster
 
 Použít lze také kombinaci několika vzorců refspec. Několik větví můžete přímo z příkazového řádku
 stáhnout například takto:
 
-$ git fetch origin master:refs/remotes/origin/mymaster \
-topic:refs/remotes/origin/topic
-From git@github.com:schacon/simplegit
-! [rejected] master -> origin/mymaster (non fast forward)
+	$ git fetch origin master:refs/remotes/origin/mymaster \
+	   topic:refs/remotes/origin/topic
+	From git@github.com:schacon/simplegit
+	 ! [rejected]        master     -> origin/mymaster  (non fast forward)
+	 * [new branch]      topic      -> origin/topic
 
-
- * [new branch] topic -> origin/topic
 
 9.5 Refspec 253
 V tomto případě bylo odeslání hlavní větve odmítnuto, protože reference nesměřovala „rychle vpřed“.
@@ -10715,29 +10639,23 @@ Odmítnutí serveru můžete potlačit zadáním znaku + před vzorec refspec.
 
 V konfiguračním souboru můžete také použít více vzorců refspec pro vyzvedávání dat. Chcete-li pokaždé vyzvednout hlavní větev a větev „experiment“, vložte do něj tyto dva řádky:
 
-[remote "origin"]
-
- url = git@github.com:schacon/simplegit-progit.git
-
- fetch = +refs/heads/master:refs/remotes/origin/master
-
- fetch = +refs/heads/experiment:refs/remotes/origin/experiment
+	[remote "origin"]
+	       url = git@github.com:schacon/simplegit-progit.git
+	       fetch = +refs/heads/master:refs/remotes/origin/master
+	       fetch = +refs/heads/experiment:refs/remotes/origin/experiment
 
 Ve vzorci nelze použít částečné nahrazení, např. toto zadání by bylo neplatné:
 
-fetch = +refs/heads/qa*:refs/remotes/origin/qa*
+	fetch = +refs/heads/qa*:refs/remotes/origin/qa*
 
 Místo nich však můžete využít možností jmenného prostoru. Jestliže pracujete v QA týmu, který odesílá
 několik větví, a vy chcete stáhnout hlavní větev a všechny větve QA týmu, avšak žádné jiné, můžete
 použít například takovouto část konfigurace:
 
-[remote "origin"]
-
- url = git@github.com:schacon/simplegit-progit.git
-
- fetch = +refs/heads/master:refs/remotes/origin/master
-
- fetch = +refs/heads/qa/*:refs/remotes/origin/qa/*
+	[remote "origin"]
+	       url = git@github.com:schacon/simplegit-progit.git
+	       fetch = +refs/heads/master:refs/remotes/origin/master
+	       fetch = +refs/heads/qa/*:refs/remotes/origin/qa/*
 
 Jestliže používáte komplexní pracovní proces, kdy QA tým odesílá větve, vývojáři odesílají větve
 a integrační týmy odesílají větve a spolupracují na nich, můžete takto jednoduše využít možností,
@@ -10750,18 +10668,15 @@ vzorec refspec.
 
 Chce-li QA tým odeslat hlavní větev do adresáře qa/master na vzdáleném serveru, může použít příkaz:
 
-$ git push origin master:refs/heads/qa/master
+	$ git push origin master:refs/heads/qa/master
 
 Chcete-li, aby toto Git provedl automaticky pokaždé, když spustíte příkaz git push origin, můžete
 do konfiguračního souboru vložit hodnotu push:
 
-[remote "origin"]
-
- url = git@github.com:schacon/simplegit-progit.git
-
- fetch = +refs/heads/*:refs/remotes/origin/*
-
- push = refs/heads/master:refs/heads/qa/master
+	[remote "origin"]
+	       url = git@github.com:schacon/simplegit-progit.git
+	       fetch = +refs/heads/*:refs/remotes/origin/*
+	       push = refs/heads/master:refs/heads/qa/master
 
 Touto hodnotou zajistíte, že bude příkaz git push origin odesílat lokální hlavní větev do vzdálené
 větve qa/master.
@@ -10772,7 +10687,7 @@ příkaz následujícího znění:
 
 
 9.6 Přenosové protokoly 254
-$ git push origin :topic
+	$ git push origin :topic
 
 Vynecháte-li z původního vzorce refspec ve tvaru <src>:<dst> část <src>, říkáte v podstatě, aby byla
 větev „topic“ na vzdáleném serveru nahrazena ničím, čímž ji smažete.
@@ -10788,64 +10703,57 @@ V souvislosti s přenosem dat systému Git prostřednictvím HTTP se často mluv
 vyzvednutí dat je sledem požadavků GET, kdy klient dokáže předpokládat rozložení repozitáře Git
 na serveru. Podívejme se na proces http-fetch pro knihovnu „simplegit“:
 
-$ git clone http://github.com/schacon/simplegit-progit.git
+	$ git clone http://github.com/schacon/simplegit-progit.git
 
 První věcí, kterou příkaz udělá, je stažení souboru info/refs. Tento soubor se zapisuje příkazem update-server-info. To je také důvod, proč ho je nutné zapnout jako zásuvný modul post-receive, aby
 přenos dat prostřednictvím protokolu probíhal správně:
 
-=> GET info/refs
-ca82a6dff817ec66f44342007202690a93763949 refs/heads/master
-
+	=> GET info/refs
+	ca82a6dff817ec66f44342007202690a93763949     refs/heads/master
 
 Nyní máte k dispozici seznam SHA a referencí na vzdálené repozitáře. Dále budete chtít zjistit, co je
 referencí HEAD, abyste mohli po dokončení procesu provést checkout.
 
-=> GET HEAD
-ref: refs/heads/master
-
+	=> GET HEAD
+	ref: refs/heads/master
 
 Po dokončení procesu tedy budete muset přepnout na hlavní větev. V tomto okamžiku je vše připraveno
 a můžete zahájit proces procházení. Protože je vaším výchozím bodem objekt revize ca82a6, jak jste
 zjistili v souboru info/refs, začnete vyzvednutím tohoto objektu:
 
-=> GET objects/ca/82a6dff817ec66f44342007202690a93763949
-(179 bytes of binary data)
-
+	=> GET objects/ca/82a6dff817ec66f44342007202690a93763949
+	(179 bytes of binary data)
 
 Tímto postupem získáte jeden objekt. Ten je na serveru ve volném formátu a vy jste ho vyzvedli statickým
 požadavkem GET HTTP. Objekt můžete rozbalit, extrahovat záhlaví a prohlédnout si obsah revize:
 
-$ git cat-file -p ca82a6dff817ec66f44342007202690a93763949
-tree cfda3bf379e4f8dba8717dee55aab78aef7f4daf
-parent 085bb3bcb608e1e8451d4b2432f8ecbe6306e7e7
-author Scott Chacon <schacon@gmail.com> 1205815931 -0700
-committer Scott Chacon <schacon@gmail.com> 1240030591 -0700
+	$ git cat-file -p ca82a6dff817ec66f44342007202690a93763949
+	tree cfda3bf379e4f8dba8717dee55aab78aef7f4daf
+	parent 085bb3bcb608e1e8451d4b2432f8ecbe6306e7e7
+	author Scott Chacon <schacon@gmail.com> 1205815931 -0700
+	committer Scott Chacon <schacon@gmail.com> 1240030591 -0700
 
-
-changed the version number
+	changed the version number
 
 Máte však ještě další dva objekty, které potřebujete načíst: cfda3b, což je strom obsahu, na nějž ukazuje
 revize, kterou jsme právě načetli; druhým objektem je 085bb3, což je rodič revize:
 
 
 9.6 Přenosové protokoly 255
-=> GET objects/08/5bb3bcb608e1e8451d4b2432f8ecbe6306e7e7
-(179 bytes of data)
-
+	=> GET objects/08/5bb3bcb608e1e8451d4b2432f8ecbe6306e7e7
+	(179 bytes of data)
 
 Tím získáte další objekt revize. Načtěte objekt stromu:
 
-=> GET objects/cf/da3bf379e4f8dba8717dee55aab78aef7f4daf
-(404 - Not Found)
-
+	=> GET objects/cf/da3bf379e4f8dba8717dee55aab78aef7f4daf
+	(404 - Not Found)
 
 Uf, zdá se, že objekt stromu není na serveru ve volném formátu, proto byla vygenerována chyba 404.
 Chyba má hned několik příčin. Objekt by mohl být v jiném repozitáři nebo by mohl být v tomto repozitáři,
 avšak v balíčkovém souboru. Git nejprve zjistí, zda jsou k dispozici alternativní repozitáře:
 
-=> GET objects/info/http-alternates
-(empty file)
-
+	=> GET objects/info/http-alternates
+	(empty file)
 
 Je-li výsledkem hledání seznam alternativních adres URL, Git se v těchto repozitářích pokusí najít volné
 a balíčkové soubory. Jedná se o užitečný mechanismus pro projekty, které byly odštěpeny od jiného
@@ -10854,25 +10762,22 @@ repozitáře, váš objekt musí být v balíčkovém souboru. Chcete-li zjistit
 na serveru dostupné, pomůže vám soubor objects/info/packs, který obsahuje jejich seznam (rovněž
 generován příkazem update-server-info):
 
-=> GET objects/info/packs
-P pack-816a9b2334da9953e530f27bcac22082a9f5b835.pack
-
+	=> GET objects/info/packs
+	P pack-816a9b2334da9953e530f27bcac22082a9f5b835.pack
 
 Na serveru je pouze jeden balíčkový soubor, takže váš objekt musí být evidentně v něm. Pro jistotu
 se však ještě podíváte do souboru indexu. To je rovněž užitečné, máte-li na serveru více balíčkových
 souborů. Zjistíte tak, který z nich obsahuje hledaný objekt:
 
-=> GET objects/pack/pack-816a9b2334da9953e530f27bcac22082a9f5b835.idx
-(4k of binary data)
-
+	=> GET objects/pack/pack-816a9b2334da9953e530f27bcac22082a9f5b835.idx
+	(4k of binary data)
 
 Nyní, když máte index balíčkového souboru, můžete ověřit, zda se v něm nachází váš objekt. Index
 uvádí hodnoty SHA všech objektů obsažených v balíčkovém souboru a ofsety k těmto objektům.
 Váš objekt se v tomto souboru nachází, a proto neváhejte a stáhněte celý balíčkový soubor:
 
-=> GET objects/pack/pack-816a9b2334da9953e530f27bcac22082a9f5b835.pack
-(13k of binary data)
-
+	=> GET objects/pack/pack-816a9b2334da9953e530f27bcac22082a9f5b835.pack
+	(13k of binary data)
 
 Stáhli jste objekt stromu, a můžete tak pokračovat v procházení revizí. Všechny jsou navíc součástí
 balíčkového souboru, který jste právě stáhli, a proto nebude nutné zadávat serveru žádné další požadavky.
@@ -10881,28 +10786,21 @@ jste stáhli na začátku.
 
 Celý výstup tohoto procesu vypadá následovně:
 
-$ git clone http://github.com/schacon/simplegit-progit.git
-Initialized empty Git repository in /private/tmp/simplegit-progit/.git/
-got ca82a6dff817ec66f44342007202690a93763949
-walk ca82a6dff817ec66f44342007202690a93763949
-got 085bb3bcb608e1e8451d4b2432f8ecbe6306e7e7
-Getting alternates list for http://github.com/schacon/simplegit-progit.git
-
+	$ git clone http://github.com/schacon/simplegit-progit.git
+	Initialized empty Git repository in /private/tmp/simplegit-progit/.git/
+	got ca82a6dff817ec66f44342007202690a93763949
+	walk ca82a6dff817ec66f44342007202690a93763949
+	got 085bb3bcb608e1e8451d4b2432f8ecbe6306e7e7
+	Getting alternates list for http://github.com/schacon/simplegit-progit.git
+	Getting pack list for http://github.com/schacon/simplegit-progit.git
+	Getting index for pack 816a9b2334da9953e530f27bcac22082a9f5b835
+	Getting pack 816a9b2334da9953e530f27bcac22082a9f5b835
+	 which contains cfda3bf379e4f8dba8717dee55aab78aef7f4daf
+	walk 085bb3bcb608e1e8451d4b2432f8ecbe6306e7e7
+	walk a11bef06a3f659402fe7563abf99ad00de2209e6
 
 
 9.6 Přenosové protokoly 256
-Getting pack list for http://github.com/schacon/simplegit-progit.git
-
-Getting index for pack 816a9b2334da9953e530f27bcac22082a9f5b835
-
-Getting pack 816a9b2334da9953e530f27bcac22082a9f5b835
-
- which contains cfda3bf379e4f8dba8717dee55aab78aef7f4daf
-
-walk 085bb3bcb608e1e8451d4b2432f8ecbe6306e7e7
-
-walk a11bef06a3f659402fe7563abf99ad00de2209e6
-
 9.6.2 Chytrý protokol
 Metoda přenosu HTTP je jednoduchá, avšak málo výkonná. Rozšířenější metodou přenosu dat je použití
 chytrého protokolu. Tyto protokoly mají na vzdáleném konci proces, který inteligentně spolupracuje
@@ -10910,7 +10808,7 @@ se systémem Git. Umí načítat lokální data a zjistí, co klient vlastní a 
 vygeneruje potřebná data. Existují dvě sady procesů pro přenos dat: jeden pár pro upload dat a jeden
 pár pro jejich stahování.
 
-Upload dat
+#### Upload dat ####
 
 K uploadu dat do vzdáleného procesu používá Git procesy send-pack a receive-pack. Proces send-pack
 se spouští na klientovi a připojuje se k procesu receive-pack na straně vzdáleného serveru. Řekněme
@@ -10918,10 +10816,10 @@ například, že ve svém projektu spustíte příkaz git push origin master a o
 URL používající protokol SSH. Git spustí proces send-pack, který iniciuje spojení se serverem přes
 SSH. Na vzdáleném serveru se pokusí spustit příkaz prostřednictvím volání SSH:
 
-$ ssh -x git@github.com "git-receive-pack 'schacon/simplegit-progit.git'"
-005bca82a6dff817ec66f4437202690a93763949 refs/heads/master report-status delete-refs
-003e085bb3bcb608e1e84b2432f8ecbe6306e7e7 refs/heads/topic
-0000
+	$ ssh -x git@github.com "git-receive-pack 'schacon/simplegit-progit.git'"
+	005bca82a6dff817ec66f4437202690a93763949 refs/heads/master report-status delete-refs
+	003e085bb3bcb608e1e84b2432f8ecbe6306e7e7 refs/heads/topic
+	0000
 
 Příkaz git-receive-pack okamžitě odpoví jedním řádkem pro každou referenci, kterou v danou chvíli
 obsahuje – v tomto případě je to pouze hlavní větev a její SHA. První řádek uvádí rovněž seznam
@@ -10937,11 +10835,9 @@ Pro každou referenci, která bude tímto odesláním aktualizována, sdělí pr
 procesu receive-pack. Pokud například aktualizujete větev master a přidáváte větev experiment,
 odpověď procesu send-pack může mít následující podobu:
 
-0085ca82a6dff817ec66f44342007202690a93763949 15027957951b64cf874c3557a0f3547bd83b3ff6
-refs/heads/master report-status
-00670000000000000000000000000000000000000000 cdfdb42577e2506715f8cfeacdbabc092bf63e8d
-refs/heads/experiment
-0000
+	0085ca82a6dff817ec66f44342007202690a93763949  15027957951b64cf874c3557a0f3547bd83b3ff6 refs/heads/master report-status
+	00670000000000000000000000000000000000000000 cdfdb42577e2506715f8cfeacdbabc092bf63e8d refs/heads/experiment
+	0000
 
 Hodnota SHA-1 ze samých nul znamená, že na tomto místě předtím nic nebylo, protože přidáváte
 větev „experiment“. Pokud byste mazali referenci, viděli byste pravý opak: samé nuly na pravé straně.
@@ -10953,9 +10849,9 @@ nejsou. Na závěr procesu server oznámí, zda se akce zdařila, nebo nezdařil
 
 
 9.6 Přenosové protokoly 257
-000Aunpack ok
+	000Aunpack ok
 
-Stahování dat
+#### Stahování dat ####
 
 Do stahování dat se zapojují procesy fetch-pack a upload-pack. Klient iniciuje proces fetch-pack,
 který vytvoří připojení k procesu upload-pack na straně vzdáleného serveru a dojedná, která data
@@ -10966,7 +10862,7 @@ prostřednictvím SSH stejným způsobem jako proces receive-pack. Proces může
 démona Git, který na serveru standardně naslouchá portu 9418. Proces fetch-pack pošle
 démonovi po připojení data, která mají následující podobu:
 
-003fgit-upload-pack schacon/simplegit-progit.git\0host=myserver.com\0
+	003fgit-upload-pack schacon/simplegit-progit.git\0host=myserver.com\0
 
 Informace začínají 4 byty, které uvádějí, jaké množství dat následuje; po nich následuje příkaz, který
 má být spuštěn, nulový byte, název hostitelského serveru a na závěr další nulový byte. Démon Git
@@ -10975,20 +10871,16 @@ k němu veřejná. Je-li vše v pořádku, spustí démon Git proces upload-pack
 
 Vyzvedáváte-li data přes SSH, spustí místo toho proces fetch-pack následující:
 
-$ ssh -x git@github.com "git-upload-pack 'schacon/simplegit-progit.git'"
+	$ ssh -x git@github.com "git-upload-pack 'schacon/simplegit-progit.git'"
 
 V obou případech zašle po připojení procesu fetch-pack proces upload-pack zpět následující
 informace:
 
-0088ca82a6dff817ec66f44342007202690a93763949 HEAD\0multi_ack thin-pack \
-
- side-band side-band-64k ofs-delta shallow no-progress include-tag
-
-003fca82a6dff817ec66f44342007202690a93763949 refs/heads/master
-
-003e085bb3bcb608e1e8451d4b2432f8ecbe6306e7e7 refs/heads/topic
-
-0000
+	0088ca82a6dff817ec66f44342007202690a93763949 HEAD\0multi_ack thin-pack \
+	  side-band side-band-64k ofs-delta shallow no-progress include-tag
+	003fca82a6dff817ec66f44342007202690a93763949 refs/heads/master
+	003e085bb3bcb608e1e8451d4b2432f8ecbe6306e7e7 refs/heads/topic
+	0000
 
 Informace se nápadně podobají těm, jimiž odpovídá proces receive-pack, liší se však schopnosti.
 Kromě toho pošle proces zpět referenci HEAD, aby klient v případě, že se jedná o klonování, věděl,
@@ -10999,11 +10891,10 @@ Odpověď má tvar „want“ (chci) a SHA požadovaných objektů. Naopak objek
 uvádí kombinací výrazu „have“ (mám) a hodnoty SHA. Výpis je ukončen výrazem „done“, který iniciuje
 odeslání požadovaného balíčkového souboru nebo dat procesem upload-pack:
 
-0054want ca82a6dff817ec66f44342007202690a93763949 ofs-delta
-0032have 085bb3bcb608e1e8451d4b2432f8ecbe6306e7e7
-
-
-0009done
+	0054want ca82a6dff817ec66f44342007202690a93763949 ofs-delta
+	0032have 085bb3bcb608e1e8451d4b2432f8ecbe6306e7e7
+	0000
+	0009done
 
 Toto jsou pouze základní případy přenosových protokolů. Ve složitějších případech podporuje klient
 schopnosti multi_ack nebo side-band. Uvedený příklad ale dobře ilustruje základní komunikaci tam
@@ -11016,7 +10907,6 @@ Občas budete patrně nuceni přistoupit k menšímu úklidu – uvést repozit�
 vyčistit importovaný repozitář nebo obnovit ztracenou práci. Tato část se na některé z těchto scénářů
 zaměří.
 
-
 9.7.1 Správa
 Git čas od času automaticky spustí příkaz auto gc. Ve většině případů neprovede tento příkaz vůbec
 nic. Pokud však identifikuje příliš mnoho volných objektů (objektů nezabalených do balíčkového
@@ -11026,43 +10916,37 @@ volné objekty a umisťuje je do balíčkových souborů, spojuje balíčkové s
 a odstraňuje objekty, jež nejsou dostupné z žádné revize a jsou starší několika měsíců. Příkaz auto gc
 můžete spustit také ručně:
 
-
-$ git gc --auto
+	$ git gc --auto
 
 I tentokrát platí, že příkaz většinou neprovede nic. Aby Git spustil skutečný příkaz gc, musíte mít kolem
 7000 volných objektů nebo více než 50 balíčkových souborů. Tyto hodnoty můžete změnit podle
 svých potřeb v konfiguračním nastavení gc.auto a gc.autopacklimit. Další operací, kterou gc provede,
 je zabalení referencí do jediného souboru. Řekněme, že váš repozitář obsahuje tyto větve a značky:
 
-$ find .git/refs -type f
-.git/refs/heads/experiment
-.git/refs/heads/master
-.git/refs/tags/v1.0
-.git/refs/tags/v1.1
-
+	$ find .git/refs -type f
+	.git/refs/heads/experiment
+	.git/refs/heads/master
+	.git/refs/tags/v1.0
+	.git/refs/tags/v1.1
 
 Spustíte-li příkaz git gc, tyto soubory z adresáře refs zmizí. Git je pro zvýšení účinnosti přesune
 do souboru .git/packed-refs, jenž má následující podobu:
 
-
-$ cat .git/packed-refs
-# pack-refs with: peeled
-cac0cab538b970a37ea1e769cbbde608743bc96d refs/heads/experiment
-ab1afef80fac8e34258ff41fc1b867c702daa24b refs/heads/master
-cac0cab538b970a37ea1e769cbbde608743bc96d refs/tags/v1.0
-9585191f37f7b0fb9444f35a9bf50de191beadc2 refs/tags/v1.1
-^1a410efbd13591db07496601ebc7a059dd55cfe9
-
+	$ cat .git/packed-refs
+	# pack-refs with: peeled
+	cac0cab538b970a37ea1e769cbbde608743bc96d refs/heads/experiment
+	ab1afef80fac8e34258ff41fc1b867c702daa24b refs/heads/master
+	cac0cab538b970a37ea1e769cbbde608743bc96d refs/tags/v1.0
+	9585191f37f7b0fb9444f35a9bf50de191beadc2 refs/tags/v1.1
+	^1a410efbd13591db07496601ebc7a059dd55cfe9
 
 Pokud některou referenci aktualizujete, Git nebude tento soubor upravovat, ale zapíše nový soubor
 do adresáře refs/heads. Je-li třeba získat hodnotu SHA pro konkrétní referenci, Git se tuto referenci
 pokusí vyhledat nejprve v adresáři refs a poté, jako záložní možnost, v souboru packed-refs. Pokud
 však nemůžete najít některou z referencí v adresáři refs, bude patrně v souboru packed-refs.
 
-
 Všimněte si také posledního řádku souboru, který začíná znakem ^. Tento řádek znamená, že značka
 bezprostředně nad ním je anotovaná a tento řádek je revize, na niž tato anotovaná značka ukazuje.
-
 
 9.7.2 Obnova dat
 Někdy se může stát, že nedopatřením přijdete o revizi Git. Většinou k tomu dochází tak, že násilím
@@ -11076,23 +10960,21 @@ potřebujete. Pokud se už něco takového stane, jak dostanete své revize zpě
 Uvedeme příklad, při němž resetujeme hlavní větev v testovacím repozitáři na jednu ze starších revizí
 a poté ztracené revize obnovíme. Nejprve se podíváme, kde se váš repozitář v současnosti nachází:
 
-$ git log --pretty=oneline
-ab1afef80fac8e34258ff41fc1b867c702daa24b modified repo a bit
-484a59275031909e19aadb7c92262719cfcdf19a added repo.rb
-1a410efbd13591db07496601ebc7a059dd55cfe9 third commit
-cac0cab538b970a37ea1e769cbbde608743bc96d second commit
-fdf4fc3344e67ab068f836878b6c4951e3b15f3d first commit
-
+	$ git log --pretty=oneline
+	ab1afef80fac8e34258ff41fc1b867c702daa24b modified repo a bit
+	484a59275031909e19aadb7c92262719cfcdf19a added repo.rb
+	1a410efbd13591db07496601ebc7a059dd55cfe9 third commit
+	cac0cab538b970a37ea1e769cbbde608743bc96d second commit
+	fdf4fc3344e67ab068f836878b6c4951e3b15f3d first commit
 
 Nyní vrátíme hlavní větev zpět na prostřední revizi:
 
-$ git reset --hard 1a410efbd13591db07496601ebc7a059dd55cfe9
-HEAD is now at 1a410ef third commit
-$ git log --pretty=oneline
-1a410efbd13591db07496601ebc7a059dd55cfe9 third commit
-cac0cab538b970a37ea1e769cbbde608743bc96d second commit
-fdf4fc3344e67ab068f836878b6c4951e3b15f3d first commit
-
+	$ git reset --hard 1a410efbd13591db07496601ebc7a059dd55cfe9
+	HEAD is now at 1a410ef third commit
+	$ git log --pretty=oneline
+	1a410efbd13591db07496601ebc7a059dd55cfe9 third commit
+	cac0cab538b970a37ea1e769cbbde608743bc96d second commit
+	fdf4fc3344e67ab068f836878b6c4951e3b15f3d first commit
 
 Účinně jsme se zbavili horních dvou revizí. Neexistuje žádná větev, z níž by byly tyto revize dostupné.
 Budete muset najít hodnotu SHA nejnovější revize a přidat větev, která na ni bude ukazovat. Problém
@@ -11105,68 +10987,62 @@ git update-ref – o důvod víc používat tento příkaz a nezapisovat hodnotu
 referencí, jak už jsme uváděli v části „Reference Git“ v této kapitole. Spuštěním příkazu git reflog
 zjistíte, kde jste se nacházeli v libovolném okamžiku:
 
-$ git reflog
-1a410ef HEAD@{0}: 1a410efbd13591db07496601ebc7a059dd55cfe9: updating HEAD
-ab1afef HEAD@{1}: ab1afef80fac8e34258ff41fc1b867c702daa24b: updating HEAD
-
+	$ git reflog
+	1a410ef HEAD@{0}: 1a410efbd13591db07496601ebc7a059dd55cfe9: updating HEAD
+	ab1afef HEAD@{1}: ab1afef80fac8e34258ff41fc1b867c702daa24b: updating HEAD
 
 Vidíme tu obě revize, jichž jsme se zbavili, ale není tu k nim mnoho informací. Chcete-li zobrazit stejné
 informace v užitečnějším formátu, můžete spustit příkaz git log -g, jímž získáte normální výstup příkazu
 log pro reflog.
 
-$ git log -g
-commit 1a410efbd13591db07496601ebc7a059dd55cfe9
-Reflog: HEAD@{0} (Scott Chacon <schacon@gmail.com>)
-Reflog message: updating HEAD
-Author: Scott Chacon <schacon@gmail.com>
-Date: Fri May 22 18:22:37 2009 -0700
+	$ git log -g
+	commit 1a410efbd13591db07496601ebc7a059dd55cfe9
+	Reflog: HEAD@{0} (Scott Chacon <schacon@gmail.com>)
+	Reflog message: updating HEAD
+	Author: Scott Chacon <schacon@gmail.com>
+	Date:   Fri May 22 18:22:37 2009 -0700
 
+	    third commit
 
- third commit
+	commit ab1afef80fac8e34258ff41fc1b867c702daa24b
+	Reflog: HEAD@{1} (Scott Chacon <schacon@gmail.com>)
+	Reflog message: updating HEAD
+	Author: Scott Chacon <schacon@gmail.com>
+	Date:   Fri May 22 18:15:24 2009 -0700
 
-commit ab1afef80fac8e34258ff41fc1b867c702daa24b
-Reflog: HEAD@{1} (Scott Chacon <schacon@gmail.com>)
-Reflog message: updating HEAD
-Author: Scott Chacon <schacon@gmail.com>
-Date: Fri May 22 18:15:24 2009 -0700
-
-
- modified repo a bit
+	     modified repo a bit
 
 
 9.7 Správa a obnova dat 260
 Zdá se, že revize úplně dole je hledanou ztracenou revizí. Můžete ji obnovit tak, že na ní vytvoříte
 novou větev. Na revizi můžete vytvořit například větev recover-branch (ab1afef):
 
-$ git branch recover-branch ab1afef
-$ git log --pretty=oneline recover-branch
-ab1afef80fac8e34258ff41fc1b867c702daa24b modified repo a bit
-484a59275031909e19aadb7c92262719cfcdf19a added repo.rb
-1a410efbd13591db07496601ebc7a059dd55cfe9 third commit
-cac0cab538b970a37ea1e769cbbde608743bc96d second commit
-fdf4fc3344e67ab068f836878b6c4951e3b15f3d first commit
-
+	$ git branch recover-branch ab1afef
+	$ git log --pretty=oneline recover-branch
+	ab1afef80fac8e34258ff41fc1b867c702daa24b modified repo a bit
+	484a59275031909e19aadb7c92262719cfcdf19a added repo.rb
+	1a410efbd13591db07496601ebc7a059dd55cfe9 third commit
+	cac0cab538b970a37ea1e769cbbde608743bc96d second commit
+	fdf4fc3344e67ab068f836878b6c4951e3b15f3d first commit
 
 Výborně, nyní máte větev s názvem recover-branch, která se nachází na bývalé pozici hlavní větve.
 První dvě revize jsou opět dostupné. Můžeme ale také uvažovat situaci, že ztracené revize nebyly
 ve výpisu reflog k nalezení. Tento stav můžeme simulovat tak, že odstraníme větev recover-branch
 a smažeme reflog. První dvě revize tak nejsou odnikud dostupné:
 
-$ git branch –D recover-branch
-$ rm -Rf .git/logs/
-
+	$ git branch -D recover-branch
+	$ rm -Rf .git/logs/
 
 Protože se data pro reflog uchovávají v adresáři .git/logs/, nemáte evidentně žádný reflog. Jak
 lze tedy v tuto chvíli ztracenou revizi obnovit? Jednou z možností je použít nástroj git fsck, který
 zkontroluje integritu vaší databáze. Pokud příkaz spustíte s parametrem --full, zobrazí vám všechny
 objekty, na něž neukazuje žádný jiný objekt:
 
-$ git fsck --full
-dangling blob d670460b4b4aece5915caf5c68d12f560a9fe3e4
-dangling commit ab1afef80fac8e34258ff41fc1b867c702daa24b
-dangling tree aea790b9a58f6cf6f2804eeac9f0abbe9631e4c9
-dangling blob 7108f7ecb345ee9d0084193f147cdad4d2998293
-
+	$ git fsck --full
+	dangling blob d670460b4b4aece5915caf5c68d12f560a9fe3e4
+	dangling commit ab1afef80fac8e34258ff41fc1b867c702daa24b
+	dangling tree aea790b9a58f6cf6f2804eeac9f0abbe9631e4c9
+	dangling blob 7108f7ecb345ee9d0084193f147cdad4d2998293
 
 V tomto případě je vaše ztracená revize uvedena výrazem „dangling commit“. Nyní ji můžete obnovit
 stejným způsobem: přidejte novou větev, která bude ukazovat na její SHA.
@@ -11196,49 +11072,41 @@ přeskládat svou práci na vaše nové revize.
 Vyzkoušíme to na situaci, kdy do svého testovacího repozitáře vložíte velký soubor, v následující revizi
 ho odstraníte, vyhledáte ho a trvale ho z repozitáře odstraníte. Nejprve do historie přidejte velký objekt:
 
-$ curl http://kernel.org/pub/software/scm/git/git-1.6.3.1.tar.bz2 > git.tbz2
-$ git add git.tbz2
-$ git commit -am 'added git tarball'
-[master 6df7640] added git tarball
-
-
- 1 files changed, 0 insertions(+), 0 deletions(-)
-create mode 100644 git.tbz2
-
+	$ curl http://kernel.org/pub/software/scm/git/git-1.6.3.1.tar.bz2 > git.tbz2
+	$ git add git.tbz2
+	$ git commit -am 'added git tarball'
+	[master 6df7640] added git tarball
+	 1 files changed, 0 insertions(+), 0 deletions(-)
+	 create mode 100644 git.tbz2
 
 Ale ne! Vlastně jste nechtěli do projektu vložit tak velký tarball. Raději se ho zbavme:
 
-$ git rm git.tbz2
-rm 'git.tbz2'
-$ git commit -m 'oops - removed large tarball'
-[master da3f30d] oops - removed large tarball
-
-
- 1 files changed, 0 insertions(+), 0 deletions(-)
-delete mode 100644 git.tbz2
-
+	$ git rm git.tbz2
+	rm 'git.tbz2'
+	$ git commit -m 'oops - removed large tarball'
+	[master da3f30d] oops - removed large tarball
+	 1 files changed, 0 insertions(+), 0 deletions(-)
+	 delete mode 100644 git.tbz2
 
 Teď provedete gc své databáze, protože chcete zjistit, kolik místa je obsazeno:
 
-$ git gc
-Counting objects: 21, done.
-Delta compression using 2 threads.
-Compressing objects: 100% (16/16), done.
-Writing objects: 100% (21/21), done.
-Total 21 (delta 3), reused 15 (delta 1)
-
+	$ git gc
+	Counting objects: 21, done.
+	Delta compression using 2 threads.
+	Compressing objects: 100% (16/16), done.
+	Writing objects: 100% (21/21), done.
+	Total 21 (delta 3), reused 15 (delta 1)
 
 Chcete-li rychle zjistit, kolik místa je obsazeno, můžete použít příkaz count-objects:
 
-$ git count-objects -v
-count: 4
-size: 16
-in-pack: 21
-packs: 1
-size-pack: 2016
-prune-packable: 0
-garbage: 0
-
+	$ git count-objects -v
+	count: 4
+	size: 16
+	in-pack: 21
+	packs: 1
+	size-pack: 2016
+	prune-packable: 0
+	garbage: 0
 
 Řádek size-pack uvádí velikost vašich balíčkových souborů v kilobytech, využity jsou tedy 2 MB.
 Před zapsáním poslední revize jste využívali přibližně 2 kB. Je tedy jasné, že odstranění souboru
@@ -11255,39 +11123,34 @@ posledních (největších) souborů:
 
 
 9.7 Správa a obnova dat 262
-
-$ git verify-pack -v .git/objects/pack/pack-3f8c0...bb.idx | sort -k 3 -n | tail -3
-e3f094f522629ae358806b17daf78246c27c007b blob 1486 734 4667
-05408d195263d853f09dca71d55116663690c27c blob 12908 3478 1189
-7a9eb2fba2b1811321254ac360970fc169ba2330 blob 2056716 2056872 5401
+	$ git verify-pack -v .git/objects/pack/pack-3f8c0...bb.idx | sort -k 3 -n | tail -3
+	e3f094f522629ae358806b17daf78246c27c007b blob   1486 734 4667
+	05408d195263d853f09dca71d55116663690c27c blob   12908 3478 1189
+	7a9eb2fba2b1811321254ac360970fc169ba2330 blob   2056716 2056872 5401
 
 Hledaný velký objekt se nachází úplně dole: 2 MB. Chcete-li zjistit, o jaký soubor se jedná, můžete
 použít příkaz rev-list, který jsme používali už v kapitole 7. Zadáte-li k příkazu rev-list parametr
 --objects, výpis bude obsahovat všechny hodnoty SHA revizí a blobů s cestami k souborům, které
 jsou s nimi asociovány. Tuto kombinaci můžete použít k nalezení názvu hledaného blobu:
 
-$ git rev-list --objects --all | grep 7a9eb2fb
-7a9eb2fba2b1811321254ac360970fc169ba2330 git.tbz2
-
+	$ git rev-list --objects --all | grep 7a9eb2fb
+	7a9eb2fba2b1811321254ac360970fc169ba2330 git.tbz2
 
 Nyní potřebujete odstranit tento soubor ze všech minulých stromů. Pomocí snadného příkazu lze zjistit,
 jaké revize tento soubor změnil:
 
-$ git log --pretty=oneline -- git.tbz2
-da3f30d019005479c99eb4c3406225613985a1db oops - removed large tarball
-6df764092f3e7c8f5f94cbe08ee5cf42e92a0289 added git tarball
-
+	$ git log --pretty=oneline -- git.tbz2
+	da3f30d019005479c99eb4c3406225613985a1db oops - removed large tarball
+	6df764092f3e7c8f5f94cbe08ee5cf42e92a0289 added git tarball
 
 Chcete-li tento soubor kompletně odstranit z historie Git, budete muset přepsat všechny revize od 6df76
 směrem dolů. Použijte k tomu příkaz filter-branch, s nímž jsme se seznámili v kapitole 6:
 
-$ git filter-branch --index-filter \
-
- 'git rm --cached --ignore-unmatch git.tbz2' -- 6df7640^..
-Rewrite 6df764092f3e7c8f5f94cbe08ee5cf42e92a0289 (1/2)rm 'git.tbz2'
-Rewrite da3f30d019005479c99eb4c3406225613985a1db (2/2)
-Ref 'refs/heads/master' was rewritten
-
+	$ git filter-branch --index-filter \
+	   'git rm --cached --ignore-unmatch git.tbz2' -- 6df7640^..
+	Rewrite 6df764092f3e7c8f5f94cbe08ee5cf42e92a0289 (1/2)rm 'git.tbz2'
+	Rewrite da3f30d019005479c99eb4c3406225613985a1db (2/2)
+	Ref 'refs/heads/master' was rewritten
 
 Parametr --index-filter je podobný parametru --tree-filter, který jsme používali v kapitole 6, jen s
 tím rozdílem, že příkazem nezměníte soubory načtené na disku, ale oblast připravených změn nebo-li
@@ -11304,29 +11167,27 @@ a v adresáři .git/refs/original také nová sada referencí, které Git přida
 filter-branch. Budete je proto muset odstranit a databázi znovu zabalit. Před novým zabalením
 je třeba odstranit vše, co na tyto staré revize ukazuje:
 
-$ rm -Rf .git/refs/original
-$ rm -Rf .git/logs/
-$ git gc
-Counting objects: 19, done.
-Delta compression using 2 threads.
-Compressing objects: 100% (14/14), done.
-Writing objects: 100% (19/19), done.
-Total 19 (delta 3), reused 16 (delta 1)
-
+	$ rm -Rf .git/refs/original
+	$ rm -Rf .git/logs/
+	$ git gc
+	Counting objects: 19, done.
+	Delta compression using 2 threads.
+	Compressing objects: 100% (14/14), done.
+	Writing objects: 100% (19/19), done.
+	Total 19 (delta 3), reused 16 (delta 1)
 
 
 9.8 Shrnutí 263
 Podívejme se, kolik místa jste ušetřili.
 
-$ git count-objects -v
-count: 8
-size: 2040
-in-pack: 19
-packs: 1
-size-pack: 7
-prune-packable: 0
-garbage: 0
-
+	$ git count-objects -v
+	count: 8
+	size: 2040
+	in-pack: 19
+	packs: 1
+	size-pack: 7
+	prune-packable: 0
+	garbage: 0
 
 Velikost zabaleného repozitáře byla zredukována na 7 kB, což je jistě lepší než 2 MB. Podle hodnoty
 velikosti je vidět, že se velký objekt stále ještě nachází mezi volnými objekty, a nebyl tedy odstraněn.
