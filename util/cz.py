@@ -415,6 +415,10 @@ class Pass2Parser:
                         self.collect()
                         self.write_collection()
 
+                    elif self.type == '?':
+                        # Začátek textu běžného odstavce.
+                        self.collect()
+                        self.status = 7        # očekává se řádek s textem
                     else:
                         # Diagnostický výstup.
                         self.fout.write('{}|{}\n'.format(self.type,
@@ -517,6 +521,20 @@ class Pass2Parser:
                         # Zůstaneme ve stejném stavu.
                     else:
                         self.status = 'unknown after {}'.format(self.status)
+
+                elif self.status == 7:          # ------- sběr řádků odstavce
+                    if self.type == '?':
+                        self.collect()          # pokračovat ve sběru
+                    elif self.type == 'empty':
+                        self.write_collection()
+                        self.collect()          # ukončeno prázdným řádkem
+                        self.write_collection()
+                        self.status = 0
+                    elif self.type == 'pagesep':
+                        pass                    # zlom stránky ignorujeme
+                    else:
+                        self.status = 'unknown after {}'.format(self.status)
+
                 elif self.status == 888:        # ------- akce po EOF
                     pass
 
