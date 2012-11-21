@@ -11,14 +11,6 @@ import re
 import sys
 
 
-def en_toc_gen(text_dir):
-
-    rex = re.compile(r'^(?P<num>#+)\s*(?P<title>.+?)(\s+(?P=num))?\s*$')
-    for relname, line in gen.sourceFileLines(text_dir):
-        m = rex.match(line)
-        if m:
-            yield fname, m.group('num'), m.group('title')
-
 
 if __name__ == '__main__':
 
@@ -58,7 +50,7 @@ if __name__ == '__main__':
     with open(os.path.join(aux_dir, 'enTOC.txt'), 'w', encoding='utf-8') as f:
 
         cnt = [0, 0, 0, 0, 0]  # init -- chapter, section, and subsection counters
-        for fname, num, title in en_toc_gen(text_dir):
+        for fname, num, title in gen.toc(text_dir):
             # The num is the symbolic numbering level '###', '##' or '#'.
             # Increase the appropriate level counter and zero the next counters.
             level = len(num) - 1  # index of the cnt for the title level
@@ -74,7 +66,8 @@ if __name__ == '__main__':
             s = '.'.join(lst)
 
             f.write('{} {}\n'.format(s, title))
+            ##f.write('{}  {} {}\n'.format(fname, s, title))
 
         f.write('------------------------------------------------------\n')
-        for fname, num, title in en_toc_gen(text_dir):
+        for fname, num, title in gen.toc(text_dir):
             f.write('{} {} {}\n'.format(num, title, num))

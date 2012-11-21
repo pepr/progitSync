@@ -3,6 +3,7 @@
 '''
 
 import os
+import re
 
 
 def sourceFiles(text_dir):
@@ -45,3 +46,23 @@ def sourceFileLines(text_dir):
             for line in f:
                 yield relname, line
         yield None, '\n'    # to be sure the last line of the previous is separated
+
+
+def toc(text_dir, max_level=4):
+    '''Generator that yields symbolic TOC items.
+
+       The generator loops through the source lines and detect the lines
+       that start and end with ## sequences. It yields tuples like
+       ('rel_to_text_dir/filename', '###', 'title').
+
+       The max_level equal to 3 means that only #, ##, and ### will be
+       yielded. The #### will not be yielded.
+    '''
+    rex = re.compile(r'^(?P<num>#+)\s*(?P<title>.+?)(\s+(?P=num))?\s*$')
+    for relname, line in sourceFileLines(text_dir):
+        m = rex.match(line)
+        if m:
+            num = m.group('num')
+            level = len(num)
+            if level <= max_level:
+                yield relname, num, m.group('title')
