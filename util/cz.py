@@ -4,9 +4,11 @@
 '''Skript pro zpracování extrahovaného txt z českého překladu v podobě PDF.'''
 
 import collections
+import gen
 import os
 import re
 import shutil
+import sys
 
 
 def abstractNum(num):
@@ -251,7 +253,7 @@ class Pass2Parser:
                 # Pokud je číslo a hodnota nadpisu zachycena v toc, jde
                 # skutečně o nadpis. Pokud ne, budeme to pokládat za položku
                 # číslovaného seznamu.
-                if num in toc and title == toc[num]:
+                if num in self.toc and title == self.toc[num]:
                     self.type = 'title'
                     self.parts = [num, title]
                 else:
@@ -337,7 +339,7 @@ class Pass2Parser:
 
 
     def run(self):
-        self.fout = open(os.path.join(aux_dir, 'pass2.txt'), 'w', encoding='utf-8')
+        self.fout = open(os.path.join(self.aux_dir, 'pass2.txt'), 'w', encoding='utf-8')
 
         with open(self.fname_in, encoding='utf-8') as fin:
 
@@ -466,7 +468,7 @@ class Pass2Parser:
                         num = self.collection[0]
                         text = self.parts[0]
 
-                        if num in toc and toc[num] == text:
+                        if num in self.toc and self.toc[num] == text:
                             # Je to nadpis. Nahradíme číslo abstraktním označením
                             # úrovně.
                             self.collect()
@@ -546,18 +548,75 @@ class Pass2Parser:
         # Uzavřeme výstupní soubor.
         self.fout.close()
 
+
 if __name__ == '__main__':
 
-    # Pomocný podadresář pro generované informace.
-    aux_dir = os.path.realpath('../info_aux_cz')
+    # Pomocné podadresáře pro generované informace.
+    cz_aux_dir = os.path.realpath('../info_aux_cz')
+    if not os.path.isdir(cz_aux_dir):
+        os.makedirs(cz_aux_dir)
+
+    en_aux_dir = os.path.realpath('../info_aux_en')
+    if not os.path.isdir(en_aux_dir):
+        os.makedirs(en_aux_dir)
 
     # Zpracujeme český překlad z textového souboru, který byl získán
     # uložením PDF jako text a následnou ruční úpravou některých jevů,
     # které vznikly ruční sazbou orientovanou na vzhled (tj. nikoliv
     # na zachování struktury dokumentu). Hlavním výsledkem je soubor
     # pass1.txt a vracený slovník toc.
-    toc = first_pass('../txtFromPDF/scott_chacon_pro_git_CZ.txt', aux_dir)
+    print('pass 1 ... ', end='')
+    czTOC = first_pass('../txtFromPDF/scott_chacon_pro_git_CZ.txt', cz_aux_dir)
 
     # V druhém průchodu rozpoznáváme pass1.txt a generujeme pass2.txt.
-    parser = Pass2Parser(os.path.join(aux_dir, 'pass1.txt'), toc, aux_dir)
+    print('done\npass 2 ... ', end='')
+    parser = Pass2Parser(os.path.join(cz_aux_dir, 'pass1.txt'), czTOC, cz_aux_dir)
     parser.run()
+    print('done')
+
+    # Po ručních úpravách zdroje pro první průchod (provedena kontrola
+    # pass2.txt lidskýma očima) okopírujeme pass2.txt ručně do odděleného
+    # souboru, který budeme dále upravovat ručně. (Kdykoliv je možné srovnat
+    # jej s nadále generovaným pass2.txt.) V tomto místě kontrolujeme, zda
+    # soubor existuje.
+    czfname = '../txtCorrected/RucneUpravovanyVysledekPass2.txt'
+    if not os.path.isfile(czfname):
+        print('\n\n\a\a\aRučně okopírovat pass2.txt do\n\t',
+              repr(czfname) + ' !!!\n\n')
+        sys.exit(1)
+
+    # V třetím průchodu sesbíráme informace jednak z originálu a jednak
+    # z překladu (stejným algoritmem). Vycházíme z druhého commitu originálního
+    # gitovského repozitáře (dfaab52e5a438d7fcd0d9c9af63289e5e3985fba), ve kterém
+    # byly originální zdrojové soubory přemístěny do podadresáře en. V prvním
+    # commitu podadresář en neexistoval a byl zjevně zaveden až v okamžiku
+    # prvních kroků překladatelů knihy.
+    print('pass 3 ... ', end='')
+
+    with open(czfname, encoding='utf-8') as fin, \
+         open(os.path.join(cz_aux_dir, 'pass3.txt'), 'w', encoding='utf-8') as fout:
+        for line in fin:
+            fout.write(line)
+
+    # Adresář s originálními podadresáři a soubory.
+    text_dir = os.path.abspath('../../progit/en')
+
+    with open(os.path.join(en_aux_dir, 'pass3.txt'), 'w', encoding='utf-8') as fout:
+        for fname, line in gen.sourceFileLines(text_dir):
+            fout.write(line)
+
+    print('done')
+
+
+    # Zjištěné posloupnosti elementů dokumentů (nadpisy, odstavce, obrázky,
+    # příklady kódu) porovnáváme za účelem zjištění rozdílů struktury. Některé
+    # informace se porovnávají podrobněji (příklady kódu, identifikace obrázků),
+    # u některých elementů se porovnává jen druh elementu (existence odstavce,
+    # existence odrážky, úroveň nadpisu,...).
+
+
+    # Ve čtvrtém průchodu vycházíme z předpokladu, že se struktura dokumentu
+    # shoduje. Hledáme značkování uvnitř elementů. U některých elementů můžeme
+    # například v odstavcích doplnit značkování přímo (například opačné
+    # apostrofy obalují úryvky kódu, který by měl být převzatý 1:1), u jiných
+    # typů značkování budeme muset později doplnit ručně (kurzíva, tučné, ...).
