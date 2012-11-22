@@ -143,6 +143,49 @@ def first_pass(fname, aux_dir):
 class Pass2Parser:
     '''Parser pro druhý průchod, konzumující výstup prvního průchodu.'''
 
+    # Regulární výrazy a jejich vzorky jsou společné celé třídě.
+    #
+    # Vícekrát použitý vzorek pro číslo s tečkami.
+    patNum = r'(?P<num>(?P<num1>\d+)\.(?P<num2>\d+)?(\.(?P<num3>\d+))?)'
+
+    # Řádek obsahující pouze číslo (kapitoly, podkapitoly, ..., bodu seznamu.
+    rexNum = re.compile(r'^' + patNum + r'\s*$')
+
+    # Číslovaný nadpis.
+    rexTitle = re.compile(r'^' + patNum + r'\s+(?P<title>.+?)\s*$')
+
+    # Nečíslovaná odrážka korektně explicitně zapsaná (markdown syntaxe).
+    rexBullet = re.compile(r'^(?P<uli>\*\t.+?)\s*$')
+
+    # Dobře rozpoznaná nečíslovaná odrážka zapsaná Unicode znakem.
+    rexUBullet = re.compile('^\u2022' + r'\s*(?P<text>.*?)\s*$')
+
+    # Pouze zahajovací znak (dobře rozpoznaný) špatně zalomeného
+    # textu nečíslované odrážky. Musí se k němu přidat jeden nebo
+    # víc dalších řádků.
+    rexUXBullet = re.compile('^\u2022' + r'\s*$')
+
+    # Značka přechodu mezi stránkami. Je generovaná v prvním průchodu,
+    # takže můžeme volit jednoduchý výraz.
+    rexPagesep = re.compile(r'^---------- pagesep$')
+
+    # Umístění obrázku s číslem. Může následovat popisný text,
+    # ale bývá zalomený za ještě jedním prázdným řádkem.
+    patObrazek = r'^Obrázek\s+(?P<num>\d+-\d+)\.(\s+(?P<text>.+?))?\s*$'
+    rexObrazek = re.compile(patObrazek)
+
+    # Řádek reprezentující příklad sázený jako kódový řádek
+    # neproporcionálním písmem. U této aplikace je uvozen jedním tabulátorem
+    # nebo 8 mezerami.
+    rexCode = re.compile(r'^(\t| {8}| {4})(?P<text>.*)$')
+
+    # Řádek, který má být pravděpodobně změněn na příklad textového řádku.
+    rexXCode = re.compile(r'^(?P<text>[$#].*)$')
+
+    # Řádek se symbolicky uvedeným nadpisem 4. úrovně (#### Nadpis ####).
+    rexH4Title = re.compile(r'^(?P<h4title>####\s+.+\s+####)\s*$')
+
+
     def __init__(self, fname, toc, aux_dir):
         self.fname_in = fname   # jméno vstupního souboru
         self.toc = toc          # toc = Table Of Content
@@ -154,46 +197,6 @@ class Pass2Parser:
 
         self.fout = None        # souborový objekt otevřený pro výstup.
         self.status = None      # init -- stav konečného automatu
-
-        # Vícekrát použitý vzorek pro číslo s tečkami.
-        patNum = r'(?P<num>(?P<num1>\d+)\.(?P<num2>\d+)?(\.(?P<num3>\d+))?)'
-
-        # Řádek obsahující pouze číslo (kapitoly, podkapitoly, ..., bodu seznamu.
-        self.rexNum = re.compile(r'^' + patNum + r'\s*$')
-
-        # Číslovaný nadpis.
-        self.rexTitle = re.compile(r'^' + patNum + r'\s+(?P<title>.+?)\s*$')
-
-        # Nečíslovaná odrážka korektně explicitně zapsaná (markdown syntaxe).
-        self.rexBullet = re.compile(r'^(?P<uli>\*\t.+?)\s*$')
-
-        # Dobře rozpoznaná nečíslovaná odrážka zapsaná Unicode znakem.
-        self.rexUBullet = re.compile('^\u2022' + r'\s*(?P<text>.*?)\s*$')
-
-        # Pouze zahajovací znak (dobře rozpoznaný) špatně zalomeného
-        # textu nečíslované odrážky. Musí se k němu přidat jeden nebo
-        # víc dalších řádků.
-        self.rexUXBullet = re.compile('^\u2022' + r'\s*$')
-
-        # Značka přechodu mezi stránkami. Je generovaná v prvním průchodu,
-        # takže můžeme volit jednoduchý výraz.
-        self.rexPagesep = re.compile(r'^---------- pagesep$')
-
-        # Umístění obrázku s číslem. Může následovat popisný text,
-        # ale bývá zalomený za ještě jedním prázdným řádkem.
-        patObrazek = r'^Obrázek\s+(?P<num>\d+-\d+)\.(\s+(?P<text>.+?))?\s*$'
-        self.rexObrazek = re.compile(patObrazek)
-
-        # Řádek reprezentující příklad sázený jako kódový řádek
-        # neproporcionálním písmem. U této aplikace je uvozen jedním tabulátorem
-        # nebo 8 mezerami.
-        self.rexCode = re.compile(r'^(\t| {8}| {4})(?P<text>.*)$')
-
-        # Řádek, který má být pravděpodobně změněn na příklad textového řádku.
-        self.rexXCode = re.compile(r'^(?P<text>[$#].*)$')
-
-        # Řádek se symbolicky uvedeným nadpisem 4. úrovně (#### Nadpis ####).
-        self.rexH4Title = re.compile(r'^(?P<h4title>####\s+.+\s+####)\s*$')
 
 
     def png_name(self, num):
@@ -553,15 +556,67 @@ class Pass2Parser:
 class Pass3Element:
     '''Rozpoznané Elementy dokumentu odpovídající řádkům zdrojového textu.'''
 
+    # Řádek se symbolicky uvedeným nadpisem (#### Nadpis ####).
+    rexTitle = re.compile(r'^(?P<level>#+)\s+(?P<title>.+?)\s+\1\s*$')
+
+    # Nečíslovaná odrážka korektně explicitně zapsaná (markdown syntaxe).
+    rexBullet = re.compile(r'^\*\t(?P<uli>.+?)\s*$')
+
+    # Příkaz pro vložení obrázku.
+    rexInsImg = re.compile(r'^Insert\s+(?P<img>\d+fig\d+\.png)\s*$')
+
     def __init__(self, fname, lineno, line):
         self.fname = fname      # původní zdrojový soubor
         self.lineno = lineno    # číslo řádku ve zdrojovém souboru
         self.line = line        # původní řádek
+
         self.type = None        # typ elementu
+        self.attrib = None      # init -- atributy elementu (význam dle typu)
+
+        # Řádek obsahující jen whitespace považujeme za prázdný
+        # řádek ve významu oddělovače.
+        if self.line.isspace():
+            self.type = 'empty'
+            self.attrib = ''   # reprezentací bude prázdný řetězec
+            return
+
+        # Řádek s nadpisem.
+        m = self.rexTitle.match(line)
+        if m:
+            self.type = 'title'
+            self.attrib = (len(m.group('level')), m.group('title'))
+            return
+
+        # Řádek s nadpisem.
+        m = self.rexBullet.match(line)
+        if m:
+            self.type = 'uli'
+            self.attrib = m.group('uli')
+            return
+
+        # Řádek pro vložení souboru obrázku.
+        m = self.rexInsImg.match(line)
+        if m:
+            self.type = 'img'
+            self.attrib = m.group('img')
+            return
+
+        # Prázdný řádek odpovídá situaci, kdy skončil soubor a další řádek
+        # nebylo možno načíst. Neměl by nastávat, ale pro jistotu.
+        if self.line == '':
+            # Z pohledu řešeného problému to tedy není prázdný řádek
+            # ve významu oddělovače.
+            self.type = 'EOF'
+            self.attrib = None
+            return
+
+        # Ostatní případy budeme považovat za odstavec.
+        self.type = 'para'
+        self.attrib = line.rstrip()
 
 
     def __repr__(self):
-        return repr((fname, line.rstrip()))
+        return repr((fname, lineno, self.type, self.attrib))
 
 
     def __str__(self):
@@ -594,12 +649,6 @@ class Pass3Parser:
         # Řádek obsahující pouze číslo (kapitoly, podkapitoly, ..., bodu seznamu.
         self.rexNum = re.compile(r'^' + patNum + r'\s*$')
 
-        # Číslovaný nadpis.
-        self.rexTitle = re.compile(r'^' + patNum + r'\s+(?P<title>.+?)\s*$')
-
-        # Nečíslovaná odrážka korektně explicitně zapsaná (markdown syntaxe).
-        self.rexBullet = re.compile(r'^(?P<uli>\*\t.+?)\s*$')
-
         # Dobře rozpoznaná nečíslovaná odrážka zapsaná Unicode znakem.
         self.rexUBullet = re.compile('^\u2022' + r'\s*(?P<text>.*?)\s*$')
 
@@ -625,8 +674,6 @@ class Pass3Parser:
         # Řádek, který má být pravděpodobně změněn na příklad textového řádku.
         self.rexXCode = re.compile(r'^(?P<text>[$#].*)$')
 
-        # Řádek se symbolicky uvedeným nadpisem 4. úrovně (#### Nadpis ####).
-        self.rexH4Title = re.compile(r'^(?P<h4title>####\s+.+\s+####)\s*$')
 
 
 
@@ -681,6 +728,7 @@ if __name__ == '__main__':
         for fname, lineno, line in gen.sourceFileLines(czfname):
             fout.write('{}|{:4d}: {}'.format(fname, lineno, line))
 
+
     # Adresář s originálními podadresáři a soubory.
     text_dir = os.path.abspath('../../progit/en')
 
@@ -707,6 +755,16 @@ if __name__ == '__main__':
             assert barename is not None
 
             fout.write('{}|{}|{:4d}: {}'.format(subdir, barename, lineno, line))
+
+
+    # To stejné do seznamu elementů.
+    en_lst = []
+    with open(os.path.join(en_aux_dir, 'pass3elem.txt'), 'w', encoding='utf-8') as fout:
+        for relname, lineno, line in gen.sourceFileLines(text_dir):
+            elem = Pass3Element(relname, lineno, line)
+            en_lst.append(elem)
+            fout.write(repr(elem) + '\n')
+
 
     print('done')
 
