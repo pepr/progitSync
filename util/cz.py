@@ -192,7 +192,7 @@ class Pass2Parser:
         # Řádek, který má být pravděpodobně změněn na příklad textového řádku.
         self.rexXCode = re.compile(r'^(?P<text>[$#].*)$')
 
-        # Řádek se symbolicky uvedeným nadpisem 4. úrovně (#### Nadpis ####). na příklad textového řádku.
+        # Řádek se symbolicky uvedeným nadpisem 4. úrovně (#### Nadpis ####).
         self.rexH4Title = re.compile(r'^(?P<h4title>####\s+.+\s+####)\s*$')
 
 
@@ -549,6 +549,89 @@ class Pass2Parser:
         self.fout.close()
 
 
+#-----------------------------------------------------------------
+class Pass3Element:
+    '''Rozpoznané Elementy dokumentu odpovídající řádkům zdrojového textu.'''
+
+    def __init__(self, fname, lineno, line):
+        self.fname = fname      # původní zdrojový soubor
+        self.lineno = lineno    # číslo řádku ve zdrojovém souboru
+        self.line = line        # původní řádek
+        self.type = None        # typ elementu
+
+
+    def __repr__(self):
+        return repr((fname, line.rstrip()))
+
+
+    def __str__(self):
+        return self.line
+
+
+
+class Pass3Parser:
+    '''Parser pro třetí průchod, konzumující (ručně upravený) výstup druhého průchodu.'''
+
+    def __init__(self, fname, cz_aux_dir, en_aux_dir):
+        self.fname_in = fname   # jméno vstupního souboru
+        self.toc = toc          # toc = Table Of Content
+        self.cz_aux_dir = cz_aux_dir  # pomocný adresář pro české výstupy
+        self.en_aux_dir = en_aux_dir  # pomocný adresář pro anglické výstupy
+
+        self.cz_lst = []
+        self.en_lst = []
+
+        self.type = None        # init -- symbolický typ řádku (jeho význam)
+        self.parts = []         # init -- seznam částí řádku dle významu
+        self.collection = []    # init -- kolekce sesbíraných řádků
+
+        self.fout = None        # souborový objekt otevřený pro výstup.
+        self.status = None      # init -- stav konečného automatu
+
+        # Vícekrát použitý vzorek pro číslo s tečkami.
+        patNum = r'(?P<num>(?P<num1>\d+)\.(?P<num2>\d+)?(\.(?P<num3>\d+))?)'
+
+        # Řádek obsahující pouze číslo (kapitoly, podkapitoly, ..., bodu seznamu.
+        self.rexNum = re.compile(r'^' + patNum + r'\s*$')
+
+        # Číslovaný nadpis.
+        self.rexTitle = re.compile(r'^' + patNum + r'\s+(?P<title>.+?)\s*$')
+
+        # Nečíslovaná odrážka korektně explicitně zapsaná (markdown syntaxe).
+        self.rexBullet = re.compile(r'^(?P<uli>\*\t.+?)\s*$')
+
+        # Dobře rozpoznaná nečíslovaná odrážka zapsaná Unicode znakem.
+        self.rexUBullet = re.compile('^\u2022' + r'\s*(?P<text>.*?)\s*$')
+
+        # Pouze zahajovací znak (dobře rozpoznaný) špatně zalomeného
+        # textu nečíslované odrážky. Musí se k němu přidat jeden nebo
+        # víc dalších řádků.
+        self.rexUXBullet = re.compile('^\u2022' + r'\s*$')
+
+        # Značka přechodu mezi stránkami. Je generovaná v prvním průchodu,
+        # takže můžeme volit jednoduchý výraz.
+        self.rexPagesep = re.compile(r'^---------- pagesep$')
+
+        # Umístění obrázku s číslem. Může následovat popisný text,
+        # ale bývá zalomený za ještě jedním prázdným řádkem.
+        patObrazek = r'^Obrázek\s+(?P<num>\d+-\d+)\.(\s+(?P<text>.+?))?\s*$'
+        self.rexObrazek = re.compile(patObrazek)
+
+        # Řádek reprezentující příklad sázený jako kódový řádek
+        # neproporcionálním písmem. U této aplikace je uvozen jedním tabulátorem
+        # nebo 8 mezerami.
+        self.rexCode = re.compile(r'^(\t| {8}| {4})(?P<text>.*)$')
+
+        # Řádek, který má být pravděpodobně změněn na příklad textového řádku.
+        self.rexXCode = re.compile(r'^(?P<text>[$#].*)$')
+
+        # Řádek se symbolicky uvedeným nadpisem 4. úrovně (#### Nadpis ####).
+        self.rexH4Title = re.compile(r'^(?P<h4title>####\s+.+\s+####)\s*$')
+
+
+
+#???
+
 
 if __name__ == '__main__':
 
@@ -595,8 +678,8 @@ if __name__ == '__main__':
     print('pass 3 ... ', end='')
 
     with open(os.path.join(cz_aux_dir, 'pass3.txt'), 'w', encoding='utf-8') as fout:
-        for fname, line in gen.sourceFileLines(czfname):
-            fout.write('{}|{}'.format(fname, line))
+        for fname, lineno, line in gen.sourceFileLines(czfname):
+            fout.write('{}|{:4d}: {}'.format(fname, lineno, line))
 
     # Adresář s originálními podadresáři a soubory.
     text_dir = os.path.abspath('../../progit/en')
@@ -616,14 +699,14 @@ if __name__ == '__main__':
         last_relname = None
         subdir = None
         barename = None
-        for relname, line in gen.sourceFileLines(text_dir):
+        for relname, lineno, line in gen.sourceFileLines(text_dir):
             if relname != last_relname:
                 subdir, barename = os.path.split(relname)
 
             assert subdir is not None
             assert barename is not None
 
-            fout.write('{}|{}|{}'.format(subdir, barename, line))
+            fout.write('{}|{}|{:4d}: {}'.format(subdir, barename, lineno, line))
 
     print('done')
 
