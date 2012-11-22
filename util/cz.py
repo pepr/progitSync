@@ -549,6 +549,7 @@ class Pass2Parser:
         self.fout.close()
 
 
+
 if __name__ == '__main__':
 
     # Pomocné podadresáře pro generované informace.
@@ -593,17 +594,36 @@ if __name__ == '__main__':
     # prvních kroků překladatelů knihy.
     print('pass 3 ... ', end='')
 
-    with open(czfname, encoding='utf-8') as fin, \
-         open(os.path.join(cz_aux_dir, 'pass3.txt'), 'w', encoding='utf-8') as fout:
-        for line in fin:
-            fout.write(line)
+    with open(os.path.join(cz_aux_dir, 'pass3.txt'), 'w', encoding='utf-8') as fout:
+        for fname, line in gen.sourceFileLines(czfname):
+            fout.write('{}|{}'.format(fname, line))
 
     # Adresář s originálními podadresáři a soubory.
     text_dir = os.path.abspath('../../progit/en')
 
     with open(os.path.join(en_aux_dir, 'pass3.txt'), 'w', encoding='utf-8') as fout:
-        for fname, line in gen.sourceFileLines(text_dir):
-            fout.write(line)
+
+        # Adresář, ve kterém se budou tvořit výstupní adresáře s hotovými
+        # českými zdrojovými soubory.
+        cz_out_dir = os.path.join(cz_aux_dir, 'pass3')
+        if not os.path.isdir(cz_out_dir):
+            os.makedirs(cz_out_dir)
+
+        # Počáteční výstupní adresář pro anglické soubory je inicializován na
+        # neexistující. Při každé změně vracené generátorem zdrojových řádků
+        # bude vytvořen odpovídající český podadresář a otevřen odpovídající
+        # český soubor.
+        last_relname = None
+        subdir = None
+        barename = None
+        for relname, line in gen.sourceFileLines(text_dir):
+            if relname != last_relname:
+                subdir, barename = os.path.split(relname)
+
+            assert subdir is not None
+            assert barename is not None
+
+            fout.write('{}|{}|{}'.format(subdir, barename, line))
 
     print('done')
 
