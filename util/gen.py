@@ -27,25 +27,40 @@ def sourceFiles(text_dir):
                 yield fname
 
 
-def sourceFileLines(text_dir):
+def sourceFileLines(name):
     '''Generator of source-file lines as they should appear in the book.
 
-       It returns the (filename, line) tuple where filename is relative
-       to the text_dir.
+       If name is a directory (let's call it text_dir), then it contains
+       subdirectories with the source files. It returns the (filename, line)
+       tuple where filename is relative to the text_dir.
+
+       If name is a filename, then the lines of the file are returned.
+       In the case, it returns tuples (filename, line) where filename
+       is the name in the untouched form.
     '''
 
-    # Loop through the source files in the order, open them,
-    # and yield their lines.
-    for fname in sourceFiles(text_dir):
-        # Build the relname relative to the text_dir. We know there is one
-        # subdir level and then the files inside.
-        path, name = os.path.split(fname)
-        subdir = os.path.basename(path)
-        relname = '/'.join((subdir, name))  # subdir/souce_file.markdown
-        with open(fname, encoding='utf-8') as f:
+    if os.path.isdir(name):
+        # Je to jméno adresáře. Přejmenujeme podle původního kódu.
+        text_dir = name
+
+        # Loop through the source files in the order, open them,
+        # and yield their lines.
+        for fname in sourceFiles(text_dir):
+            # Build the relname relative to the text_dir. We know there is one
+            # subdir level and then the files inside.
+            path, name = os.path.split(fname)
+            subdir = os.path.basename(path)
+            relname = '/'.join((subdir, name))  # subdir/souce_file.markdown
+            with open(fname, encoding='utf-8') as f:
+                for line in f:
+                    yield relname, line
+            yield None, '\n'    # to be sure the last line of the previous is separated
+    else:
+        # Musí jít o jméno souboru.
+        assert os.path.isfile(name)
+        with open(name, encoding='utf-8') as f:
             for line in f:
-                yield relname, line
-        yield None, '\n'    # to be sure the last line of the previous is separated
+                yield name, line
 
 
 def toc(text_dir, max_level=4):
