@@ -131,10 +131,8 @@ Před instalcí samotného Gitu musí váš systém obsahovat následující kni
 	$ yum install curl-devel expat-devel gettext-devel \
 	  openssl-devel zlib-devel
 
-
 	$ apt-get install libcurl4-gnutls-dev libexpat1-dev gettext \
 	  libz-dev
-
 
 Po doinstalování všech potřebných závislostí můžete pokračovat stažením nejnovější verze z webových stránek systému Git:
 
@@ -165,7 +163,7 @@ V distribuci založené na Debianu (např. Ubuntu) zkuste použít program apt-g
 
 Existují dva jednoduché způsoby, jak nainstalovat Git v systému Mac. Tím nejjednodušším je použít grafický instalátor Git, který si můžete stáhnout ze stránky Google Code (viz obrázek 1-7):
 
-	http://code.google.com/p/git-osx-installer
+http://code.google.com/p/git-osx-installer
 
 Insert 18333fig0107.png
 Obrázek 1-7. Instalátor Git pro OS X
@@ -247,12 +245,12 @@ Budete-li někdy při používání systému Git potřebovat pomoc, existují t�
 	$ git <příkaz> --help
 	$ man git-<příkaz>
 
-
 Například manpage nápovědu pro příkaz config vyvoláte zadáním:
 
 	$ git help config
 
-Tyto příkazy jsou užitečné, neboť je můžete spustit kdykoli, dokonce i offline. Pokud nenajdete pomoc na manuálové stránce ani v této knize a uvítali byste osobní pomoc, můžete zkusit kanál #git nebo #github na serveru Freenode IRC (irc.freenode.net). Na těchto kanálech se většinou pohybují stovky lidí, kteří mají se systémem Git bohaté zkušenosti a často ochotně pomohou.
+Tyto příkazy jsou užitečné, neboť je můžete spustit kdykoli, dokonce i offline.
+Pokud nenajdete pomoc na manuálové stránce ani v této knize a uvítali byste osobní pomoc, můžete zkusit kanál #git nebo #github na serveru Freenode IRC (irc.freenode.net). Na těchto kanálech se většinou pohybují stovky lidí, kteří mají se systémem Git bohaté zkušenosti a často ochotně pomohou.
 
 ## Shrnutí ##
 
@@ -311,14 +309,11 @@ Obrázek 2-1. Cyklus stavů vašich souborů
 
 ### Kontrola stavu souborů ###
 
-Hlavním nástrojem na zjišťování stavu jednotlivých souborů je příkaz git status. Spustíte-li tento
-
-příkaz bezprostředně po klonování, objeví se zhruba následující:
+Hlavním nástrojem na zjišťování stavu jednotlivých souborů je příkaz git status. Spustíte-li tento příkaz bezprostředně po klonování, objeví se zhruba následující:
 
 	$ git status
 	# On branch master
 	nothing to commit (working directory clean)
-
 
 To znamená, že žádné soubory nejsou připraveny k zapsání a pracovní adresář je čistý. Jinými slovy žádné sledované soubory nebyly změněny. Git také neví o žádných nesledovaných souborech, jinak by byly ve výčtu uvedeny. Příkaz vám dále sděluje, na jaké větvi (branch) se nacházíte. Pro tuto chvíli nebudeme situaci komplikovat a výchozí bude vždy hlavní větev (master branch). Větve a reference budou podrobně popsány v následující kapitole.
 
@@ -441,7 +436,9 @@ Tady je další příklad souboru .gitignore:
 
 ### Zobrazení připravených a nepřipravených změn ###
 
-Je-li pro vaše potřeby příkaz git status příliš neurčitý – chcete přesně vědět, co jste změnili, nejen které soubory – můžete použít příkaz git diff. Podrobněji se budeme příkazu git diff věnovat později. Vy ho však nejspíš budete nejčastěji využívat k zodpovězení těchto dvou otázek: Co jste změnili, ale ještě nepřipravili k zapsání? A co jste připravili a nyní může být zapsáno? Zatímco příkaz git status vám tyto otázky zodpoví velmi obecně, příkaz git diff přesně zobrazí přidané a odstraněné řádky – tedy samotná záplata. Řekněme, že znovu upravíte a připravíte soubor README a poté bez připravení upravíte soubor benchmarks.rb. Po spuštění příkazu status se zobrazí zhruba toto:
+Je-li pro vaše potřeby příkaz git status příliš neurčitý – chcete přesně vědět, co jste změnili, nejen které soubory – můžete použít příkaz git diff. Podrobněji se budeme příkazu git diff věnovat později. Vy ho však nejspíš budete nejčastěji využívat k zodpovězení těchto dvou otázek: Co jste změnili, ale ještě nepřipravili k zapsání? A co jste připravili a nyní může být zapsáno? Zatímco příkaz git status vám tyto otázky zodpoví velmi obecně, příkaz git diff přesně zobrazí přidané a odstraněné řádky – tedy samotná záplata.
+
+Řekněme, že znovu upravíte a připravíte soubor README a poté bez připravení upravíte soubor benchmarks.rb. Po spuštění příkazu status se zobrazí zhruba toto:
 
 	$ git status
 	# On branch master

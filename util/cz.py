@@ -566,7 +566,7 @@ class Pass3Element:
     rexInsImg = re.compile(r'^Insert\s+(?P<img>\d+fig\d+\.png)\s*$')
 
     # Popis obrázku.
-    rexImgCaption = re.compile(r'^Figure\s+(?P<num>\d+.+\d+).?\s+(?P<text>.+?)\s*$')
+    rexImgCaption = re.compile(r'^(Fig(ure)?|Obrázek)\s+(?P<num>\d+.+\d+).?\s+(?P<text>.+?)\s*$')
 
     # Příklad kódu.
     rexCode = re.compile(r'^( {4}|\t)(?P<code>.+?)\s*$')
@@ -657,20 +657,20 @@ class Pass3Element:
 class Pass3Parser:
     '''Parser pro třetí průchod, konzumující (ručně upravený) výstup druhého průchodu.'''
 
-    def __init__(self, cz_name_in, en_name_in, cz_aux_dir, en_aux_dir):
-        self.cz_name_in = cz_name_in    # jméno vstupního souboru/adresáře s českou verzí
+    def __init__(self, cs_name_in, en_name_in, cs_aux_dir, en_aux_dir):
+        self.cs_name_in = cs_name_in    # jméno vstupního souboru/adresáře s českou verzí
         self.en_name_in = en_name_in    # jméno vstupního souboru/adresáře s anglickou verzí
-        self.cz_aux_dir = cz_aux_dir    # pomocný adresář pro české výstupy
+        self.cs_aux_dir = cs_aux_dir    # pomocný adresář pro české výstupy
         self.en_aux_dir = en_aux_dir    # pomocný adresář pro anglické výstupy
 
-        self.cz_lst = None              # seznam elementů z českého překladu
+        self.cs_lst = None              # seznam elementů z českého překladu
         self.en_lst = None              # seznam elementů z anglického originálu
 
 
-    def run(self):
+    def writePass3txtFiles(self):
         # Kopie českého vstupu do jednoho souboru.
-        with open(os.path.join(self.cz_aux_dir, 'pass3.txt'), 'w', encoding='utf-8') as fout:
-            for fname, lineno, line in gen.sourceFileLines(self.cz_name_in):
+        with open(os.path.join(self.cs_aux_dir, 'pass3.txt'), 'w', encoding='utf-8') as fout:
+            for fname, lineno, line in gen.sourceFileLines(self.cs_name_in):
                 fout.write('{}|{:4d}: {}'.format(fname, lineno, line))
 
         # Kopie anglického vstupu do jednoho souboru.
@@ -678,12 +678,19 @@ class Pass3Parser:
             for fname, lineno, line in gen.sourceFileLines(self.en_name_in):
                 fout.write('{}|{:4d}: {}'.format(fname, lineno, line))
 
+
+    def loadElementLists(self):
+        '''Načte elementy dokumentů do členských seznamů.
+
+           Jako vedlejší efekt zachytí reprezentaci seznamů elementů do souborů
+           pass3elem.txt v pomocných adresářích.'''
+
         # Elementy z českého překladu do seznamu a do souboru.
-        self.cz_lst = []
-        with open(os.path.join(self.cz_aux_dir, 'pass3elem.txt'), 'w', encoding='utf-8') as fout:
-            for relname, lineno, line in gen.sourceFileLines(self.cz_name_in):
+        self.cs_lst = []
+        with open(os.path.join(self.cs_aux_dir, 'pass3elem.txt'), 'w', encoding='utf-8') as fout:
+            for relname, lineno, line in gen.sourceFileLines(self.cs_name_in):
                 elem = Pass3Element(relname, lineno, line)
-                self.cz_lst.append(elem)
+                self.cs_lst.append(elem)
                 fout.write(repr(elem) + '\n')
 
         # Elementy z anglického originálu do seznamu a do souboru.
@@ -694,8 +701,31 @@ class Pass3Parser:
                 self.en_lst.append(elem)
                 fout.write(repr(elem) + '\n')
 
+
+
+    def checkStructDiffs(self):
+        '''Generuje cs/pass3struct_diff.txt s rozdíly ve struktuře zdrojových řádků.'''
+
         # Zjištěné posloupnosti elementů dokumentů (nadpisy, odstavce, obrázky,
-        # příklady kódu) porovnáváme za účelem zjištění rozdílů struktury. Některé
+        # příklady kódu) porovnáváme za účelem zjištění rozdílů struktury -- zde
+        # jen typy elementů.
+        struct_diff_fname = os.path.join(self.cs_aux_dir, 'pass3struct_diff.txt')
+        with open(struct_diff_fname, 'w', encoding='utf-8') as f:
+            for lineno, (en_element, cs_element) in enumerate(zip(self.en_lst, self.cs_lst), 1):
+                if en_element.type != cs_element.type:
+                    f.write('{:4d}:\t{}\n\t{}\n\n'.format(lineno,
+                                                          repr(en_element),
+                                                          repr(cs_element)))
+
+    def run(self):
+        '''Spouštěč jednotlivých fází parseru.'''
+
+        self.writePass3txtFiles()
+        self.loadElementLists()
+        self.checkStructDiffs()
+
+
+        # Některé
         # informace se porovnávají podrobněji (příklady kódu, identifikace obrázků),
         # u některých elementů se porovnává jen druh elementu (existence odstavce,
         # existence odrážky, úroveň nadpisu,...).
@@ -705,9 +735,9 @@ class Pass3Parser:
         if 0:
             # Adresář, ve kterém se budou tvořit výstupní adresáře s hotovými
             # českými zdrojovými soubory.
-            cz_out_dir = os.path.join(self.cz_aux_dir, 'pass3')
-            if not os.path.isdir(cz_out_dir):
-                os.makedirs(cz_out_dir)
+            cs_out_dir = os.path.join(self.cs_aux_dir, 'pass3')
+            if not os.path.isdir(cs_out_dir):
+                os.makedirs(cs_out_dir)
 
             # Počáteční výstupní adresář pro anglické soubory je inicializován na
             # neexistující. Při každé změně vracené generátorem zdrojových řádků
@@ -731,9 +761,9 @@ class Pass3Parser:
 if __name__ == '__main__':
 
     # Pomocné podadresáře pro generované informace.
-    cz_aux_dir = os.path.realpath('../info_aux_cz')
-    if not os.path.isdir(cz_aux_dir):
-        os.makedirs(cz_aux_dir)
+    cs_aux_dir = os.path.realpath('../info_aux_cs')
+    if not os.path.isdir(cs_aux_dir):
+        os.makedirs(cs_aux_dir)
 
     en_aux_dir = os.path.realpath('../info_aux_en')
     if not os.path.isdir(en_aux_dir):
@@ -745,11 +775,11 @@ if __name__ == '__main__':
     # na zachování struktury dokumentu). Hlavním výsledkem je soubor
     # pass1.txt a vracený slovník toc.
     print('pass 1 ... ', end='')
-    czTOC = first_pass('../txtFromPDF/scott_chacon_pro_git_CZ.txt', cz_aux_dir)
+    czTOC = first_pass('../txtFromPDF/scott_chacon_pro_git_CZ.txt', cs_aux_dir)
 
     # V druhém průchodu rozpoznáváme pass1.txt a generujeme pass2.txt.
     print('done\npass 2 ... ', end='')
-    parser = Pass2Parser(os.path.join(cz_aux_dir, 'pass1.txt'), czTOC, cz_aux_dir)
+    parser = Pass2Parser(os.path.join(cs_aux_dir, 'pass1.txt'), czTOC, cs_aux_dir)
     parser.run()
     print('done')
 
@@ -780,7 +810,7 @@ if __name__ == '__main__':
     # u některých elementů se porovnává jen druh elementu (existence odstavce,
     # existence odrážky, úroveň nadpisu,...).
     print('pass 3 ... ', end='')
-    parser = Pass3Parser(czfname, en_src_dir, cz_aux_dir, en_aux_dir)
+    parser = Pass3Parser(czfname, en_src_dir, cs_aux_dir, en_aux_dir)
     parser.run()
     print('done')
 
