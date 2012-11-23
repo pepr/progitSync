@@ -565,6 +565,15 @@ class Pass3Element:
     # Příkaz pro vložení obrázku.
     rexInsImg = re.compile(r'^Insert\s+(?P<img>\d+fig\d+\.png)\s*$')
 
+    # Popis obrázku.
+    rexImgCaption = re.compile(r'^Figure\s+(?P<num>\d+.+\d+).?\s+(?P<text>.+?)\s*$')
+
+    # Příklad kódu.
+    rexCode = re.compile(r'^( {4}|\t)(?P<code>.+?)\s*$')
+
+    # Položka číslovaného seznamu.
+    rexLi = re.compile(r'^(?P<num>\d+\.)\t(?P<text>.+?)\s*$')
+
     def __init__(self, fname, lineno, line):
         self.fname = fname      # původní zdrojový soubor
         self.lineno = lineno    # číslo řádku ve zdrojovém souboru
@@ -587,11 +596,18 @@ class Pass3Element:
             self.attrib = (len(m.group('level')), m.group('title'))
             return
 
-        # Řádek s nadpisem.
+        # Odrážka.
         m = self.rexBullet.match(line)
         if m:
             self.type = 'uli'
             self.attrib = m.group('uli')
+            return
+
+        # Položka číslovaného seznamu.
+        m = self.rexLi.match(line)
+        if m:
+            self.type = 'li'
+            self.attrib = (m.group('num'), m.group('text'))
             return
 
         # Řádek pro vložení souboru obrázku.
@@ -599,6 +615,20 @@ class Pass3Element:
         if m:
             self.type = 'img'
             self.attrib = m.group('img')
+            return
+
+        # Řádek s popisem obrázku.
+        m = self.rexImgCaption.match(line)
+        if m:
+            self.type = 'imgcaption'
+            self.attrib = (m.group('num'), m.group('text'))
+            return
+
+        # Řádek s kódem.
+        m = self.rexCode.match(line)
+        if m:
+            self.type = 'code'
+            self.attrib = m.group('code')
             return
 
         # Prázdný řádek odpovídá situaci, kdy skončil soubor a další řádek
@@ -616,7 +646,7 @@ class Pass3Element:
 
 
     def __repr__(self):
-        return repr((fname, lineno, self.type, self.attrib))
+        return repr((self.fname, self.lineno, self.type, self.attrib))
 
 
     def __str__(self):
@@ -627,56 +657,74 @@ class Pass3Element:
 class Pass3Parser:
     '''Parser pro třetí průchod, konzumující (ručně upravený) výstup druhého průchodu.'''
 
-    def __init__(self, fname, cz_aux_dir, en_aux_dir):
-        self.fname_in = fname   # jméno vstupního souboru
-        self.toc = toc          # toc = Table Of Content
-        self.cz_aux_dir = cz_aux_dir  # pomocný adresář pro české výstupy
-        self.en_aux_dir = en_aux_dir  # pomocný adresář pro anglické výstupy
+    def __init__(self, cz_name_in, en_name_in, cz_aux_dir, en_aux_dir):
+        self.cz_name_in = cz_name_in    # jméno vstupního souboru/adresáře s českou verzí
+        self.en_name_in = en_name_in    # jméno vstupního souboru/adresáře s anglickou verzí
+        self.cz_aux_dir = cz_aux_dir    # pomocný adresář pro české výstupy
+        self.en_aux_dir = en_aux_dir    # pomocný adresář pro anglické výstupy
 
+        self.cz_lst = None              # seznam elementů z českého překladu
+        self.en_lst = None              # seznam elementů z anglického originálu
+
+
+    def run(self):
+        # Kopie českého vstupu do jednoho souboru.
+        with open(os.path.join(self.cz_aux_dir, 'pass3.txt'), 'w', encoding='utf-8') as fout:
+            for fname, lineno, line in gen.sourceFileLines(self.cz_name_in):
+                fout.write('{}|{:4d}: {}'.format(fname, lineno, line))
+
+        # Kopie anglického vstupu do jednoho souboru.
+        with open(os.path.join(self.en_aux_dir, 'pass3.txt'), 'w', encoding='utf-8') as fout:
+            for fname, lineno, line in gen.sourceFileLines(self.en_name_in):
+                fout.write('{}|{:4d}: {}'.format(fname, lineno, line))
+
+        # Elementy z českého překladu do seznamu a do souboru.
         self.cz_lst = []
+        with open(os.path.join(self.cz_aux_dir, 'pass3elem.txt'), 'w', encoding='utf-8') as fout:
+            for relname, lineno, line in gen.sourceFileLines(self.cz_name_in):
+                elem = Pass3Element(relname, lineno, line)
+                self.cz_lst.append(elem)
+                fout.write(repr(elem) + '\n')
+
+        # Elementy z anglického originálu do seznamu a do souboru.
         self.en_lst = []
+        with open(os.path.join(self.en_aux_dir, 'pass3elem.txt'), 'w', encoding='utf-8') as fout:
+            for relname, lineno, line in gen.sourceFileLines(self.en_name_in):
+                elem = Pass3Element(relname, lineno, line)
+                self.en_lst.append(elem)
+                fout.write(repr(elem) + '\n')
 
-        self.type = None        # init -- symbolický typ řádku (jeho význam)
-        self.parts = []         # init -- seznam částí řádku dle významu
-        self.collection = []    # init -- kolekce sesbíraných řádků
-
-        self.fout = None        # souborový objekt otevřený pro výstup.
-        self.status = None      # init -- stav konečného automatu
-
-        # Vícekrát použitý vzorek pro číslo s tečkami.
-        patNum = r'(?P<num>(?P<num1>\d+)\.(?P<num2>\d+)?(\.(?P<num3>\d+))?)'
-
-        # Řádek obsahující pouze číslo (kapitoly, podkapitoly, ..., bodu seznamu.
-        self.rexNum = re.compile(r'^' + patNum + r'\s*$')
-
-        # Dobře rozpoznaná nečíslovaná odrážka zapsaná Unicode znakem.
-        self.rexUBullet = re.compile('^\u2022' + r'\s*(?P<text>.*?)\s*$')
-
-        # Pouze zahajovací znak (dobře rozpoznaný) špatně zalomeného
-        # textu nečíslované odrážky. Musí se k němu přidat jeden nebo
-        # víc dalších řádků.
-        self.rexUXBullet = re.compile('^\u2022' + r'\s*$')
-
-        # Značka přechodu mezi stránkami. Je generovaná v prvním průchodu,
-        # takže můžeme volit jednoduchý výraz.
-        self.rexPagesep = re.compile(r'^---------- pagesep$')
-
-        # Umístění obrázku s číslem. Může následovat popisný text,
-        # ale bývá zalomený za ještě jedním prázdným řádkem.
-        patObrazek = r'^Obrázek\s+(?P<num>\d+-\d+)\.(\s+(?P<text>.+?))?\s*$'
-        self.rexObrazek = re.compile(patObrazek)
-
-        # Řádek reprezentující příklad sázený jako kódový řádek
-        # neproporcionálním písmem. U této aplikace je uvozen jedním tabulátorem
-        # nebo 8 mezerami.
-        self.rexCode = re.compile(r'^(\t| {8}| {4})(?P<text>.*)$')
-
-        # Řádek, který má být pravděpodobně změněn na příklad textového řádku.
-        self.rexXCode = re.compile(r'^(?P<text>[$#].*)$')
+        # Zjištěné posloupnosti elementů dokumentů (nadpisy, odstavce, obrázky,
+        # příklady kódu) porovnáváme za účelem zjištění rozdílů struktury. Některé
+        # informace se porovnávají podrobněji (příklady kódu, identifikace obrázků),
+        # u některých elementů se porovnává jen druh elementu (existence odstavce,
+        # existence odrážky, úroveň nadpisu,...).
 
 
+        ########################################################################
+        if 0:
+            # Adresář, ve kterém se budou tvořit výstupní adresáře s hotovými
+            # českými zdrojovými soubory.
+            cz_out_dir = os.path.join(self.cz_aux_dir, 'pass3')
+            if not os.path.isdir(cz_out_dir):
+                os.makedirs(cz_out_dir)
 
+            # Počáteční výstupní adresář pro anglické soubory je inicializován na
+            # neexistující. Při každé změně vracené generátorem zdrojových řádků
+            # bude vytvořen odpovídající český podadresář a otevřen odpovídající
+            # český soubor.
+            last_relname = None
+            subdir = None
+            barename = None
+            for relname, lineno, line in gen.sourceFileLines(text_dir):
+                if relname != last_relname:
+                    subdir, barename = os.path.split(relname)
 
+                assert subdir is not None
+                assert barename is not None
+
+                fout.write('{}|{}|{:4d}: {}'.format(subdir, barename, lineno, line))
+        ########################################################################
 #???
 
 
@@ -716,64 +764,26 @@ if __name__ == '__main__':
               repr(czfname) + ' !!!\n\n')
         sys.exit(1)
 
+    # Adresář s originálními podadresáři a soubory.
+    en_src_dir = os.path.abspath('../../progit/en')
+
     # V třetím průchodu sesbíráme informace jednak z originálu a jednak
     # z překladu (stejným algoritmem). Vycházíme z druhého commitu originálního
     # gitovského repozitáře (dfaab52e5a438d7fcd0d9c9af63289e5e3985fba), ve kterém
     # byly originální zdrojové soubory přemístěny do podadresáře en. V prvním
     # commitu podadresář en neexistoval a byl zjevně zaveden až v okamžiku
     # prvních kroků překladatelů knihy.
-    print('pass 3 ... ', end='')
-
-    with open(os.path.join(cz_aux_dir, 'pass3.txt'), 'w', encoding='utf-8') as fout:
-        for fname, lineno, line in gen.sourceFileLines(czfname):
-            fout.write('{}|{:4d}: {}'.format(fname, lineno, line))
-
-
-    # Adresář s originálními podadresáři a soubory.
-    text_dir = os.path.abspath('../../progit/en')
-
-    with open(os.path.join(en_aux_dir, 'pass3.txt'), 'w', encoding='utf-8') as fout:
-
-        # Adresář, ve kterém se budou tvořit výstupní adresáře s hotovými
-        # českými zdrojovými soubory.
-        cz_out_dir = os.path.join(cz_aux_dir, 'pass3')
-        if not os.path.isdir(cz_out_dir):
-            os.makedirs(cz_out_dir)
-
-        # Počáteční výstupní adresář pro anglické soubory je inicializován na
-        # neexistující. Při každé změně vracené generátorem zdrojových řádků
-        # bude vytvořen odpovídající český podadresář a otevřen odpovídající
-        # český soubor.
-        last_relname = None
-        subdir = None
-        barename = None
-        for relname, lineno, line in gen.sourceFileLines(text_dir):
-            if relname != last_relname:
-                subdir, barename = os.path.split(relname)
-
-            assert subdir is not None
-            assert barename is not None
-
-            fout.write('{}|{}|{:4d}: {}'.format(subdir, barename, lineno, line))
-
-
-    # To stejné do seznamu elementů.
-    en_lst = []
-    with open(os.path.join(en_aux_dir, 'pass3elem.txt'), 'w', encoding='utf-8') as fout:
-        for relname, lineno, line in gen.sourceFileLines(text_dir):
-            elem = Pass3Element(relname, lineno, line)
-            en_lst.append(elem)
-            fout.write(repr(elem) + '\n')
-
-
-    print('done')
-
-
+    #
     # Zjištěné posloupnosti elementů dokumentů (nadpisy, odstavce, obrázky,
     # příklady kódu) porovnáváme za účelem zjištění rozdílů struktury. Některé
     # informace se porovnávají podrobněji (příklady kódu, identifikace obrázků),
     # u některých elementů se porovnává jen druh elementu (existence odstavce,
     # existence odrážky, úroveň nadpisu,...).
+    print('pass 3 ... ', end='')
+    parser = Pass3Parser(czfname, en_src_dir, cz_aux_dir, en_aux_dir)
+    parser.run()
+    print('done')
+
 
 
     # Ve čtvrtém průchodu vycházíme z předpokladu, že se struktura dokumentu
