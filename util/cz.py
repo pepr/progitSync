@@ -566,7 +566,7 @@ class Pass3Element:
     rexInsImg = re.compile(r'^Insert\s+(?P<img>\d+fig\d+\.png)\s*$')
 
     # Popis obrázku.
-    rexImgCaption = re.compile(r'^(Fig(ure)?|Obrázek)\s+(?P<num>\d+.+\d+).?\s+(?P<text>.+?)\s*$')
+    rexImgCaption = re.compile(r'^(Fig(ure)?|Obrázek)\.\s+(?P<num>\d+.+\d+).?\s+(?P<text>.+?)\s*$')
 
     # Příklad kódu.
     rexCode = re.compile(r'^( {4}|\t)(?P<code>.+?)\s*$')
