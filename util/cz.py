@@ -730,7 +730,16 @@ class Pass3Parser:
         struct_diff_fname = os.path.join(self.cs_aux_dir, 'pass3struct_diff.txt')
         with open(struct_diff_fname, 'w', encoding='utf-8') as f:
             for en_element, cs_element in zip(self.en_lst, self.cs_lst):
-                if en_element.type != cs_element.type:
+
+                # Pro nejhrubší synchronizaci se budeme řídit pouze typy
+                # elementů. (Nejméně přísné pravidlo synchronizace.)
+                #
+                # Pokud se typy shodují, pak přísnější pravidlo
+                # synchronizace vyžaduje, aby se shodovaly řádky
+                # s příkladem kódu.
+                if en_element.type != cs_element.type \
+                   or (en_element.type == 'code'
+                       and en_element.line != cs_element.line):
                     # U cs jen číslo řádku, u en číslo kapitoly/číslo řádku.
                     f.write('\ncs {} -- en {}/{}:\n'.format(
                             cs_element.lineno,
@@ -816,10 +825,10 @@ if __name__ == '__main__':
     # souboru, který budeme dále upravovat ručně. (Kdykoliv je možné srovnat
     # jej s nadále generovaným pass2.txt.) V tomto místě kontrolujeme, zda
     # soubor existuje.
-    czManuallyFixedPass2fname = '../txtCorrected/RucneUpravovanyVysledekPass2.txt'
-    if not os.path.isfile(czManuallyFixedPass2fname):
+    czfname_pass2man = '../txtCorrected/RucneUpravovanyVysledekPass2.txt'
+    if not os.path.isfile(czfname_pass2man):
         print('\n\n\a\a\aRučně okopírovat pass2.txt do\n\t',
-              repr(czManuallyFixedPass2fname) + ' !!!\n\n')
+              repr(czfname_pass2man) + ' !!!\n\n')
         sys.exit(1)
 
     # Adresář s originálními podadresáři a soubory.
@@ -838,7 +847,7 @@ if __name__ == '__main__':
     # u některých elementů se porovnává jen druh elementu (existence odstavce,
     # existence odrážky, úroveň nadpisu,...).
     print('pass 3 ... ', end='')
-    parser = Pass3Parser(czfname, en_src_dir, cs_aux_dir, en_aux_dir)
+    parser = Pass3Parser(czfname_pass2man, en_src_dir, cs_aux_dir, en_aux_dir)
     parser.run()
     print('done')
 
