@@ -784,7 +784,6 @@ class Pass3Parser:
 
                 fout.write('{}|{}|{:4d}: {}'.format(subdir, barename, lineno, line))
         ########################################################################
-#???
 
 
 if __name__ == '__main__':
@@ -817,10 +816,10 @@ if __name__ == '__main__':
     # souboru, který budeme dále upravovat ručně. (Kdykoliv je možné srovnat
     # jej s nadále generovaným pass2.txt.) V tomto místě kontrolujeme, zda
     # soubor existuje.
-    czfname = '../txtCorrected/RucneUpravovanyVysledekPass2.txt'
-    if not os.path.isfile(czfname):
+    czManuallyFixedPass2fname = '../txtCorrected/RucneUpravovanyVysledekPass2.txt'
+    if not os.path.isfile(czManuallyFixedPass2fname):
         print('\n\n\a\a\aRučně okopírovat pass2.txt do\n\t',
-              repr(czfname) + ' !!!\n\n')
+              repr(czManuallyFixedPass2fname) + ' !!!\n\n')
         sys.exit(1)
 
     # Adresář s originálními podadresáři a soubory.
