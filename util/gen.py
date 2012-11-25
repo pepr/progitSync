@@ -31,18 +31,19 @@ def sourceFileLines(name):
     '''Generator of source-file lines as they should appear in the book.
 
        If name is a directory (let's call it text_dir), then it contains
-       subdirectories with the source files. It returns the (filename, lineno, line)
-       tuple where filename is relative to the text_dir.
+       subdirectories with the source files. It returns 
+       the (filename, lineno, line) tuple where filename is relative 
+       to the text_dir.
 
        If name is a filename, then the lines of the file are returned.
-       In the case, it returns tuples (filename, lineno, line) where filename
-       is the name in the untouched form.
+       In the case, it returns tuples (filename, lineno, line) where 
+       filename is the name in the untouched form.
        
        Line numbering is 1-based (human oriented).
     '''
 
     if os.path.isdir(name):
-        # Je to jméno adresáře. Přejmenujeme podle původního kódu.
+        # It is a directory. Rename it to reuse the older code.
         text_dir = name
 
         # Loop through the source files in the order, open them,
@@ -56,9 +57,9 @@ def sourceFileLines(name):
             with open(fname, encoding='utf-8') as f:
                 for lineno, line in enumerate(f, 1):
                     yield relname, lineno, line
-            yield None, 0, '\n'    # to be sure the last line of the previous is separated
+            yield relname, 0, '\n'    # to be sure the last line of the previous is separated
     else:
-        # Musí jít o jméno souboru.
+        # It should be a file name.
         assert os.path.isfile(name)
         with open(name, encoding='utf-8') as f:
             for lineno, line in enumerate(f, 1):

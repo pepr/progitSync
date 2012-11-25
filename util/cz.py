@@ -560,7 +560,7 @@ class Pass3Element:
     rexTitle = re.compile(r'^(?P<level>#+)\s+(?P<title>.+?)\s+\1\s*$')
 
     # Nečíslovaná odrážka korektně explicitně zapsaná (markdown syntaxe).
-    rexBullet = re.compile(r'^\*\t(?P<uli>.+?)\s*$')
+    rexBullet = re.compile(r'^\*\s+(?P<uli>.+?)\s*$')
 
     # Příkaz pro vložení obrázku.
     rexInsImg = re.compile(r'^Insert\s+(?P<img>\d+fig\d+\.png)\s*$')
@@ -668,39 +668,57 @@ class Pass3Parser:
 
 
     def writePass3txtFiles(self):
-        # Kopie českého vstupu do jednoho souboru.
+        # Kopie českého vstupu do jednoho souboru. Při tomto průchodu
+        # pochází z jednoho souboru, takže jméno souboru vynecháme.
         with open(os.path.join(self.cs_aux_dir, 'pass3.txt'), 'w', encoding='utf-8') as fout:
             for fname, lineno, line in gen.sourceFileLines(self.cs_name_in):
-                fout.write('{}|{:4d}: {}'.format(fname, lineno, line))
+                fout.write('{:4d}:\t{}'.format(lineno, line))
 
-        # Kopie anglického vstupu do jednoho souboru.
-        with open(os.path.join(self.en_aux_dir, 'pass3.txt'), 'w', encoding='utf-8') as fout:
+        # Kopie anglického vstupu do jednoho souboru. Pro lepší orientaci
+        # v dlouhých řádcích nebudeme vypisovat jméno souboru, ale
+        # jen číslo kapitoly (jeden znak relativní cesty).
+        with open(os.path.join(self.en_aux_dir, 'pass3.txt'), 'w',
+                  encoding='utf-8') as fout:
             for fname, lineno, line in gen.sourceFileLines(self.en_name_in):
-                fout.write('{}|{:4d}: {}'.format(fname, lineno, line))
+                fout.write('{}/{}:\t{}'.format(fname[1:2], lineno, line))
 
 
     def loadElementLists(self):
         '''Načte elementy dokumentů do členských seznamů.
 
-           Jako vedlejší efekt zachytí reprezentaci seznamů elementů do souborů
-           pass3elem.txt v pomocných adresářích.'''
+           Jako vedlejší efekt zachytí reprezentaci seznamů elementů
+           do souborů pass3elem.txt v pomocných adresářích.'''
 
-        # Elementy z českého překladu do seznamu a do souboru.
+        # Elementy z českého překladu do seznamu a do souboru. Do českého
+        # překladu jsou vloženy navíc úseky jako vysvětlivky anglického
+        # originálu, který byl ponechán v původním tvaru. Při srovnávání
+        # struktury se musí přeskočit. Zapíšeme je ale do zvláštního
+        # souboru pass3extra_lines.txt. Natvrdo naplníme množinu čísel
+        # přeskakovaných řádků.
+        cs_skip = set(range(4137, 4154))
         self.cs_lst = []
-        with open(os.path.join(self.cs_aux_dir, 'pass3elem.txt'), 'w', encoding='utf-8') as fout:
+        with open(os.path.join(self.cs_aux_dir, 'pass3elem.txt'), 'w',
+                  encoding='utf-8') as fout, \
+             open(os.path.join(self.cs_aux_dir, 'pass3extra_lines.txt'), 'w',
+                  encoding='utf-8') as foutextra:
             for relname, lineno, line in gen.sourceFileLines(self.cs_name_in):
                 elem = Pass3Element(relname, lineno, line)
-                self.cs_lst.append(elem)
-                fout.write(repr(elem) + '\n')
+                if lineno in cs_skip:
+                    # Přeskočíme elementy, které byly doplněny navíc.
+                    # Prostě je nepřidáme do seznamu.
+                    foutextra.write('{:4d}:\t{}'.format(lineno, line))
+                else:
+                    self.cs_lst.append(elem)    # tento do seznamu přidáme
+                    fout.write(repr(elem) + '\n')
 
         # Elementy z anglického originálu do seznamu a do souboru.
         self.en_lst = []
-        with open(os.path.join(self.en_aux_dir, 'pass3elem.txt'), 'w', encoding='utf-8') as fout:
+        with open(os.path.join(self.en_aux_dir, 'pass3elem.txt'), 'w',
+                  encoding='utf-8') as fout:
             for relname, lineno, line in gen.sourceFileLines(self.en_name_in):
                 elem = Pass3Element(relname, lineno, line)
                 self.en_lst.append(elem)
                 fout.write(repr(elem) + '\n')
-
 
 
     def checkStructDiffs(self):
@@ -711,11 +729,22 @@ class Pass3Parser:
         # jen typy elementů.
         struct_diff_fname = os.path.join(self.cs_aux_dir, 'pass3struct_diff.txt')
         with open(struct_diff_fname, 'w', encoding='utf-8') as f:
-            for lineno, (en_element, cs_element) in enumerate(zip(self.en_lst, self.cs_lst), 1):
+            for en_element, cs_element in zip(self.en_lst, self.cs_lst):
                 if en_element.type != cs_element.type:
-                    f.write('{:4d}:\t{}\n\t{}\n\n'.format(lineno,
-                                                          repr(en_element),
-                                                          repr(cs_element)))
+                    # U cs jen číslo řádku, u en číslo kapitoly/číslo řádku.
+                    f.write('\ncs {} -- en {}/{}:\n'.format(
+                            cs_element.lineno,
+                            en_element.fname[1:2],
+                            en_element.lineno))
+
+                    # Typ a hodnota českého elementu.
+                    f.write('\t{}:\t{}\n'.format(cs_element.type,
+                                                 cs_element.line.rstrip()))
+
+                    # Typ a hodnota anglického elementu.
+                    f.write('\t{}:\t{}\n'.format(en_element.type,
+                                                 en_element.line.rstrip()))
+
 
     def run(self):
         '''Spouštěč jednotlivých fází parseru.'''

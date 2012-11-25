@@ -773,7 +773,7 @@ Ve spojení s příkazem git log můžete použít také celou řadu shrnující
 	 lib/simplegit.rb |   25 +++++++++++++++++++++++++
 	 3 files changed, 54 insertions(+), 0 deletions(-)
 
-Jak vidíte, parametr --stat vypíše pod každým záznamem revize seznam změněných souborů, kolik souborů bylo změněno (changed) a kolik řádků bylo v těchto souborech vloženo (insertions) a smazáno (deletions). Zároveň vloží na konec výpisu shrnutí těchto informací. 
+Jak vidíte, parametr --stat vypíše pod každým záznamem revize seznam změněných souborů, kolik souborů bylo změněno (changed) a kolik řádků bylo v těchto souborech vloženo (insertions) a smazáno (deletions). Zároveň vloží na konec výpisu shrnutí těchto informací.
 Další opravdu užitečnou možností je parametr --pretty. Tento parametr změní výstup logu na jiný než výchozí formát. K dispozici máte několik přednastavených možností. Parametr oneline vypíše všechny revize na jednom řádku. Tuto možnost oceníte při velkém množství revizí. Dále se nabízejí parametry short, full a fuller (zkrácený, plný, úplný). Zobrazují výstup přibližně ve stejném formátu, avšak s více či méně podrobnými informacemi:
 
 	$ git log --pretty=oneline
@@ -2499,34 +2499,23 @@ Gitolite umožňuje nastavit přístupová práva nejen na repozitáře (podobn�
 
 Instalace Gitolite je velmi jednoduchá a to i když nebudete číst obsáhlou dokumentaci, která je k dispozici. Budete potřebovat účet na nějakém unixovém serveru (bylo testováno na různých distribucích Linuxu a na Solarisu 10), kde musí být nainstalovány git, Perl a SSH server kompatibilní s OpenSSH. V příkladech uvedených níže budeme používat účet git na serveru gitserver.
 
-Gitolite se kupodivu instaluje pomocí spuštění skriptu na pracovní stanici. Takže vaše pracovní stanice musí mít k dispozici bash shell. Pokud by vás to zajímalo, stačí klidně i bash, který je součástí msysgit.
+Nástroj Gitolite je ve smyslu "serverového" softwaru poněkud neobvyklý. Přístup se realizuje přes ssh, takže každá serverová userid je potenciálně "hostitelem gitolite" (gitolite host). Teď si popíšeme nejjednodušší způsob instalace. V dokumentaci naleznete další metody.
 
-Nejprve získejte přístup na váš server pomocí veřejného klíče, tak abyste se mohli přihlásit z vaší pracovní stanice na server bez hesla. Následující postup funguje na Linuxu; na jiných operačních systémech to může být nutné udělat ručně. Předpokládejme, že již máte vygenerován pár klíčů pomocí ssh-keygen.
+Začněte tím, že na serveru vytvoříte uživatele nazvaného `git` a přihlásíte se na něj. Z vaší pracovní stanice nakopírujte svůj veřejný ssh klíč (pokud jste spustili `ssh-keygen` s implicitními hodnotami, jde o soubor `~/.ssh/id_rsa.pub`) a přejmenujte jej na `VaseJmeno.pub`. Potom proveďte následující příkazy:
 
-	$ ssh-copy-id -i ~/.ssh/id_rsa gitolite@gitserver
+	git clone git://github.com/sitaramc/gitolite
+	gitolite/install -ln
+	# předpokládá existenci $HOME/bin a uvedení tohoto adresáře v $PATH
+	gitolite setup -pk $HOME/VaseJmeno.pub
+	# já bych například spustil 'gitolite setup -pk $HOME/sitaram.pub'
 
-Tento příkaz se zeptá na heslo k účtu gitolite a poté nastaví přístup pomocí veřejného klíče. Tato část je zásadní pro instalační skript, takže se ujistěte, že můžete na server přistupovat bez použití hesla, pomocí příkazu:
+Nakonec přejděte zpět na pracovní stanici a spusťte `git clone git@server:gitolite-admin`.
 
-	$ ssh gitolite@gitserver pwd
-	/home/gitolite
-
-Dále naklonujte Gitolite z hlavní stránky projektu a spusťte skript „easy-install“ (třetí parametr je vaše jméno tak jak chcete, aby se objevovalo ve výsledném gitolite-admin repozitáři):
-
-	$ git clone git://github.com/sitaramc/gitolite
-	$ cd gitolite/src
-	$ ./gl-easy-install -q gitolite gitserver sitaram
-
-To je všechno! Nyní máte Gitolite nainstalovaný na serveru a v domácím adresáři vaší pracovní stanice máte také úplně nový repozitář gitolite-admin. Své nastavení Gitolite spravujete pomocí provádění změn v tomto repozitáři jejich odesíláním (podobně jako Gitosis).
-
-Mimochodem, upgrade Gitolite se provádí úplně stejně. Pokud byste chtěli, můžete spustit skript bez jakýchkoliv parametrů a dozvíte se instrukce k jeho používání.
-
-Poslední příkaz vypíše na obrazovku docela hodně informací, které si může být zajímavé přečíst. Při prvním spuštění se také vytvoří nový pár klíčů; nastavte si heslo a nebo jen stiskněte enter pro používání bez hesla. Proč je nutný tento druhý pár klíčů a k čemu se používá, je vysvětleno v dokumentu „SSH troubleshooting“, který je součástí Gitolite (Nakonec i dokumentace může být k něčemu dobrá!)
+To je všechno! Nyní máte Gitolite nainstalovaný na serveru a v domácím adresáři vaší pracovní stanice máte také úplně nový repozitář gitolite-admin. Své nastavení Gitolite spravujete pomocí provádění změn v tomto repozitáři jejich odesíláním (push).
 
 ### Přizpůsobení instalace ###
 
-Přestože základní rychlá metoda instalace je vhodná pro většinu lidí, existují možnosti, jak si instalaci přizpůsobit, pokud potřebujete. První jsou další dvě větve, které si můžete nainstalovat místo „hlavní“ větve. Větev „rebel“ umožňuje nastavit pravidla pro odmítnutí („deny“) v konfiguračním souboru a je více vysvětlena níže. Pokud je na straně vašeho serveru git ve verzi starší než 1.5.6, měli byste použít větev „oldgits“.
-
-Nakonec, pokud vynecháte parametr -q, budete používat „verbose“ mód instalace – tedy detailnější výpis toho, co instalační skript v každém kroku dělá. Tento mód také dovoluje měnit některé parametry serverové strany jako umístění repozitářů a to pomocí úpravy „rc“ souboru, který server používá. Tento „rc“ soubor je rozsáhle komentován, takže byste měli být schopni celkem snadno provést změny, soubor uložit a pokračovat.
+Základní rychlá metoda instalace bude většině lidí vyhovovoat. V případě potřeby existují další možnosti přizpůsobení. Něco můžete změnit jednoduše editací rc souboru. Pokud to ale nestačí, naleznete víc v dokumentaci věnované přizpůsobení Gitolite.
 
 ### Konfigurační soubor a pravidla přístupu ###
 
@@ -2539,8 +2528,6 @@ Přepněte se do repozitáře gitolite-admin (je umístěn ve vašem domácím a
 	conf/gitolite.conf
 	keydir/sitaram.pub
 	$ cat conf/gitolite.conf
-	#gitolite conf
-	# please see conf/example.conf for details on syntax and features
 
 	repo gitolite-admin
 	    RW+                 = sitaram
@@ -2548,9 +2535,11 @@ Přepněte se do repozitáře gitolite-admin (je umístěn ve vašem domácím a
 	repo testing
 	    RW+                 = @all
 
-Všimněte si, že „sitaram“ (poslední parametr při předchozím spouštění gl-easy-install skriptu) má práva pro čtení i zápis k repozitáři gitolite-admin a také stejnojmenný veřejný klíč.
+Všimněte si, že „sitaram“ (jméno veřejného klíče v dříve použitém příkazu gl-setup) má práva pro čtení i zápis k repozitáři gitolite-admin a také stejnojmenný veřejný klíč.
 
-Konfigurační soubor Gitolite je odlišný od konfiguračního souboru Gitosis. Opět je celkem rozsáhle dokumentován v conf/example.conf a tak zde uvedu pouze některé zajímavé části.
+Přidávání dalších uživatelů je snadné. Pokud chceme přidat uživatele "alice", získáme její veřejný klíč, pojmenujeme jej "alice.pub" a umístíme jej do adresáře "keydir". Je součástí klonu repozitáře gitolite-admin, který jsme právě vytvořili na pracovní stanici. Přidáme, potvrdíme a odešleme změny (add, commit, push). Tím jsme dosáhli přidání uživatele.
+
+Syntaxe konfiguračního souboru pro Gitolite je dobře dokumentovaná, takže zde uvedu jen pár zajímavých věcí.
 
 Pro usnadnění můžete dávat uživatele i repozitáře do skupin. Jména skupin jsou podobná jako makra; když je definujete, je úplně jedno jestli jde o projekty nebo uživatele; rozdíl to je až v momentu, kdy „makro“ použijete.
 
@@ -2599,20 +2588,41 @@ Jak můžete vidět výše, práva musí být jedno z nastavení R, RW nebo RW+.
 
 Pravidla se znovu budou procházet postupně až do momentu, kdy bude nalezeno odpovídají pravidlo nebo bude přístup zamítnut. Odeslání do hlavní větve nebo větve „integ“, která nevracejí zpět změny, jsou povolena prvním pravidlem. Odeslání, která vracejí změny do těchto větví, neodpovídají prvnímu pravidlu. Porovnají se tedy s druhým pravidlem a na jeho základě budou zamítnuty. Odeslání (bez ohledu na to zda se jedná o vracení změn nebo ne) do jiných referencí než hlavní a „integ“ nebudou odpovídat ani prvnímu ani druhému pravidlu a budou tedy díky třetímu pravidlu povolena.
 
-Jestliže to zní komplikovaně, už budete tušit, proč jsou pravidla pro odmítání v oddělené větvi, kterou musíte vědomě začít používat:)
+### Omezení odesílání změn vázané na soubory ###
+
+K omezení odesílání do určitých větví a určitými uživateli můžete přidat také omezení určující, které soubory mohou uživatelé měnit. Například  soubor Makefile (a možná některé programy) by asi neměl kdokoliv měnit, protože je na něm závislá řada dalších věcí. Pokud se neupraví *správným způsobem*, něco by se pokazilo. Nástroji gitolite můžeme říct:
+
+	repo foo
+	    RW                      =   @junior_devs @senior_devs
+
+	    -   VREF/NAME/Makefile  =   @junior_devs
+
+Uživatelé, kteří přecházejí ze starší verze gitolite by si měli dát pozor na to, že v souvislosti s uvedeným rysem došlo k výrazné změně chování. Věnujte prosím pozornost detailům, které jsou uvedeny v příručce pro přechod k nové verzi.
+
+### Osobní větve ###
+
+Konečně Gitolite má také funkci, která se nazývá „osobní větve“ (nebo raději „jmenný prostor osobních větví“) a může být velmi užitečná v korporátním prostředí.
+
+Hodně výměny kódu probíhá v otevřeném git světě metodou „prosím stáhněte si“. V korporátním prostředí ovšem nebývá jakýkoliv neautorizovaný přístup vítán a pracovní stanice vývojáře nemůže provádět autentizaci, takže můžete na centrální server odesílat, ale musíte požádat někoho jiného, když odtud chcete stahovat.
+
+To by za normálních okolností způsobilo stejný zmatek ve jménech větví jako v centralizovaných systémech správy verzí a navíc nastavování přístupových práv by se stalo noční můrou pro administrátory.
+
+Gitolite vám umožní nadefinovat pro každého vývojáře jmenné prostory s prefixy „personal“ nebo „scratch“ (např. refs/personal/<devname>/*). Podrobnosti hledejte v dokumentaci.
+
+### "Wildcard" repozitáře ###
+
+Gitolite vám umožní určit repozitáře zástupnými znaky (wildcards; ve skutečnosti jde o perlovské regulární výrazy) -- například k náhodnému výběru zadání příkladu můžeme použít `assignments/s[0-9][0-9]/a[0-9][0-9]`. Umožní nám též přidělit nový režim oprávnění ("C"), který uživatelům povoluje vytvářet repozitáře popsané zástupnými znaky, automaticky přidělí vlastnictví konkrétnímu uživateli, který jej vytvořil, umožní mu přidělit oprávnění R a RW dalším spolupracovníkům atd. Podrobnosti opět hledejte v dokumentaci.
 
 ### Další vlastnosti ###
 
-Vysvětlení Gitolite završíme přehledem několika vlastností, které jsou detailně popsány v dokumentaci – v dokumentech FAQ, tips a dalších.
+Vysvětlení Gitolite završíme přehledem několika vlastností, které jsou detailně popsány v dokumentaci.
 
-Gitolite loguje všechny úspěšné přístupy. Jestliže máte volná pravidla pro přidělování oprávnění vracet změny (práva RW+) a stane se, že někdo takto „zkazí“ hlavní větev, je tu ještě log soubor, který vám zachrání život, protože v něm můžete postižené SHA najít.
+**Logování:** Gitolite loguje všechny úspěšné přístupy. Jestliže máte volná pravidla pro přidělování oprávnění vracet změny (práva RW+) a stane se, že někdo takto „zkazí“ hlavní větev, je tu ještě log soubor, který vám zachrání život, protože v něm můžete postižené SHA najít.
 
-Jedna z extrémně užitečných vlastností Gitolite je podpora pro git instalovaný jinam než do běžné cesty $PATH (to je běžnější než si myslíte; v některých korporátních prostředích či u některých poskytovatelů hostingu je běžné, že odmítají instalovat git pro celý systém a tak vám nezbude nic jiného než nainstalovat si jej do svého vlastního adresáře). Za normálních okolností jste nuceni nastavit klientskou stranu tak, aby s tímto nestandardním umístěním bylo počítáno. S Gitolite si zvolíte „verbose“ mód instalace a nastavíte proměnnou $GIT_PATH v „rc“ souboru. To je všechno a žádná nastavení klientů nejsou potřeba!
+**Přehledy uživatelských oprávnění:** Další příjemnou vlastností je to, co se stane, pokud se pouze pokusíte připojit pomocí SSH na server. Gitolite vám ukáže, ke kterým repozitářům máte přístup a s jakoými oprávněními. Příklad:
 
-Další příjemnou vlastností je to, co se stane, pokud se pouze pokusíte připojit pomocí SSH na server. Starší verze Gitolite si stěžovaly na to, že proměnnou prostředí SSH_ORIGINAL_COMMAND je prázdná (prohlédněte si dokumentaci k SSH pokud vás zajímá více). Nyní Gitolite vypíše něco jako toto:
+	hello sitaram, this is git@git running gitolite3 v3.01-18-g9609868 on git 1.7.4.4
 
-	hello sitaram, the gitolite version here is v1.5.4-19-ga3397d4
-	the gitolite config gives you the following access:
 	     R     anu-wsd
 	     R     entrans
 	     R  W  git-notes
@@ -2621,15 +2631,9 @@ Další příjemnou vlastností je to, co se stane, pokud se pouze pokusíte př
 	     R     indic_web_input
 	     R     shreelipi_converter
 
-Pro opravdu velké instalace můžete delegovat zodpovědnost za skupiny a repozitáře dalším lidem a nechat je samotné spravovat jednotlivé části. To snižuje vytížení hlavního administrátora, který už není tím „úzkým hrdlem“, které zdržuje ostatní. Tato vlastnost má vlastní dokumentaci v adresáři doc/.
+**Delegace:** Pro opravdu velké instalace můžete delegovat zodpovědnost za skupiny a repozitáře dalším lidem a nechat je samotné spravovat jednotlivé části. To snižuje vytížení hlavního administrátora, který tím přestává být úským místem správy.
 
-Konečně Gitolite má také funkci, která se nazývá „osobní větve“ (nebo raději „jmenný prostor osobních větví“) a může být velmi užitečná v korporátním prostředí.
-
-Hodně výměny kódu probíhá v otevřeném git světě metodou „prosím stáhněte si“. V korporátním prostředí ovšem nebývá jakýkoliv neautorizovaný přístup vítán a pracovní stanice vývojáře nemůže provádět autentifikaci, takže můžete na centrální server odesílat, ale musíte požádat někoho jiného, když odtud chcete stahovat.
-
-To by za normálních okolností způsobilo stejný zmatek ve jménech větví jako v centralizovaných systémech správy verzí a navíc nastavování přístupových práv by se stalo noční můrou pro administrátory.
-
-Gitolite vám umožní nadefinovat prefixy „personal“ nebo „scratch“ jmenných prostorů pro každého vývojáře (např. refs/personal/<devname>/*) s plnými právy pouze pro dotyčného a s právem pro čtení pro všechny ostatní. Opět pouze vyberte „verbose“ mód instalace a nastavte proměnnou $PERSONAL v „rc“ souboru na refs/personal. To je vše; pro administrátory je to navíc většinou záležitost „nastav a zapomeň“ a to i v případě, že se vývojářský tým často mění.
+**Zrcadlení:** Gitolite vám pomůže se správou více zrcadel a při výpadku hlavního serveru můžete snadno přepnout na jiný.
 
 ## Démon Git ##
 
@@ -2643,7 +2647,11 @@ Ať tak či tak, na protokolu Git jistě oceníte jeho snadné nastavení. V pod
 
 --reuseaddr umožňuje serveru restartování bez nutnosti čekat na vypršení časového limitu pro stará spojení, parametr --base-path umožňuje uživatelům klonovat projekty, aniž by museli zadávat celou cestu, a cesta na konci příkazu říká démonovi Git, kde má hledat repozitáře určené k exportu. Jestliže používáte bránu firewall, budete rovněž muset na ní povolit port 9418.
 
-Podle toho, jaký operační systém používáte, můžete přejít do režimu démon mnoha způsoby. U počítačů s Ubuntu můžete použít skript Upstart. Do souboru /etc/event.d/local-git-daemon vložte tento skript:
+Podle toho, jaký operační systém používáte, můžete přejít do režimu démon mnoha způsoby. U počítačů s Ubuntu můžete použít skript Upstart. Do souboru
+
+	/etc/event.d/local-git-daemon
+
+vložte tento skript:
 
 	start on startup
 	stop on shutdown
@@ -2721,7 +2729,8 @@ Tady si budete muset zvolit uživatelské jméno, které zatím není v systému
 Insert 18333fig0403.png
 Obrázek 4-3. Registrační formulář na serveru GitHub
 
-Po vyplnění osobních údajů nadešel vhodný čas k vložení vašeho veřejného klíče SSH. Jak vygenerovat nový klíč, jsme popsali výše, v části 4.3. Vezměte obsah veřejného klíče z daného páru a vložte ho do textového pole „SSH Public Key“. Kliknutím na odkaz „explain ssh keys“ přejdete na stránku s podrobnými instrukcemi, jak klíč vložit ve všech hlavních operačních systémech. Kliknutím na tlačítko „I agree, sign me up“ přejdete na svůj nový uživatelský ovládací panel (viz obrázek 4-4).
+Po vyplnění osobních údajů nadešel vhodný čas k vložení vašeho veřejného klíče SSH. Jak vygenerovat nový klíč, jsme popsali výše, v části 4.3. Vezměte obsah veřejného klíče z daného páru a vložte ho do textového pole „SSH Public Key“. Kliknutím na odkaz „explain ssh keys“ přejdete na stránku s podrobnými instrukcemi, jak klíč vložit ve všech hlavních operačních systémech.
+Kliknutím na tlačítko „I agree, sign me up“ přejdete na svůj nový uživatelský ovládací panel (viz obrázek 4-4).
 
 Insert 18333fig0404.png
 Obrázek 4-4. Uživatelský ovládací panel na serveru GitHub
@@ -2832,7 +2841,6 @@ Provoz vlastního serveru vám dává celou řadu možností kontroly a umožňu
 
 Mělo by být jasně dáno, které řešení nebo jaká kombinace řešení je vhodná pro vás a pro vaši organizaci.
 
-
 # Distribuovaný charakter systému Git #
 
 Nyní máte vytvořen vzdálený repozitář Git jako místo, kde mohou všichni vývojáři sdílet zdrojový kód, a znáte základní příkazy systému Git pro práci v lokálním prostředí. Je čas podívat se na využití některých distribuovaných postupů, které vám Git nabízí.
@@ -2852,7 +2860,8 @@ Obrázek 5-1. Centralizovaný pracovní postup
 
 To znamená, že pokud dva vývojáři klonují z centrálního úložiště a oba provedou změny, jen první z nich, který odešle své změny, to může provést bez komplikací. Druhý vývojář musí před odesláním svých změn začlenit práci prvního vývojáře do své, aby nepřepsal jeho změny. Tento koncept platí jak pro Git, tak pro Subversion (popř. jakýkoli CVCS). I v systému Git funguje bez problémů.
 
-Pokud pracujete v malém týmu nebo už jste ve své společnosti nebo ve svém týmu zvyklí na centralizovaný pracovní postup, můžete v něm beze všeho pokračovat. Jednoduše vytvořte repozitář a přidělte všem ze svého týmu oprávnění k odesílání dat. Git neumožní uživatelům, aby se navzájem přepisovali. Pokud některý z vývojářů naklonuje data, provede změny a poté se je pokusí odeslat, a jiný vývojář mezitím odeslal svoje revize, server tyto změny odmítne. Git vývojáři při odmítnutí sdělí, že se pokouší odeslat změny, které nesměřují „rychle vpřed“, což není možné provést, dokud nevyzvedne a nezačlení stávající data z repozitáře. Tento pracovní postup může být pro mnoho lidí zajímavý, protože je to schéma, které jsou zvyklí používat a jsou s ním spokojeni.
+Pokud pracujete v malém týmu nebo už jste ve své společnosti nebo ve svém týmu zvyklí na centralizovaný pracovní postup, můžete v něm beze všeho pokračovat. Jednoduše vytvořte repozitář a přidělte všem ze svého týmu oprávnění k odesílání dat. Git neumožní uživatelům, aby se navzájem přepisovali. Pokud některý z vývojářů naklonuje data, provede změny a poté se je pokusí odeslat, a jiný vývojář mezitím odeslal svoje revize, server tyto změny odmítne. Git vývojáři při odmítnutí sdělí, že se pokouší odeslat změny, které nesměřují „rychle vpřed“, což není možné provést, dokud nevyzvedne a nezačlení stávající data z repozitáře.
+Tento pracovní postup může být pro mnoho lidí zajímavý, protože je to schéma, které jsou zvyklí používat a jsou s ním spokojeni.
 
 ### Pracovní postup s integračním manažerem ###
 
@@ -2872,9 +2881,7 @@ Tento pracovní postup je velmi rozšířený na stránkách jako GitHub, kde je
 
 ### Pracovní postup s diktátorem a poručíky ###
 
-Jedná se o variantu pracovního postupu s více repozitáři. Většinou se používá u obřích projektů se stovkami spolupracovníků. Možná nejznámějším příkladem je vývoj jádra Linuxu. Několik různých integračních manažerů odpovídá za konkrétní části repozitáře – říká se jím poručíci (lieutenants). Všichni poručíci mají jednoho integračního manažera, kterému se říká „benevolentní diktátor“.
-
-Repozitář benevolentního diktátora slouží jako referenční repozitář, z nějž všichni spolupracovníci musí stahovat data. Postup práce je následující (viz obrázek 5-3):
+Jedná se o variantu pracovního postupu s více repozitáři. Většinou se používá u obřích projektů se stovkami spolupracovníků. Možná nejznámějším příkladem je vývoj jádra Linuxu. Několik různých integračních manažerů odpovídá za konkrétní části repozitáře – říká se jím poručíci (lieutenants). Všichni poručíci mají jednoho integračního manažera, kterému se říká „benevolentní diktátor“. Repozitář benevolentního diktátora slouží jako referenční repozitář, z nějž všichni spolupracovníci musí stahovat data. Postup práce je následující (viz obrázek 5-3):
 
 1.	Stálí vývojáři pracují na svých tematických větvích a přeskládávají svou práci na vrchol hlavní větve. Hlavní větev je větev diktátora.
 2.	Poručíci začleňují tematické větve vývojářů do svých hlavních větví.
@@ -2920,7 +2927,8 @@ Spustíte-li tento příkaz před zapsáním revize, můžete se rozhodnout, zda
 
 Dále se snažte provádět každou revizi jako logicky samostatný soubor změn. Pokud je to možné, snažte se provádět stravitelné změny. Není právě ideální pracovat celý víkend na pěti různých problémech a v pondělí je všechny najednou odeslat v jedné velké revizi. I pokud nebudete během víkendu zapisovat revize, využijte v pondělí oblasti připravených změn a rozdělte svou práci alespoň do stejného počtu revizí, kolik je řešených problémů, a přidejte k nim vysvětlující zprávy. Pokud některé změny modifikují tentýž soubor, zkuste použít příkaz git add --patch a připravit soubory k zapsání po částech (podrobnosti v kapitole 6). Snímek projektu na vrcholu větve bude stejný, ať zapíšete jednu revizi, nebo pět (za předpokladu, že vložíte všechny změny). Snažte se proto usnadnit práci svým kolegům, kteří – možná – budou vaše změny kontrolovat. Díky tomuto přístupu také později snáze vyjmete nebo vrátíte některou z provedených změn, bude-li to třeba. Kapitola 6 popisuje několik užitečných triků, jak v systému Git přepsat historii a jak interaktivně připravovat soubory k zapsání. Používejte tyto nástroje k udržení čisté a srozumitelné historie.
 
-Poslední věcí, na niž se vyplatí soustředit pozornost, jsou zprávy k revizím. Pokud si zvyknete vytvářet k revizím kvalitní zprávy, bude pro vás práce a kooperace v systému Git mnohem jednodušší. Zpráva by měla obvykle začínat samostatným řádkem o maximálně 50 znacích, v níž stručně popíšete soubor provedených změn. Za ním by měl následovat prázdný řádek a za ním podrobnější popis revize. Projekt Git vyžaduje, aby podrobnější popis revize obsahoval vaši motivaci ke změnám a vymezil jejich implementaci na pozadí předchozích kroků. Tuto zásadu je dobré dodržovat. Vytváříte-li zprávy k revizím v angličtině, často se také doporučuje používat rozkazovací způsob, tj. příkazy. Místo „I added tests for“ nebo „Adding tests for“ používejte raději „Add tests for“. Zde uvádíme vzor, jehož autorem je Tim Pope a v originále je k nalezení na stránkách tpope.net:
+Poslední věcí, na niž se vyplatí soustředit pozornost, jsou zprávy k revizím. Pokud si zvyknete vytvářet k revizím kvalitní zprávy, bude pro vás práce a kooperace v systému Git mnohem jednodušší. Zpráva by měla obvykle začínat samostatným řádkem o maximálně 50 znacích, v níž stručně popíšete soubor provedených změn. Za ním by měl následovat prázdný řádek a za ním podrobnější popis revize. Projekt Git vyžaduje, aby podrobnější popis revize obsahoval vaši motivaci ke změnám a vymezil jejich implementaci na pozadí předchozích kroků. Tuto zásadu je dobré dodržovat. Vytváříte-li zprávy k revizím v angličtině, často se také doporučuje používat rozkazovací způsob, tj. příkazy. Místo „I added tests for“ nebo „Adding tests for“ používejte raději „Add tests for“.
+Zde uvádíme vzor, jehož autorem je Tim Pope a v originále je k nalezení na stránkách tpope.net:
 
 	Krátké (do 50 znaků) shrnutí změn
 
@@ -2935,9 +2943,8 @@ Poslední věcí, na niž se vyplatí soustředit pozornost, jsou zprávy k revi
 
 	 - Můžete používat i odrážky.
 
-	 - Jako odrážka se nejčastěji používá pomlčka nebo hvězdička,
-	   před ně se vkládá jedna mezera, mezi body výčtu prázdný
-	   řádek, avšak úzus tu není jednotný.
+	 - Jako odrážka se nejčastěji používá pomlčka nebo hvězdička, před ně se vkládá
+	   jedna mezera, mezi body výčtu prázdný řádek, avšak úzus tu není jednotný.
 
 Budou-li takto vypadat všechny vaše zprávy k revizím, usnadníte tím práci sobě i svým spolupracovníkům. Projekt Git obsahuje kvalitně naformátované zprávy k revizím. Mohu vám doporučit, abyste v něm zkusili zadat příkaz git log --no-merges a podívali se, jak vypadá pěkně naformátovaná historie revizí projektu.
 
@@ -2947,7 +2954,8 @@ Já v následujících příkladech stejně jako ve většině případů v tét
 
 Nejjednodušší sestavou, s níž se pravděpodobně setkáte, je soukromý projekt, na němž kromě vás pracují ještě jeden nebo dva vývojáři. Soukromým projektem myslím uzavřený zdrojový kód – okolní svět k němu nemá oprávnění pro čtení. Vy a vaši ostatní vývojáři máte všichni oprávnění odesílat změny do repozitáře.
 
-V takovém prostředí můžete uplatnit podobný pracovní postup, na jaký jste možná zvyklí ze systému Subversion nebo jiného centralizovaného systému. Se systémem Git ale budete stále ještě ve výhodě v takových ohledech, jako je zapisování revizí offline a podstatně snazší větvení a slučování. Pracovní postup však bude velmi podobný. Hlavním rozdílem je to, že slučování probíhá na straně klienta, ne během zapisování revize na straně serveru. Podívejme se, jak to může vypadat, když dva vývojáři začnou spolupracovat na projektu se sdíleným repozitářem. První vývojář, John, naklonuje repozitář, provede změny a zapíše lokální revizi. (V následujících příkladech nahrazuji zprávy protokolů třemi tečkami, abych je trochu zkrátil.)
+V takovém prostředí můžete uplatnit podobný pracovní postup, na jaký jste možná zvyklí ze systému Subversion nebo jiného centralizovaného systému. Se systémem Git ale budete stále ještě ve výhodě v takových ohledech, jako je zapisování revizí offline a podstatně snazší větvení a slučování. Pracovní postup však bude velmi podobný. Hlavním rozdílem je to, že slučování probíhá na straně klienta, ne během zapisování revize na straně serveru.
+Podívejme se, jak to může vypadat, když dva vývojáři začnou spolupracovat na projektu se sdíleným repozitářem. První vývojář, John, naklonuje repozitář, provede změny a zapíše lokální revizi. (V následujících příkladech nahrazuji zprávy protokolů třemi tečkami, abych je trochu zkrátil.)
 
 	# John's Machine
 	$ git clone john@githost:simplegit.git
@@ -3147,6 +3155,7 @@ Jessica je připravena odeslat svou práci, ale dostane e-mail od Josie, že ji�
 	...
 	From jessica@githost:simplegit
 	 * [new branch]      featureBee -> origin/featureBee
+
 Nyní může Jessica začlenit tyto změny do své práce pomocí příkazu git merge:
 
 	$ git merge origin/featureBee
@@ -3365,7 +3374,8 @@ Nejprve je třeba nastavit sekci „imap“ v souboru ~/.gitconfig. Každou hodn
 	  port = 993
 	  sslverify = false
 
-Pokud váš server IMAP nepoužívá SSL, dva poslední řádky zřejmě nebudou vůbec třeba a hodnota hostitele bude imap://, a nikoli imaps://. Až toto nastavení dokončíte, můžete použít příkaz git send-email, jímž umístíte sérii patchů do složky Koncepty (Drafts) zadaného serveru IMAP:
+Pokud váš server IMAP nepoužívá SSL, dva poslední řádky zřejmě nebudou vůbec třeba a hodnota hostitele bude imap://, a nikoli imaps://.
+Až toto nastavení dokončíte, můžete použít příkaz git send-email, jímž umístíte sérii patchů do složky Koncepty (Drafts) zadaného serveru IMAP:
 
 	$ git send-email *.patch
 	0001-added-limit-to-log-function.patch
@@ -3404,7 +3414,8 @@ Při práci na projektech Git možná nevystačíte jen s vědomostmi, jak do pr
 
 ### Práce v tematických větvích ###
 
-Pokud uvažujete o integraci nové práce do projektu, je většinou dobré zkusit si to v tematické větvi, tj. dočasné větvi, kterou vytvoříte konkrétně pro tento účel. Snadno tak můžete záplatu individuálně opravit, a pokud není funkční, opustit ji, dokud nebudete mít čas k její opravě. Pokud pro větev vytvoříte jednoduchý název spojený s tématem testované práce (např. ruby_client nebo něco obdobně popisného), snadno se na větev rozpomenete, jestliže se k ní musíte později vrátit. Správce projektů Git přiřazuje těmto větvím také jmenný prostor, např. sc/ruby_client, kde sc je zkratka pro osobu, která práci vytvořila. Jak si vzpomínáte, můžete vytvořit větev založenou na své hlavní větvi:
+Pokud uvažujete o integraci nové práce do projektu, je většinou dobré zkusit si to v tematické větvi, tj. dočasné větvi, kterou vytvoříte konkrétně pro tento účel. Snadno tak můžete záplatu individuálně opravit, a pokud není funkční, opustit ji, dokud nebudete mít čas k její opravě. Pokud pro větev vytvoříte jednoduchý název spojený s tématem testované práce (např. ruby_client nebo něco obdobně popisného), snadno se na větev rozpomenete, jestliže se k ní musíte později vrátit. Správce projektů Git přiřazuje těmto větvím také jmenný prostor, např. sc/ruby_client, kde sc je zkratka pro osobu, která práci vytvořila.
+Jak si vzpomínáte, můžete vytvořit větev založenou na své hlavní větvi:
 
 	$ git branch sc/ruby_client master
 
@@ -3605,7 +3616,8 @@ Obrázek 5-22. Po začlenění tematické větve
 Insert 18333fig0523.png
 Obrázek 5-23. Po vydání tematické větve
 
-Pokud někdo při tomto postupu klonuje repozitář vašeho projektu, může provést buď checkout hlavní větve, aby získal nejnovější stabilní verzi a udržoval ji aktuální, nebo checkout větve develop, která může být ještě o něco napřed. Tento koncept můžete dále rozšířit o integrační větev, v níž budete veškerou práci slučovat. Teprve pokud je kód v této větvi stabilní a projde testováním, začleníte ho do větve develop. A až se větev develop ukáže v některém okamžiku jako stabilní, posunete rychle vpřed i svou hlavní větev.
+Pokud někdo při tomto postupu klonuje repozitář vašeho projektu, může provést buď checkout hlavní větve, aby získal nejnovější stabilní verzi a udržoval ji aktuální, nebo checkout větve develop, která může být ještě o něco napřed.
+Tento koncept můžete dále rozšířit o integrační větev, v níž budete veškerou práci slučovat. Teprve pokud je kód v této větvi stabilní a projde testováním, začleníte ho do větve develop. A až se větev develop ukáže v některém okamžiku jako stabilní, posunete rychle vpřed i svou hlavní větev.
 
 #### Pracovní postupy se začleňováním velkého objemu dat ####
 
@@ -3767,7 +3779,6 @@ Pokud si chcete například prohlédnout konkrétní revizi, řekněme, že spus
 
 	    added some blame and merge stuff
 
-
 V tomto případě vyberte 1c002dd... Pokud chcete na revizi použít příkaz git show, budou všechny následující příkazy ekvivalentní (za předpokladu, že jsou zkrácené verze jednoznačné):
 
 	$ git show 1c002dd4b536e7479fe34593e72e6c6c1819e53b
@@ -3807,7 +3818,9 @@ Jestliže vás zajímá, na kterou konkrétní hodnotu SHA větev ukazuje, nebo 
 
 ### Zkrácené názvy v záznamu RefLog ###
 
-Jednou z věcí, které probíhají na pozadí systému Git, zatímco vy pracujete, je uchovávání záznamu reflog, v němž se ukládají pozice referencí HEAD a všech vašich větví za několik posledních měsíců. Svůj reflog si můžete nechat zobrazit příkazem git reflog:
+Jednou z věcí, které probíhají na pozadí systému Git, zatímco vy pracujete, je uchovávání záznamu reflog, v němž se ukládají pozice referencí HEAD a všech vašich větví za několik posledních měsíců.
+
+Svůj reflog si můžete nechat zobrazit příkazem git reflog:
 
 	$ git reflog
 	734713b... HEAD@{0}: commit: fixed refs handling, added gc auto, updated
@@ -3851,7 +3864,8 @@ Měli bychom také doplnit, že informace záznamu reflog jsou čistě lokální
 
 ### Reference podle původu ###
 
-Další základní způsob, jak specifikovat konkrétní revizi, je na základě jejího původu. Umístíte-li na konec reference znak ^, Git bude referenci chápat tak, že označuje rodiče dané revize. Můžete mít například takovouto historii projektu:
+Další základní způsob, jak specifikovat konkrétní revizi, je na základě jejího původu. Umístíte-li na konec reference znak ^, Git bude referenci chápat tak, že označuje rodiče dané revize.
+Můžete mít například takovouto historii projektu:
 
 	$ git log --pretty=format:'%h %s' --graph
 	* 734713b fixed refs handling, added gc auto, updated tests
@@ -3936,7 +3950,8 @@ Tento log využijete, pokud chcete udržovat větev experiment stále aktuální
 
 	$ git log origin/master..HEAD
 
-Tento příkaz zobrazí všechny revize ve vaší aktuální větvi, které nejsou obsaženy v hlavní větvi vzdáleného repozitáře origin. Spustíte-li příkaz git push a vaše aktuální větev sleduje větev origin/master, budou na server přesunuty revize, které lze zobrazit příkazem git log origin/master..HEAD. Jednu stranu intervalu můžete zcela vynechat, Git na její místo automaticky dosadí HEAD. Stejné výsledky jako v předchozím příkladu dostanete zadáním příkazu git log origin/master.. – Git dosadí na prázdnou stranu výraz HEAD.
+Tento příkaz zobrazí všechny revize ve vaší aktuální větvi, které nejsou obsaženy v hlavní větvi vzdáleného repozitáře origin. Spustíte-li příkaz git push a vaše aktuální větev sleduje větev origin/master, budou na server přesunuty revize, které lze zobrazit příkazem git log origin/master..HEAD.
+Jednu stranu intervalu můžete zcela vynechat, Git na její místo automaticky dosadí HEAD. Stejné výsledky jako v předchozím příkladu dostanete zadáním příkazu git log origin/master.. – Git dosadí na prázdnou stranu výraz HEAD.
 
 #### Několik bodů ####
 
@@ -3955,7 +3970,8 @@ Tím máte v rukou velmi efektivní systém vyhledávání revizí, který vám 
 
 #### Tři tečky ####
 
-Poslední významnou syntaxí k určení intervalu je trojtečková syntax, která vybere všechny revize dostupné ve dvou referencích, ale ne v obou zároveň. Podívejme se ještě jednou na příklad historie revizí na obrázku 6-1. Chcete-li zjistit, co je ve větvi master nebo experiment, ale nechcete vidět jejich společné reference, zadejte příkaz:
+Poslední významnou syntaxí k určení intervalu je trojtečková syntax, která vybere všechny revize dostupné ve dvou referencích, ale ne v obou zároveň. Podívejme se ještě jednou na příklad historie revizí na obrázku 6-1.
+Chcete-li zjistit, co je ve větvi master nebo experiment, ale nechcete vidět jejich společné reference, zadejte příkaz:
 
 	$ git log master...experiment
 	F
@@ -3963,7 +3979,9 @@ Poslední významnou syntaxí k určení intervalu je trojtečková syntax, kter
 	D
 	C
 
-Výstupem příkazu bude běžný výpis příkazu log, ale zobrazí se pouze informace o těchto čtyřech revizích, uspořádané v tradičním pořadí podle data zapsání. Přepínačem, který se v tomto případě běžně používá v kombinaci s příkazem log, je parametr --left-right. Příkaz pak zobrazí, na jaké straně intervalu se ta která revize nachází. Díky tomu získáte k datům další užitečné informace:
+Výstupem příkazu bude běžný výpis příkazu log, ale zobrazí se pouze informace o těchto čtyřech revizích, uspořádané v tradičním pořadí podle data zapsání.
+
+Přepínačem, který se v tomto případě běžně používá v kombinaci s příkazem log, je parametr --left-right. Příkaz pak zobrazí, na jaké straně intervalu se ta která revize nachází. Díky tomu získáte k datům další užitečné informace:
 
 	$ git log --left-right master...experiment
 	< F
@@ -3975,7 +3993,8 @@ Pomocí těchto nástrojů můžete v systému Git daleko snáze specifikovat, k
 
 ## Interaktivní příprava k zapsání ##
 
-Git nabízí také celou řadu skriptů, které vám mohou usnadnit provádění příkazů zadávaných v příkazovém řádku. V této části se podíváme na několik interaktivních příkazů, které vám mohou pomoci snadno určit, na jaké kombinace a části souborů má být omezena konkrétní revize. Tyto nástroje se vám mohou velmi hodit, jestliže upravujete několik souborů a rozhodnete se, že tyto změny zapíšete raději do několika specializovaných revizí než do jedné velké nepřehledné. Tímto způsobem zajistíte, že budou vaše revize logicky oddělenými sadami změn, jež mohou vaši spolupracovníci snadno zkontrolovat. Spustíte-li příkaz git add s parametrem -i nebo --interactive, přejde Git do interaktivního režimu shellu a zobrazí zhruba následující:
+Git nabízí také celou řadu skriptů, které vám mohou usnadnit provádění příkazů zadávaných v příkazovém řádku. V této části se podíváme na několik interaktivních příkazů, které vám mohou pomoci snadno určit, na jaké kombinace a části souborů má být omezena konkrétní revize. Tyto nástroje se vám mohou velmi hodit, jestliže upravujete několik souborů a rozhodnete se, že tyto změny zapíšete raději do několika specializovaných revizí než do jedné velké nepřehledné. Tímto způsobem zajistíte, že budou vaše revize logicky oddělenými sadami změn, jež mohou vaši spolupracovníci snadno zkontrolovat.
+Spustíte-li příkaz git add s parametrem -i nebo --interactive, přejde Git do interaktivního režimu shellu a zobrazí zhruba následující:
 
 	$ git add -i
 	           staged     unstaged path
@@ -4509,8 +4528,6 @@ Další skvělou věcí na systému Git je, že explicitně nesleduje přejmenov
 	56ef2caf GITServerHandler.m (Scott 2009-01-05 152)                 [refDict setOb
 	56ef2caf GITServerHandler.m (Scott 2009-01-05 153)
 
-56ef2caf GITServerHandler.m (Scott 2009-01-05 151) if(commit) { 56ef2caf GITServerHandler.m (Scott 2009-01-05 152) [refDict setOb 56ef2caf GITServerHandler.m (Scott 2009-01-05 153)
-
 Tato funkce je opravdu užitečná. Normálně se jako původní revize zobrazí ta, kam jste kód zkopírovali, protože to bylo poprvé, kdy jste v daném souboru sáhli do těchto řádků. Git vám vyhledá původní revizi, kde jste tyto řádky napsali, dokonce i když jsou v jiném souboru.
 
 ### Binární vyhledávání ###
@@ -4612,9 +4629,11 @@ Tím dalším, co se objevuje ve výstupu příkazu git status, je položka rack
 	@@ -0,0 +1 @@
 	+Subproject commit 08d709f78b8c5b0fbeb7821e37fa53e69afcf433
 
-Ačkoli je rack podadresářem ve vašem pracovním adresáři, Git ví, že se jedná o submodul, a dokud se v tomto adresáři nenacházíte, nesleduje jeho obsah. Místo toho zaznamenává Git konkrétní revizi z tohoto adresáře. Provedete-li v tomto podadresáři změny a zapíšete revizi, superprojekt (tedy celkový, nadřízený projekt) zjistí, že se tu ukazatel HEAD změnil, a zaznamená přesnou revizi, na níž právě pracujete. Pokud pak tento projekt naklonují jiní uživatelé, budou schopni přesně obnovit původní prostředí. Toto je důležitá vlastnost submodulů: zaznamenáváte je jako přesné revize, na nichž se nacházejí.
+Ačkoli je rack podadresářem ve vašem pracovním adresáři, Git ví, že se jedná o submodul, a dokud se v tomto adresáři nenacházíte, nesleduje jeho obsah. Místo toho zaznamenává Git konkrétní revizi z tohoto adresáře. Provedete-li v tomto podadresáři změny a zapíšete revizi, superprojekt (tedy celkový, nadřízený projekt) zjistí, že se tu ukazatel HEAD změnil, a zaznamená přesnou revizi, na níž právě pracujete. Pokud pak tento projekt naklonují jiní uživatelé, budou schopni přesně obnovit původní prostředí.
 
-Submodul nelze zaznamenat na hlavní větvi nebo na jiné symbolické referenci. Jestliže zapíšete revizi, zobrazí se přibližně toto:
+Toto je důležitá vlastnost submodulů: zaznamenáváte je jako přesné revize, na nichž se nacházejí. Submodul nelze zaznamenat na hlavní větvi nebo na jiné symbolické referenci.
+
+Jestliže zapíšete revizi, zobrazí se přibližně toto:
 
 	$ git commit -m 'first commit with submodule rack'
 	[master 0550271] first commit with submodule rack
@@ -4734,7 +4753,7 @@ Vývojáři někdy chtějí získat kombinaci podadresářů velkého projektu p
 
 Dobrým způsobem, jak to v systému Git provést, je učinit ze všech podsložek oddělené repozitáře Git a vytvořit repozitáře superprojektu Git, které budou obsahovat několik submodulů. Výhodou tohoto postupu je, že můžete podrobněji definovat vztah mezi projekty se značkami a větvemi v superprojektech.
 
-### Projekty se submoduly ###
+### Problémy se submoduly ###
 
 Používání submodulů se však vždy neobejde bez zádrhelů. Zaprvé je třeba, abyste si v adresáři submodulu počínali opatrně. Spustíte-li příkaz git submodule update, provedete tím checkout konkrétní verze projektu, avšak nikoli v rámci větve. Říká se tomu oddělená hlava (detached head) – znamená to, že soubor HEAD ukazuje přímo na revizi, ne na symbolickou referenci. Problém je, že většinou nechcete pracovat v prostředí oddělené hlavy, protože tu velmi snadno přijdete o provedené změny. Jestliže nejprve spustíte příkaz submodule update, zapíšete v adresáři tohoto submodulu revizi, aniž byste na tuto práci vytvořili novou větev, a poté ze superprojektu znovu spustíte příkaz git submodule update, aniž byste mezitím zapisovali revize, Git vaše revize bez varování přepíše. Technicky vzato práci neztratíte, ale nebude žádná větev, která by na ni ukazovala, a tak bude poněkud obtížené získat práci zpět.
 
@@ -4765,9 +4784,7 @@ Problematické může být také přepínání větví obsahujících submoduly.
 
 Budete ho muset buď přemístit, nebo odstranit. V druhém případě ho budete muset znovu naklonovat, až přepnete zpět, navíc hrozí, že ztratíte lokální změny nebo větve, které jste neodeslali.
 
-Poslední velký problém s nímž se uživatelé často setkávají, souvisí s přepínáním z podadresářů na submoduly. Pokud jste ve svém projektu sledovali soubory a chcete je přesunout do submodulu, musíte být velmi opatrní, abyste si Git proti sobě nepoštvali. Řekněme, že máte soubory rack v podadresáři svého projektu a chcete ho přepnout do submodulu.
-
-Jestliže odstraníte podadresář a spustíte příkaz submodule add, Git vám vynadá:
+Poslední velký problém s nímž se uživatelé často setkávají, souvisí s přepínáním z podadresářů na submoduly. Pokud jste ve svém projektu sledovali soubory a chcete je přesunout do submodulu, musíte být velmi opatrní, abyste si Git proti sobě nepoštvali. Řekněme, že máte soubory rack v podadresáři svého projektu a chcete ho přepnout do submodulu. Jestliže odstraníte podadresář a spustíte příkaz submodule add, Git vám vynadá:
 
 	$ rm -Rf rack/
 	$ git submodule add git@github.com:schacon/rack.git rack
@@ -4805,7 +4822,9 @@ Nyní, když jsme poznali obtíže spojené se systémem submodulů, podívejme 
 
 Existují však ještě další strategie. Jednou z nich je tzv. začlenění podstromu (subtree merge), které lze použít jako řešení problémů se subprojektem. Ukažme si, jak se dá začlenit stejný adresář rack jako v předchozí části, tentokrát však s využitím strategie začlenění podstromu.
 
-Začlenění podstromu spočívá v tom, že máte dva projekty a jeden z projektů se promítá do podadresáře druhého projektu a naopak. Pokud určíte strategii začlenění podstromu, je Git natolik inteligentní, aby zjistil, že je jeden podstromem druhého, a provedl sloučení odpovídajícím způsobem – počíná si opravdu sofistikovaně. Nejprve přidáte aplikaci Rack do svého projektu. Projekt Rack přidáte ve vlastním projektu jako vzdálenou referenci a provedete jeho checkout do vlastní větve:
+Začlenění podstromu spočívá v tom, že máte dva projekty a jeden z projektů se promítá do podadresáře druhého projektu a naopak. Pokud určíte strategii začlenění podstromu, je Git natolik inteligentní, aby zjistil, že je jeden podstromem druhého, a provedl sloučení odpovídajícím způsobem – počíná si opravdu sofistikovaně.
+
+Nejprve přidáte aplikaci Rack do svého projektu. Projekt Rack přidáte ve vlastním projektu jako vzdálenou referenci a provedete jeho checkout do vlastní větve:
 
 	$ git remote add rack_remote git@github.com:schacon/rack.git
 	$ git fetch rack_remote
@@ -4870,7 +4889,6 @@ Do této chvíle jsem se věnoval základům práce v systému Git a tomu, jak s
 
 ## Konfigurace systému Git ##
 
-
 Jak jsme v krátkosti ukázali v kapitole 1, příkazem git config lze specifikovat konfigurační nastavení systému Git. Jednou z prvních věcí, kterou jsme udělali, bylo nastavení nastavení jména a e-mailové adresy:
 
 	$ git config --global user.name "John Doe"
@@ -4909,7 +4927,6 @@ Nastavíte-li tuto hodnotu na konkrétní umístění ve svém systému, Git pou
 	co bylo provedeno
 
 	[tiket: X]
-
 
 Chcete-li systému Git zadat, aby soubor používal jako výchozí zprávu, která se zobrazí v textovém editoru po spuštění příkazu git commit, nastavte konfigurační hodnotu commit.template:
 
@@ -5177,6 +5194,8 @@ Až v projektu spustíte příkaz git show nebo git diff, Git se nebude pokouše
 
 Ve verzi 1.6 systému Git můžete použít funkci atributů Git k efektivnímu zpracování binárních souborů nástrojem diff. Systému Git přitom sdělíte, jak má konvertovat binární data do textového formátu, který lze zpracovávat běžným nástrojem diff.
 
+#### Soubory MS Word ####
+
 Protože se jedná o opravdu šikovnou a nepříliš známou funkci, uvedu několik příkladů. Tuto metodu budete využívat především k řešení jednoho z nejpalčivějších problémů, s nímž se lidstvo potýká: verzování dokumentů Word. Je všeobecně známo, že Word je nejpříšejnější editor na světě, přesto ho však – bůhví proč – všichni používají. Chcete-li verzovat dokumenty Word, můžete je uložit do repozitáře Git a všechny hned zapsat do revize. K čemu to však bude? Spustíte-li příkaz git diff normálně, zobrazí se zhruba toto:
 
 	$ git diff
@@ -5192,7 +5211,16 @@ Systému Git tím sdělíte, že pro všechny soubory, které odpovídají této
 
 	$ git config diff.word.textconv strings
 
-Git nyní ví, že až se bude pokoušet vypočítat rozdíl mezi dvěma snímky a jeden ze souborů bude končit na .doc, má tyto soubory spustit přes filtr word, který je definován jako program strings. Než se Git pokusí porovnat soubory Word nástrojem diff, efektivně vytvoří hezké textové verze souborů. Uveďme malý příklad. Kapitolu 1 této knihy jsem vložil do systému Git, do jednoho odstavce jsem přidal kousek textu a dokument jsem uložil. Poté jsem spustil příkaz git diff, abych se podíval, co se změnilo:
+Tento příkaz do vašeho `.git/config` přidá sekci, která vypadá následovně:
+
+	[diff "word"]
+		textconv = strings
+
+Okrajová poznámka: Existují různé druhy `.doc` souborů. Některé používají kódování UTF-16 nebo jiné kódové stránky a `strings` v nich nic rozumného nenajde. Záleží na okolnostech.
+
+Git nyní ví, že až se bude pokoušet vypočítat rozdíl mezi dvěma snímky a jeden ze souborů bude končit na .doc, má tyto soubory spustit přes filtr word, který je definován jako program strings. Než se Git pokusí porovnat soubory Word nástrojem diff, efektivně vytvoří hezké textové verze souborů.
+
+Uveďme malý příklad. Kapitolu 1 této knihy jsem vložil do systému Git, do jednoho odstavce jsem přidal kousek textu a dokument jsem uložil. Poté jsem spustil příkaz git diff, abych se podíval, co se změnilo:
 
 	$ git diff
 	diff --git a/chapter1.doc b/chapter1.doc
@@ -5208,6 +5236,59 @@ Git nyní ví, že až se bude pokoušet vypočítat rozdíl mezi dvěma snímky
 	+Let's see if this works.
 
 Git mi stroze, ale pravdivě sděluje, že jsem přidal řetězec „Let’s see if this works“. Není to sice dokonalé – na konci je přidáno několik náhodných znaků – ale evidentně to funguje. Pokud se vám podaří najít či vytvořit dobře fungující převaděč dokumentů Word na prostý text, bude toto řešení bezpochyby velmi účinné. Program strings je však k dispozici ve většině systémů Mac i Linux, a tak možná nejprve vyzkoušejte tento program s různými binárními formáty.
+
+##### OpenDocument Text files #####
+
+Stejný postup, který jsme použili pro soubory MS Word (`*.doc`), můžeme použít i pro soubory ve formátu OpenDocument Text (`*.odt`), kter vytváří OpenOffice.org.
+
+Do souboru `.gitattributes` přidejte následující řádek:
+
+	*.odt diff=odt
+
+A teď v `.git/config` nastavte diff filtr pro `odt`:
+
+	[diff "odt"]
+		binary = true
+		textconv = /usr/local/bin/odt-to-txt
+
+OpenDocument soubory jsou ve skutečnosti zazipované adresáře, které obsahují více souborů (obsah ve formátu XML, styly, obrázky atd.). Potřebujeme napsat skript, který by extrahoval obsah a vrátil jej jako prostý text. Vytvořte soubor `/usr/local/bin/odt-to-txt` (můžete jej umístit i do jiného adresáře) s následujícím obsahem:
+
+	#! /usr/bin/env perl
+	# Simplistic OpenDocument Text (.odt) to plain text converter.
+	# Author: Philipp Kempgen
+
+	if (! defined($ARGV[0])) {
+		print STDERR "No filename given!\n";
+		print STDERR "Usage: $0 filename\n";
+		exit 1;
+	}
+
+	my $content = '';
+	open my $fh, '-|', 'unzip', '-qq', '-p', $ARGV[0], 'content.xml' or die $!;
+	{
+		local $/ = undef;  # slurp mode
+		$content = <$fh>;
+	}
+	close $fh;
+	$_ = $content;
+	s/<text:span\b[^>]*>//g;           # remove spans
+	s/<text:h\b[^>]*>/\n\n*****  /g;   # headers
+	s/<text:list-item\b[^>]*>\s*<text:p\b[^>]*>/\n    --  /g;  # list items
+	s/<text:list\b[^>]*>/\n\n/g;       # lists
+	s/<text:p\b[^>]*>/\n  /g;          # paragraphs
+	s/<[^>]+>//g;                      # remove all XML tags
+	s/\n{2,}/\n\n/g;                   # remove multiple blank lines
+	s/\A\n+//;                         # remove leading blank lines
+	print "\n", $_, "\n\n";
+
+Učiňte jej spustitelným:
+
+	chmod +x /usr/local/bin/odt-to-txt
+
+Teď už bude `git diff` schopen říci, co se v `.odt` souborech změnilo.
+
+
+#### Soubory s obrázky ####
 
 Dalším zajímavým problémem, který lze tímto způsobem řešit, je výpočet rozdílů u obrázkových souborů. Jedním způsobem, jak to udělat, je spustit soubory JPEG přes filtr, který extrahuje jejich informace EXIF – metadata, která se zaznamenávají s většinou obrázkových souborů. Pokud stáhnete a nainstalujete program exiftool, můžete ho použít ke konverzi obrázků na text prostřednictvím metadat, a nástroj diff vám tak přinejmenším zobrazí textovou verzi všech provedených změn.
 
@@ -5450,9 +5531,7 @@ Budete muset najít postup, jak získat zprávy všech těchto revizí, které m
 
 	changed the version number
 
-Jednoduchým způsobem, jak z revize, k níž máte hodnotu SHA-1, extrahovat její zprávu, je přejít k prvnímu prázdnému řádku a vzít vše, co následuje za ním.
-
-V systémech Unix to lze provést příkazem sed:
+Jednoduchým způsobem, jak z revize, k níž máte hodnotu SHA-1, extrahovat její zprávu, je přejít k prvnímu prázdnému řádku a vzít vše, co následuje za ním. V systémech Unix to lze provést příkazem sed:
 
 	$ git cat-file commit ca82a6 | sed '1,/^$/d'
 	changed the version number
@@ -5896,7 +5975,6 @@ Pokud na projektu spolupracujete s dalšími vývojáři, stane se vám, že ně
 	out-of-date: resource out of date; try updating at /Users/schacon/libexec/git-\
 	core/git-svn line 482
 
-
 Chcete-li tuto situaci vyřešit, spusťte příkaz git svn rebase, jímž stáhnete veškeré změny na serveru, které ještě nemáte lokálně, a přeskládáte všechnu práci na vrchol toho, co se nachází na serveru:
 
 	$ git svn rebase
@@ -5978,7 +6056,7 @@ Pokud tuto práci naklonuje jiný uživatel, uvidí jen jednu revizi vzniklou sl
 
 Princip větvení v systému Subversion se odlišuje od větvení v systému Git. Pokud se mu můžete úplně vyhnout, mohu vám to vřele doporučit. Pokud se mu vyhnout nelze, můžete i tady použít nástroj git svn, pomocí nějž lze vytvářet nové větve a zapisovat do nich revize.
 
-Vytvoření nové větve SVN
+#### Vytvoření nové větve SVN ####
 
 Chcete-li vytvořit novou větev v systému Subversion, spusťte příkaz git svn branch [název větve]:
 
@@ -6107,7 +6185,8 @@ Takový import však není úplně dokonalý a vzhledem k tomu, jak dlouho můž
 
 Chcete-li získat seznam jmen autorů používaných v SVN, spusťte tento příkaz:
 
-	$ svn log --xml | grep author | sort -u | perl -pe 's/.>(.?)<./$1 = /'
+	$ svn log --xml | grep author | sort -u | \
+	      perl -pe 's/.>(.?)<./$1 = /'
 
 Vytvoříte tím log ve formátu XML. Můžete v něm vyhledávat autory, vytvořit si vlastní seznam a XML zase vyjmout. (Tento příkaz pochopitelně funguje pouze na počítačích, v nichž je nainstalován grep, sort a perl.) Poté tento výstup přesměrujte do souboru users.txt, abyste mohli vedle každého záznamu přidat stejná data o uživatelích Git.
 
@@ -6138,21 +6217,24 @@ Nejenže teď pole Author vypadá podstatně lépe, ale navíc jste se zbavili i
 
 Po importu bude nutné data trochu vyčistit. Zaprvé je nutné vyčistit nejasné reference, které vytvořil příkaz git svn. Nejprve přesunete značky tak, aby se z nich staly skutečné značky, a ne podivné vzdálené větve. V dalším kroku přesunete zbytek větví a uděláte z nich větve lokální.
 
-Skutečné značky Git vytvoříte takto:
+Abyste značky upravili na korektní gitové značky, spusťte
 
-	$ cp -Rf .git/refs/remotes/tags/* .git/refs/tags/
-	$ rm -Rf .git/refs/remotes/tags
+	$ git for-each-ref refs/remotes/tags | cut -d / -f 4- | grep -v @ | while read tagname; do git tag "$tagname" "tags/$tagname"; git branch -r -d "tags/$tagname"; done
 
-Kombinací těchto příkazů vezmete reference, které byly vzdálenými větvemi a začínaly tag/, a uděláte z nich skutečné (prosté) značky.
+Tím se reference, které označovaly vzdálené větve a začínaly `tag/`, převedou na skutečné (prosté) značky.
 
 Ze zbytku referencí vytvořte v repozitáři refs/remotes lokální větve:
 
-	$ cp -Rf .git/refs/remotes/* .git/refs/heads/
-	$ rm -Rf .git/refs/remotes
+	$ git for-each-ref refs/remotes | cut -d / -f 3- | grep -v @ | while read branchname; do git branch "$branchname" "refs/remotes/$branchname"; git branch -r -d "$branchname"; done
 
-Všechny staré větve jsou nyní skutečnými větvemi Git a všechny staré značky jsou nyní skutečnými značkami Git. Poslední věcí, která ještě zbývá, je přidat nový server Git jako vzdálený repozitář a odeslat do něj revize. Protože do něj chcete odeslat všechny své větve a značky, můžete použít příkaz:
+Všechny staré větve jsou nyní skutečnými větvemi Git a všechny staré značky jsou nyní skutečnými značkami Git. Poslední věcí, která ještě zbývá, je přidat nový server Git jako vzdálený repozitář a odeslat do něj revize. Tady je příklad, jak můžete váš server přidat jako vzdálený:
 
-	$ git push origin –all
+	$ git remote add origin git@my-git-server:myrepository.git
+
+Protože do něj chcete odeslat všechny své větve a značky, můžete použít příkaz:
+
+	$ git push origin --all
+        $ git push origin --tags
 
 Na novém serveru Git tak nyní máte v úhledném, čistém importu uloženy všechny větve a značky.
 
@@ -6301,7 +6383,8 @@ Nyní je už vše připraveno k vygenerování dat revizí pro váš importér. 
 	export_data('imported from ' + dir)
 	puts 'from :' + last_mark if last_mark
 
-Časové pásmo definujete napevno (--0700), protože je to jednoduché. Pokud importujete z jiného systému, musíte zadat časové pásmo jako posun. Zpráva k revizi musí být ve speciálním formátu:
+Časové pásmo definujete napevno (--0700), protože je to jednoduché. Pokud importujete z jiného systému, musíte zadat časové pásmo jako posun.
+Zpráva k revizi musí být ve speciálním formátu:
 
 	data (size)\n(contents)
 
@@ -6340,6 +6423,10 @@ Znovu tu využijete metodu export_data, kterou jste aplikovali před chvílí. J
 Poslední věcí, kterou musíte udělat, je vrátit aktuální označovač, aby mohl být zadán do příští iterace:
 
 	return mark
+
+Poznámka: Pokud používáte Windows, budete muset provést jeden krok navíc. Jak už jsem se zmínil, Windows používají nahrazují znak konce řádku posloupností CRLF, zatímco git fast-import očekává pouze LF. Abychom tento problém obešli a aby si git fast-import nestěžoval, musíte ruby říct, aby místo LF používal CRLF:
+
+	$stdout.binmode
 
 A to je celé. Spustíte-li tento skript, získáte obsah v následující podobě:
 
@@ -6424,7 +6511,6 @@ Nástroj fast-import vám nabízí ještě spoustu dalších možností – nast
 
 Po přečtení této kapitoly byste měli hravě zvládat používání systému Git v kombinaci se systémem Subversion a import téměř jakéhokoli existujícího repozitáře do repozitáře Git, aniž by došlo ke ztrátě dat. V následující kapitole se podíváme na elementární principy systému Git, abyste dokázali efektivně využívat každý jeho byte.
 
-
 # Elementární principy systému Git #
 
 Ať už jste do této kapitoly přeskočili z některé z předchozích, nebo jste se sem pročetli napříč celou knihou, v této kapitole se dozvíte něco o vnitřním fungování a implementaci systému Git. Osobně se domnívám, že je tato informace velmi důležitá, aby uživatel pochopil, jak užitečný a výkonný je systém Git. Ostatní mi však oponovali, že pro začátečníky mohou být tyto informace matoucí a zbytečně složité. Proto jsem tyto úvahy shrnul do poslední kapitoly knihy, kterou si můžete přečíst v libovolné fázi seznamování se systémem Git. Vhodný okamžik záleží jen na vás.
@@ -6460,7 +6546,8 @@ Zbývají čtyři důležité položky: soubory HEAD a index a adresáře object
 
 ## Objekty Git ##
 
-Git je obsahově adresovatelný systém souborů. Výborně. A co to znamená? Znamená to, že v jádru systému Git se nachází jednoduché úložiště dat, ke kterému lze přistupovat pomocí klíčů. Můžete do něj vložit jakýkoli obsah a na oplátku dostanete klíč, který můžete kdykoli v budoucnu použít k vyzvednutí obsahu. Můžete tak použít například nízkoúrovňový příkaz hash-object, který vezme určitá data, uloží je v adresáři .git a dá vám klíč, pod nímž jsou tato data uložena. Vytvořme nejprve nový repozitář Git. Můžeme se přesvědčit, že je adresář objects prázdný:
+Git je obsahově adresovatelný systém souborů. Výborně. A co to znamená?
+Znamená to, že v jádru systému Git se nachází jednoduché úložiště dat, ke kterému lze přistupovat pomocí klíčů. Můžete do něj vložit jakýkoli obsah a na oplátku dostanete klíč, který můžete kdykoli v budoucnu použít k vyzvednutí obsahu. Můžete tak použít například nízkoúrovňový příkaz hash-object, který vezme určitá data, uloží je v adresáři .git a dá vám klíč, pod nímž jsou tato data uložena. Vytvořme nejprve nový repozitář Git. Můžeme se přesvědčit, že je adresář objects prázdný:
 
 	$ mkdir test
 	$ cd test
@@ -6615,7 +6702,6 @@ Formát objektu revize je prostý. Udává strom nejvyšší úrovně pro sníme
 
 Dále zapíšete i zbylé dva objekty revize. Oba budou odkazovat na revizi, která jim bezprostředně předcházela:
 
-
 	$ echo 'second commit' | git commit-tree 0155eb -p fdf4fc3
 	cac0cab538b970a37ea1e769cbbde608743bc96d
 	$ echo 'third commit'  | git commit-tree 3c4e9c -p cac0cab
@@ -6700,9 +6786,7 @@ Git zkomprimuje nový obsah metodou zlib, která je obsažena v knihovně zlib. 
 	>> zlib_content = Zlib::Deflate.deflate(store)
 	=> "x\234K\312\311OR04c(\317H,Q\310,V(-\320QH\311O\266\a\000_\034\a\235"
 
-Na závěr zapíšete obsah zkomprimovaný metodou zlib do objektu na disku. Musíte tu určit cestu k objektu, který chcete zapsat (první dva znaky hodnoty SHA-1 budou název podadresáře, zbývajících 38 znaků bude tvořit název souboru v tomto adresáři). Pokud podadresář neexistuje, můžete ho v jazyce Ruby vytvořit pomocí funkce FileUtils.mkdir_p().
-
-Poté zadejte File.open() pro otevření souboru a voláním write() na vzniklý identifikátor souboru zapište do souboru právě zkomprimovaný (zlib) obsah:
+Na závěr zapíšete obsah zkomprimovaný metodou zlib do objektu na disku. Musíte tu určit cestu k objektu, který chcete zapsat (první dva znaky hodnoty SHA-1 budou název podadresáře, zbývajících 38 znaků bude tvořit název souboru v tomto adresáři). Pokud podadresář neexistuje, můžete ho v jazyce Ruby vytvořit pomocí funkce FileUtils.mkdir_p(). Poté zadejte File.open() pro otevření souboru a voláním write() na vzniklý identifikátor souboru zapište do souboru právě zkomprimovaný (zlib) obsah:
 
 	>> path = '.git/objects/' + sha1[0,2] + '/' + sha1[2,38]
 	=> ".git/objects/bd/9dbf5aae1a3862dd1526723246b20206e5fc37"
@@ -6772,7 +6856,9 @@ Spustíte-li příkaz git checkout test, Git aktualizuje soubor do následujíc�
 	$ cat .git/HEAD
 	ref: refs/heads/test
 
-Spustíte-li příkaz git commit, systém vytvoří objekt revize, jehož rodičem bude hodnota SHA-1, na niž ukazuje reference v souboru HEAD. Soubor můžete editovat také ručně, ale opět existuje i bezpečnější příkaz: symbolic-ref. Hodnotu souboru HEAD můžete načíst tímto příkazem:
+Spustíte-li příkaz git commit, systém vytvoří objekt revize, jehož rodičem bude hodnota SHA-1, na niž ukazuje reference v souboru HEAD.
+
+Soubor můžete editovat také ručně, ale opět existuje i bezpečnější příkaz: symbolic-ref. Hodnotu souboru HEAD můžete načíst tímto příkazem:
 
 	$ git symbolic-ref HEAD
 	refs/heads/master
@@ -6955,7 +7041,8 @@ Na celém balíčku je navíc příjemné, že ho můžete kdykoli znovu zabalit
 
 ## Refspec ##
 
-V celé této knize jsme používali jednoduché mapování ze vzdálených větví do lokálních referencí. Mapování však může být i komplexnější. Řekněme, že přidáte například tento vzdálený repozitář:
+V celé této knize jsme používali jednoduché mapování ze vzdálených větví do lokálních referencí. Mapování však může být i komplexnější.
+Řekněme, že přidáte například tento vzdálený repozitář:
 
 	$ git remote add origin git@github.com:schacon/simplegit-progit.git
 
@@ -6973,7 +7060,9 @@ Ve výchozím případě, který se automaticky zapisuje příkazem git remote a
 	$ git log remotes/origin/master
 	$ git log refs/remotes/origin/master
 
-Všechny tři jsou přitom ekvivalentní, protože Git vždy rozšíří jejich podobu na refs/remotes/origin/ master. Pokud ale raději chcete, aby Git pokaždé stáhl pouze hlavní větev a nestahoval žádné jiné větve na vzdáleném serveru, změňte řádek příkazu fetch na:
+Všechny tři jsou přitom ekvivalentní, protože Git vždy rozšíří jejich podobu na refs/remotes/origin/ master.
+
+Pokud ale raději chcete, aby Git pokaždé stáhl pouze hlavní větev a nestahoval žádné jiné větve na vzdáleném serveru, změňte řádek příkazu fetch na:
 
 	fetch = +refs/heads/master:refs/remotes/origin/master
 
@@ -7056,7 +7145,8 @@ Nyní máte k dispozici seznam SHA a referencí na vzdálené repozitáře. Dál
 	=> GET HEAD
 	ref: refs/heads/master
 
-Po dokončení procesu tedy budete muset přepnout na hlavní větev. V tomto okamžiku je vše připraveno a můžete zahájit proces procházení. Protože je vaším výchozím bodem objekt revize ca82a6, jak jste zjistili v souboru info/refs, začnete vyzvednutím tohoto objektu:
+Po dokončení procesu tedy budete muset přepnout na hlavní větev.
+V tomto okamžiku je vše připraveno a můžete zahájit proces procházení. Protože je vaším výchozím bodem objekt revize ca82a6, jak jste zjistili v souboru info/refs, začnete vyzvednutím tohoto objektu:
 
 	=> GET objects/ca/82a6dff817ec66f44342007202690a93763949
 	(179 bytes of binary data)
@@ -7124,7 +7214,9 @@ Metoda přenosu HTTP je jednoduchá, avšak málo výkonná. Rozšířenější 
 
 #### Upload dat ####
 
-K uploadu dat do vzdáleného procesu používá Git procesy send-pack a receive-pack. Proces send-pack se spouští na klientovi a připojuje se k procesu receive-pack na straně vzdáleného serveru. Řekněme například, že ve svém projektu spustíte příkaz git push origin master a origin je definován jako URL používající protokol SSH. Git spustí proces send-pack, který iniciuje spojení se serverem přes SSH. Na vzdáleném serveru se pokusí spustit příkaz prostřednictvím volání SSH:
+K uploadu dat do vzdáleného procesu používá Git procesy send-pack a receive-pack. Proces send-pack se spouští na klientovi a připojuje se k procesu receive-pack na straně vzdáleného serveru.
+
+Řekněme například, že ve svém projektu spustíte příkaz git push origin master a origin je definován jako URL používající protokol SSH. Git spustí proces send-pack, který iniciuje spojení se serverem přes SSH. Na vzdáleném serveru se pokusí spustit příkaz prostřednictvím volání SSH:
 
 	$ ssh -x git@github.com "git-receive-pack 'schacon/simplegit-progit.git'"
 	005bca82a6dff817ec66f4437202690a93763949 refs/heads/master report-status delete-refs
@@ -7186,11 +7278,15 @@ Občas budete patrně nuceni přistoupit k menšímu úklidu – uvést repozit�
 
 ### Správa ###
 
-Git čas od času automaticky spustí příkaz auto gc. Ve většině případů neprovede tento příkaz vůbec nic. Pokud však identifikuje příliš mnoho volných objektů (objektů nezabalených do balíčkového souboru) nebo balíčkových souborů, spustí Git plnou verzi příkazu git gc. Písmena gc jsou zkratkou anglického výrazu „garbage collect“ (sběr odpadků). Příkaz provádí hned několik věcí: sbírá všechny volné objekty a umisťuje je do balíčkových souborů, spojuje balíčkové soubory do jednoho velkého a odstraňuje objekty, jež nejsou dostupné z žádné revize a jsou starší několika měsíců. Příkaz auto gc můžete spustit také ručně:
+Git čas od času automaticky spustí příkaz auto gc. Ve většině případů neprovede tento příkaz vůbec nic. Pokud však identifikuje příliš mnoho volných objektů (objektů nezabalených do balíčkového souboru) nebo balíčkových souborů, spustí Git plnou verzi příkazu git gc. Písmena gc jsou zkratkou anglického výrazu „garbage collect“ (sběr odpadků). Příkaz provádí hned několik věcí: sbírá všechny volné objekty a umisťuje je do balíčkových souborů, spojuje balíčkové soubory do jednoho velkého a odstraňuje objekty, jež nejsou dostupné z žádné revize a jsou starší několika měsíců.
+
+Příkaz auto gc můžete spustit také ručně:
 
 	$ git gc --auto
 
-I tentokrát platí, že příkaz většinou neprovede nic. Aby Git spustil skutečný příkaz gc, musíte mít kolem 7000 volných objektů nebo více než 50 balíčkových souborů. Tyto hodnoty můžete změnit podle svých potřeb v konfiguračním nastavení gc.auto a gc.autopacklimit. Další operací, kterou gc provede, je zabalení referencí do jediného souboru. Řekněme, že váš repozitář obsahuje tyto větve a značky:
+I tentokrát platí, že příkaz většinou neprovede nic. Aby Git spustil skutečný příkaz gc, musíte mít kolem 7000 volných objektů nebo více než 50 balíčkových souborů. Tyto hodnoty můžete změnit podle svých potřeb v konfiguračním nastavení gc.auto a gc.autopacklimit.
+
+Další operací, kterou gc provede, je zabalení referencí do jediného souboru. Řekněme, že váš repozitář obsahuje tyto větve a značky:
 
 	$ find .git/refs -type f
 	.git/refs/heads/experiment
@@ -7215,7 +7311,6 @@ Všimněte si také posledního řádku souboru, který začíná znakem ^. Tent
 ### Obnova dat ###
 
 Někdy se může stát, že nedopatřením přijdete o revizi Git. Většinou k tomu dochází tak, že násilím smažete větev, která uchovávala část vaší práce, a vy po čase zjistíte, že byste tuto větev přece jen potřebovali. Stejně tak jste mohli provést tvrdý reset větve a tím zavrhnout revize, z nichž nyní něco potřebujete. Pokud se už něco takového stane, jak dostanete své revize zpět?
-
 
 Uvedeme příklad, při němž resetujeme hlavní větev v testovacím repozitáři na jednu ze starších revizí a poté ztracené revize obnovíme. Nejprve se podíváme, kde se váš repozitář v současnosti nachází:
 
@@ -7272,7 +7367,8 @@ Zdá se, že revize úplně dole je hledanou ztracenou revizí. Můžete ji obno
 	cac0cab538b970a37ea1e769cbbde608743bc96d second commit
 	fdf4fc3344e67ab068f836878b6c4951e3b15f3d first commit
 
-Výborně, nyní máte větev s názvem recover-branch, která se nachází na bývalé pozici hlavní větve. První dvě revize jsou opět dostupné. Můžeme ale také uvažovat situaci, že ztracené revize nebyly ve výpisu reflog k nalezení. Tento stav můžeme simulovat tak, že odstraníme větev recover-branch a smažeme reflog. První dvě revize tak nejsou odnikud dostupné:
+Výborně, nyní máte větev s názvem recover-branch, která se nachází na bývalé pozici hlavní větve. První dvě revize jsou opět dostupné.
+Můžeme ale také uvažovat situaci, že ztracené revize nebyly ve výpisu reflog k nalezení. Tento stav můžeme simulovat tak, že odstraníme větev recover-branch a smažeme reflog. První dvě revize tak nejsou odnikud dostupné:
 
 	$ git branch -D recover-branch
 	$ rm -Rf .git/logs/
