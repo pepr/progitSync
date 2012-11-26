@@ -770,39 +770,94 @@ class Pass3Parser:
                                                  en_element.line.rstrip()))
 
 
+    def splitToFiles(self):
+        '''Jediný vstupního cs soubor do více souborů s cílovou strukturou.
+
+           Využívá se informací z načtených seznamů elementů.
+           '''
+
+        assert len(self.cs_lst) > 0
+        assert len(self.en_lst) > 0
+
+        en_fname = None
+        cs_fname = None
+        f = None
+        for en_element, cs_element in zip(self.en_lst, self.cs_lst):
+            # Při změně souboru originálu uzavřeme původní, zajistíme
+            # existenci cílového adresáře a otevřeme nový výstupní soubor.
+            if en_element.fname != en_fname:
+                # Pokud byl otevřen výstupní soubor, uzavřeme jej.
+                if f is not None:
+                    f.close()
+
+                # Zachytíme jméno anglického originálu a trochu je zneužijeme.
+                # Obsahuje relativní cestu vůči podadresáři "en/" originálu,
+                # takže je přímo připlácneme k vytvářenému  "cs/". Dodatečně
+                # oddělíme adresář a zajistíme jeho existenci.
+                en_fname = en_element.fname
+                cs_fname = os.path.join(self.cs_aux_dir, 'cs', en_fname)
+                cs_fname = os.path.abspath(cs_fname)
+
+                cs_chapter_dir = os.path.dirname(cs_fname)
+                if not os.path.isdir(cs_chapter_dir):
+                    os.makedirs(cs_chapter_dir)
+
+                # Otevřeme nový výstupní soubor.
+                f = open(cs_fname, 'w', encoding='utf-8')
+
+                # Pro informaci vypíšeme relativní jméno originálu (je stejné
+                # jako jméno výstupního souboru).
+                print('\t' + en_fname)
+
+            # Zapíšeme řádek českého elementu.
+            f.write(cs_element.line)
+
+        # Uzavřeme soubor s poslední částí knihy.
+        f.close()
+
+
     def run(self):
         '''Spouštěč jednotlivých fází parseru.'''
 
         self.writePass3txtFiles()
         self.loadElementLists()
         self.checkStructDiffs()
+        self.splitToFiles()
 
-        # Přidat metodu, která vytvoří cs/ s cílovou strukturou souborů.
 
-        ########################################################################
-        if 0:
-            # Adresář, ve kterém se budou tvořit výstupní adresáře s hotovými
-            # českými zdrojovými soubory.
-            cs_out_dir = os.path.join(self.cs_aux_dir, 'pass3')
-            if not os.path.isdir(cs_out_dir):
-                os.makedirs(cs_out_dir)
+class Pass4Parser:
+    '''Parser pro čtvrtý průchod -- značkování a kontroly.
 
-            # Počáteční výstupní adresář pro anglické soubory je inicializován na
-            # neexistující. Při každé změně vracené generátorem zdrojových řádků
-            # bude vytvořen odpovídající český podadresář a otevřen odpovídající
-            # český soubor.
-            last_relname = None
-            subdir = None
-            barename = None
-            for relname, lineno, line in gen.sourceFileLines(text_dir):
-                if relname != last_relname:
-                    subdir, barename = os.path.split(relname)
+       Konzumuje výstup třetího průchodu přímo ve formě objektu pass3.'''
 
-                assert subdir is not None
-                assert barename is not None
+    def __init__(self, pass3):
+        self.cs_aux_dir = pass3.cs_aux_dir    # pomocný adresář pro české výstupy
+        self.en_aux_dir = pass3.en_aux_dir    # pomocný adresář pro anglické výstupy
 
-                fout.write('{}|{}|{:4d}: {}'.format(subdir, barename, lineno, line))
-        ########################################################################
+
+    def run(self):
+        '''Spouštěč jednotlivých fází parseru.'''
+
+        print('\nZatím neimplementován.\a\a\a')
+    #
+    # Kontrolovat identifikace souborů s obrázky (elementy).
+    # Kontrolovat čísla obrázků (elementy).
+    #
+    # Hledáme značkování uvnitř 'para' elementů. U některých podřetězců můžeme
+    # do českého překladu doplnit značkování přímo:
+    #  - opačné apostrofy obalují úryvky kódu, který by měl být převzatý 1:1,
+    #  - kontrolujeme výskyt podřetězců v opačných apostrofech v cs,
+    #  - plníme množinu podřetězců v opačných apostrofech (zapíšeme seřazené
+    #    do souboru),
+    #  - navrhneme doplnění opačných apostrofů i do míst, kde jsou v originále
+    #    zapomenuty (není jasné, co vše se najde; zatím do odděleného souboru),
+    #  - obyčejné dvojité uvozovky měníme na české (? -- zatím do odděleného souboru),
+    #
+    # Další typy značkování jen nahlásíme a budeme asi doplňovat ručně
+    # (kurzíva, tučné, ...).
+    #
+    # V 'para' kontrolovat správnost odkazů na obrázky (vůči originálu).
+
 
 
 if __name__ == '__main__':
@@ -826,8 +881,8 @@ if __name__ == '__main__':
 
     # V druhém průchodu rozpoznáváme pass1.txt a generujeme pass2.txt.
     print('done\npass 2 ... ', end='')
-    parser = Pass2Parser(os.path.join(cs_aux_dir, 'pass1.txt'), czTOC, cs_aux_dir)
-    parser.run()
+    parser2 = Pass2Parser(os.path.join(cs_aux_dir, 'pass1.txt'), czTOC, cs_aux_dir)
+    parser2.run()
     print('done')
 
     # Po ručních úpravách zdroje pro první průchod (provedena kontrola
@@ -856,21 +911,15 @@ if __name__ == '__main__':
     # informace se porovnávají podrobněji (příklady kódu, identifikace obrázků),
     # u některých elementů se porovnává jen druh elementu (existence odstavce,
     # existence odrážky, úroveň nadpisu,...).
-    print('pass 3 ... ', end='')
-    parser = Pass3Parser(czfname_pass2man, en_src_dir, cs_aux_dir, en_aux_dir)
-    parser.run()
-    print('done')
+    print('pass 3 ... ')
+    parser3 = Pass3Parser(czfname_pass2man, en_src_dir, cs_aux_dir, en_aux_dir)
+    parser3.run()
+    print('\tdone')
 
     # Ve čtvrtém průchodu vycházíme z předpokladu, že se struktura dokumentu
-    # shoduje.
-    #
-    # Kontrolovat identifikace souborů s obrázky (elementy).
-    # Kontrolovat čísla obrázků (elementy).
-    #
-    # Hledáme značkování uvnitř elementů. U některých elementů můžeme
-    # například v odstavcích doplnit značkování přímo (například opačné
-    # apostrofy obalují úryvky kódu, který by měl být převzatý 1:1), u jiných
-    # typů značkování budeme muset později doplnit ručně (kurzíva, tučné, ...).
-    #
-    # Kontrolovat správnost odkazů na obrázky v odstavcích.
-
+    # shoduje. Už generujeme cílovou strukturu cs/, ale pro další strojové
+    # korekce budeme stále vycházet z informací získaných v předchozím kroku.
+    print('pass 4 ... ')
+    parser4 = Pass4Parser(parser3)
+    parser4.run()
+    print('\tdone')
