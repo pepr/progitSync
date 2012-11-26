@@ -777,11 +777,7 @@ class Pass3Parser:
         self.loadElementLists()
         self.checkStructDiffs()
 
-        # Některé
-        # informace se porovnávají podrobněji (příklady kódu, identifikace obrázků),
-        # u některých elementů se porovnává jen druh elementu (existence odstavce,
-        # existence odrážky, úroveň nadpisu,...).
-
+        # Přidat metodu, která vytvoří cs/ s cílovou strukturou souborů.
 
         ########################################################################
         if 0:
@@ -865,10 +861,16 @@ if __name__ == '__main__':
     parser.run()
     print('done')
 
-
-
     # Ve čtvrtém průchodu vycházíme z předpokladu, že se struktura dokumentu
-    # shoduje. Hledáme značkování uvnitř elementů. U některých elementů můžeme
+    # shoduje.
+    #
+    # Kontrolovat identifikace souborů s obrázky (elementy).
+    # Kontrolovat čísla obrázků (elementy).
+    #
+    # Hledáme značkování uvnitř elementů. U některých elementů můžeme
     # například v odstavcích doplnit značkování přímo (například opačné
     # apostrofy obalují úryvky kódu, který by měl být převzatý 1:1), u jiných
     # typů značkování budeme muset později doplnit ručně (kurzíva, tučné, ...).
+    #
+    # Kontrolovat správnost odkazů na obrázky v odstavcích.
+
