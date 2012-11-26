@@ -1,3 +1,6 @@
+#!python3
+# -*- coding: utf-8 -*-
+
 import re
 '''Capturing one line of a document and converting it to an object.'''
 

@@ -1,4 +1,6 @@
 #!python3
+# -*- coding: utf-8 -*-
+
 '''Generators for gluing the source files into a stream of lines...
 '''
 

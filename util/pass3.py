@@ -1,3 +1,6 @@
+#!python3
+# -*- coding: utf-8 -*-
+
 import docelement
 import gen
 import os
