@@ -739,7 +739,7 @@ class Pass3Parser:
                 # s příkladem kódu.
                 if en_element.type != cs_element.type \
                    or (en_element.type == 'code'
-                       and en_element.line != cs_element.line):
+                       and en_element.line.rstrip() != cs_element.line.rstrip()):
                     # U cs jen číslo řádku, u en číslo kapitoly/číslo řádku.
                     f.write('\ncs {} -- en {}/{}:\n'.format(
                             cs_element.lineno,
@@ -761,7 +761,6 @@ class Pass3Parser:
         self.writePass3txtFiles()
         self.loadElementLists()
         self.checkStructDiffs()
-
 
         # Některé
         # informace se porovnávají podrobněji (příklady kódu, identifikace obrázků),
