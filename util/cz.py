@@ -729,6 +729,20 @@ class Pass3Parser:
         # jen typy elementů.
         struct_diff_fname = os.path.join(self.cs_aux_dir, 'pass3struct_diff.txt')
         with open(struct_diff_fname, 'w', encoding='utf-8') as f:
+
+            # Některé příklady jsou přeložené. V nich rozdíly povolíme.
+            cs_line_may_differ = set(range(244, 247))
+            cs_line_may_differ.update(range(430, 436))
+            cs_line_may_differ.update(range(647, 648))
+            cs_line_may_differ.update(range(793, 809))
+            cs_line_may_differ.update(range(828, 838))
+            cs_line_may_differ.update(range(855, 861))
+            cs_line_may_differ.update(range(1032, 1033))
+            cs_line_may_differ.update(range(2508, 2511))
+            cs_line_may_differ.update(range(2933, 2948))
+            cs_line_may_differ.update(range(4925, 4930))
+            cs_line_may_differ.update(range(4938, 4943))
+
             for en_element, cs_element in zip(self.en_lst, self.cs_lst):
 
                 # Pro nejhrubší synchronizaci se budeme řídit pouze typy
@@ -739,7 +753,8 @@ class Pass3Parser:
                 # s příkladem kódu.
                 if en_element.type != cs_element.type \
                    or (en_element.type == 'code'
-                       and en_element.line.rstrip() != cs_element.line.rstrip()):
+                       and en_element.line.rstrip() != cs_element.line.rstrip()
+                       and cs_element.lineno not in cs_line_may_differ):
                     # U cs jen číslo řádku, u en číslo kapitoly/číslo řádku.
                     f.write('\ncs {} -- en {}/{}:\n'.format(
                             cs_element.lineno,

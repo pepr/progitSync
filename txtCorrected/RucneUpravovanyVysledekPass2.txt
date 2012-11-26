@@ -132,7 +132,7 @@ Před instalcí samotného Gitu musí váš systém obsahovat následující kni
 	  openssl-devel zlib-devel
 
 	$ apt-get install libcurl4-gnutls-dev libexpat1-dev gettext \
-	  libz-dev
+	  libz-dev libssl-dev
 
 Po doinstalování všech potřebných závislostí můžete pokračovat stažením nejnovější verze z webových stránek systému Git:
 
@@ -140,8 +140,8 @@ Po doinstalování všech potřebných závislostí můžete pokračovat stažen
 
 Poté přistupte ke kompilaci a instalaci:
 
-	$ tar -zxf git-1.6.0.5.tar.gz
-	$ cd git-1.6.0.5
+	$ tar -zxf git-1.7.2.2.tar.gz
+	$ cd git-1.7.2.2
 	$ make prefix=/usr/local all
 	$ sudo make prefix=/usr/local install
 
@@ -276,7 +276,7 @@ Chcete-li spustit verzování existujících souborů (na rozdíl od prázdného
 
 	$ git add *.c
 	$ git add README
-	$ git commit –m 'initial project version'
+	$ git commit -m 'initial project version'
 
 K tomu, co přesně tyto příkazy provedou, se dostaneme za okamžik. V této chvíli máte vytvořen repozitář Git se sledovanými soubory a úvodní revizí.
 
@@ -427,11 +427,11 @@ Masky souborů jsou jako zjednodušené regulární výrazy, které používá s
 
 Tady je další příklad souboru .gitignore:
 
-	# komentář – toto je ignorováno
-	*.a # žádné soubory s připonou .a
-	!lib.a # ale sleduj soubor lib.a, přestože máš ignorovat soubory s příponou .a
-	/TODO # ignoruj soubor TODO pouze v kořenovém adresáři, ne v podadresářích
-	build/ # ignoruj všechny soubory v adresáři build/
+	# komentář – ignoruje se
+	*.a       # žádné soubory s příponou .a
+	!lib.a    # ale sleduj soubor lib.a, přestože máš ignorovat soubory s příponou .a
+	/TODO     # ignoruj soubor TODO pouze v kořenovém adresáři, ne v podadresářích
+	build/    # ignoruj všechny soubory v adresáři build/
 	doc/*.txt # ignoruj doc/notes.txt, ale nikoli doc/server/arch.txt
 
 ### Zobrazení připravených a nepřipravených změn ###
@@ -1255,7 +1255,7 @@ Revizi lze označit značkou i poté, co jste ji už opustili. Předpokládejme,
 
 Nyní předpokládejme, že jste zapomněli označit projekt ve verzi 1.2, která byla obsažena v revizi označené jako „updated rakefile“. Značku můžete přidat dodatečně. Pro označení revize značkou zadejte na konec příkazu kontrolní součet revize (nebo jeho část):
 
-	$ git tag -a v1.2 9fceb02
+	$ git tag -a v1.2 -m 'version 1.2' 9fceb02
 
 Můžete se podívat, že jste revizi označil:
 
@@ -1497,7 +1497,7 @@ Obrázek 3-10. Krátká a jednoduchá historie revizí
 
 Rozhodli jste se, že budete pracovat na chybě č. 53, ať už vaše společnost používá jakýkoli systém sledování chyb. Přesněji řečeno, Git není začleněn do žádného konkrétního systému sledování chyb, ale protože je chyba č. 53 významná a chcete na ní pracovat, vytvoříte si pro ni novou větev. Abyste vytvořili novou větev a rovnou na ni přepnuli, můžete spustit příkaz git checkout s přepínačem -b:
 
-	$ git checkou0t -b iss53
+	$ git checkout -b iss53
 	Switched to a new branch "iss53"
 
 Tímto způsobem jste spojili dva příkazy:
@@ -1581,7 +1581,7 @@ Předpokládejme, že jste dokončili práci na chybě č. 53 a nyní byste ji r
 	$ git checkout master
 	$ git merge iss53
 	Merge made by recursive.
-	 README | 1 +
+	 README |    1 +
 	 1 files changed, 1 insertions(+), 0 deletions(-)
 
 Toto už se trochu liší od začlenění větve hotfix, které jste prováděli před chvílí. V tomto případě se historie vývoje od určitého bodu v minulosti rozbíhala. Vzhledem k tomu, že revize na větvi, na níž se nacházíte, není přímým předkem větve, kterou chcete začlenit, Git bude muset podniknout určité kroky. Git v tomto případě provádí jednoduché třícestné sloučení: vychází ze dvou snímků, na které ukazují větve, a jejich společného předka. Obrázek 3-16 označuje ony tři snímky, které Git v tomto případě použije ke sloučení.
@@ -1607,7 +1607,7 @@ Může se stát, že sloučení neproběhne bez problémů. Pokud jste tutéž �
 	$ git merge iss53
 	Auto-merging index.html
 	CONFLICT (content): Merge conflict in index.html
-	Automatic merge failed; fix conflicts and then commit the result
+	Automatic merge failed; fix conflicts and then commit the result.
 
 Git nepřistoupil k automatickému vytvoření nové revize sloučením. Prozatím pozastavil celý proces do doby, než konflikt vyřešíte. Chcete-li kdykoli po konfliktu zjistit, které soubory zůstaly nesloučeny, spusťte příkaz git status:
 
@@ -2226,8 +2226,8 @@ John, Josie a Jessica pak mohou do tohoto repozitáře odeslat první verzi své
 Ostatní nyní mohou velmi snadno repozitář naklonovat i do něj odesílat změny:
 
 	$ git clone git@gitserver:/opt/git/project.git
-	$ vim README
 	$ cd project
+	$ vim README
 	$ git commit -am 'fix for the README file'
 	$ git push origin master
 
@@ -2304,8 +2304,8 @@ Obrázek 4-1. Online uživatelské rozhraní GitWeb
 Pokud vás zajímá, jak by GitWeb vypadal pro váš projekt, nabízí Git příkaz, jímž lze spustit dočasnou instanci. V systému je třeba mít lehký server typu lighttpd nebo webrick. V počítačích se systémem Linux je často nainstalován lighttpd. Spustit ho lze zadáním příkazu git instaweb v adresáři vašeho projektu. Pokud používáte OS Mac, v systému Leopard je předinstalován jazyk Ruby, a proto pro vás bude nejlepší variantou zřejmě server webrick. Chcete-li spustit instaweb s jiným správcem než lighttpd, použijte parametr --httpd:
 
 	$ git instaweb --httpd=webrick
-	[2009-02-21 10:02:21] INFO WEBrick 1.3.1
-	[2009-02-21 10:02:21] INFO ruby 1.8.6 (2008-03-03) [universal-darwin9.0]
+	[2009-02-21 10:02:21] INFO  WEBrick 1.3.1
+	[2009-02-21 10:02:21] INFO  ruby 1.8.6 (2008-03-03) [universal-darwin9.0]
 
 Tím spustíte HTTPD server na portu 1234 a automaticky se spustí webový prohlížeč, který otevře tuto stránku. Není to nic obtížného. Až skončíte a budete chtít server vypnout, spusťte stejný příkaz s parametrem --stop:
 
@@ -2503,11 +2503,11 @@ Nástroj Gitolite je ve smyslu "serverového" softwaru poněkud neobvyklý. Př�
 
 Začněte tím, že na serveru vytvoříte uživatele nazvaného `git` a přihlásíte se na něj. Z vaší pracovní stanice nakopírujte svůj veřejný ssh klíč (pokud jste spustili `ssh-keygen` s implicitními hodnotami, jde o soubor `~/.ssh/id_rsa.pub`) a přejmenujte jej na `VaseJmeno.pub`. Potom proveďte následující příkazy:
 
-	git clone git://github.com/sitaramc/gitolite
-	gitolite/install -ln
-	# předpokládá existenci $HOME/bin a uvedení tohoto adresáře v $PATH
-	gitolite setup -pk $HOME/VaseJmeno.pub
-	# já bych například spustil 'gitolite setup -pk $HOME/sitaram.pub'
+    git clone git://github.com/sitaramc/gitolite
+    gitolite/install -ln
+        # předpokládá existenci $HOME/bin a uvedení tohoto adresáře v $PATH
+    gitolite setup -pk $HOME/VaseJmeno.pub
+        # já bych například spustil 'gitolite setup -pk $HOME/sitaram.pub'
 
 Nakonec přejděte zpět na pracovní stanici a spusťte `git clone git@server:gitolite-admin`.
 
@@ -2592,10 +2592,10 @@ Pravidla se znovu budou procházet postupně až do momentu, kdy bude nalezeno o
 
 K omezení odesílání do určitých větví a určitými uživateli můžete přidat také omezení určující, které soubory mohou uživatelé měnit. Například  soubor Makefile (a možná některé programy) by asi neměl kdokoliv měnit, protože je na něm závislá řada dalších věcí. Pokud se neupraví *správným způsobem*, něco by se pokazilo. Nástroji gitolite můžeme říct:
 
-	repo foo
-	    RW                      =   @junior_devs @senior_devs
+    repo foo
+        RW                      =   @junior_devs @senior_devs
 
-	    -   VREF/NAME/Makefile  =   @junior_devs
+        -   VREF/NAME/Makefile  =   @junior_devs
 
 Uživatelé, kteří přecházejí ze starší verze gitolite by si měli dát pozor na to, že v souvislosti s uvedeným rysem došlo k výrazné změně chování. Věnujte prosím pozornost detailům, které jsou uvedeny v příručce pro přechod k nové verzi.
 
@@ -2621,15 +2621,15 @@ Vysvětlení Gitolite završíme přehledem několika vlastností, které jsou d
 
 **Přehledy uživatelských oprávnění:** Další příjemnou vlastností je to, co se stane, pokud se pouze pokusíte připojit pomocí SSH na server. Gitolite vám ukáže, ke kterým repozitářům máte přístup a s jakoými oprávněními. Příklad:
 
-	hello sitaram, this is git@git running gitolite3 v3.01-18-g9609868 on git 1.7.4.4
+        hello sitaram, this is git@git running gitolite3 v3.01-18-g9609868 on git 1.7.4.4
 
-	     R     anu-wsd
-	     R     entrans
-	     R  W  git-notes
-	     R  W  gitolite
-	     R  W  gitolite-admin
-	     R     indic_web_input
-	     R     shreelipi_converter
+             R     anu-wsd
+             R     entrans
+             R  W  git-notes
+             R  W  gitolite
+             R  W  gitolite-admin
+             R     indic_web_input
+             R     shreelipi_converter
 
 **Delegace:** Pro opravdu velké instalace můžete delegovat zodpovědnost za skupiny a repozitáře dalším lidem a nechat je samotné spravovat jednotlivé části. To snižuje vytížení hlavního administrátora, který tím přestává být úským místem správy.
 
@@ -2705,7 +2705,7 @@ Pokud nemáte chuť absolvovat celý proces nastavování vlastního serveru Git
 
 V dnešní době můžete vybírat z velkého počtu možností hostingu. Každá má jiné klady a zápory. Aktuální seznam těchto míst najdete na stránce GitHosting, dostupné z hlavní stránky GitWiki:
 
-	http://git.or.cz/gitwiki/GitHosting
+	http://en.wikipedia.org/wiki/Git_(software)#Source_code_hosting
 
 Protože se tu nemůžeme věnovat všem možnostem a protože shodou okolností na jednom hostingovém místě pracuji, využijeme tuto část k tomu, abychom ukázali nastavení účtu a vytvoření nového projektu na serveru GitHub. Získáte tak představu, co všechno vás čeká.
 
@@ -2939,7 +2939,7 @@ Zde uvádíme vzor, jehož autorem je Tim Pope a v originále je k nalezení na 
 	nehodláte vypustit celé tělo). Spojení obou částí může zmást
 	některé nástroje, např. přeskládání.
 
-	Další odstavce následují za prázdným řádkem:
+	Další odstavce následují za prázdným řádkem.
 
 	 - Můžete používat i odrážky.
 
@@ -3202,12 +3202,12 @@ Nakonec začlení Johnovu práci do své vlastní větve featureA:
 Jessica by ráda něco vylepšila, a proto vytvoří novou revizi a odešle ji zpět na server:
 
 	$ git commit -am 'small tweak'
-	[featureA ed774b3] small tweak
+	[featureA 774b3ed] small tweak
 	 1 files changed, 1 insertions(+), 1 deletions(-)
 	$ git push origin featureA
 	...
 	To jessica@githost:simplegit.git
-	   3300904..ed774b3  featureA -> featureA
+	   3300904..774b3ed  featureA -> featureA
 
 Historie revizí Jessicy bude nyní vypadat jako na obrázku 5-13.
 
@@ -3288,7 +3288,7 @@ Obrázek 5-16. Výchozí historie revizí s větví featureB
 
 	$ git checkout featureA
 	$ git rebase origin/master
-	$ git push –f myfork featureA
+	$ git push -f myfork featureA
 
 Tím přepíšete svou historii, která teď bude vypadat jako na obrázku 5-17.
 
@@ -4250,18 +4250,18 @@ Můžete také spustit příkaz git stash pop, jímž odklad aplikujete a souča
 
 V některých případech můžete chtít aplikovat odložené změny, udělat nějakou práci, a pak odvolat změny, které byly v odkladu původně. Git nenabízí žádný příkaz ve smyslu stash unapply, ovšem je možné použít reverzní aplikaci patche reprezentujícího odklad:
 
-	$ git stash show -p stash@{0} | git apply -R
+    $ git stash show -p stash@{0} | git apply -R
 
 Jestliže nespecifikujete konkrétní odklad, Git předpokládá odklad poslední:
 
-	$ git stash show -p | git apply -R
+    $ git stash show -p | git apply -R
 
 Můžete si také vytvořit alias a do svého gitu přidat například příkaz stash-unapply:
 
-	$ git config --global alias.stash-unapply '!git stash show -p | git apply -R'
-	$ git stash
-	$ #... work work work
-	$ git stash-unapply
+    $ git config --global alias.stash-unapply '!git stash show -p | git apply -R'
+    $ git stash
+    $ #... work work work
+    $ git stash-unapply
 
 ### Vytvoření větve z odkladu ###
 
@@ -5329,8 +5329,8 @@ První možností je automaticky vložit kontrolní součet SHA-1 blobu do pole 
 
 Při příštím checkoutu tohoto souboru Git vloží SHA blobu:
 
-	$ rm text.txt
-	$ git checkout -- text.txt
+	$ rm test.txt
+	$ git checkout -- test.txt
 	$ cat test.txt
 	$Id: 42812b7653c7b88933f8a9d6cad0ca16714b9bb3 $
 
@@ -5346,7 +5346,7 @@ Obrázek 7-3. Filtr clean spuštěný při přípravě souborů k zapsání – 
 
 Původní zpráva k revizi s touto funkcí dává jednoduchý příklad, jak před zapsáním spustit celý váš zdrojový kód C programem indent. Tuto možnost lze aplikovat nastavením atributu filter v souboru .gitattributes tak, aby filtroval soubory *.c filtrem indent:
 
-	*.c filter=indent
+	*.c     filter=indent
 
 Poté řekněte systému Git, co má filter indent dělat v situacích smudge a clean:
 
@@ -5619,8 +5619,8 @@ Jestliže používáte strukturu ACL získanou metodou get_acl_access_data a kon
 	      next if path.size == 0
 	      has_file_access = false
 	      access[$user].each do |access_path|
-	        if !access_path  # user has access to everything
-	          || (path.index(access_path) == 0) # access to this path
+	        if !access_path || # user has access to everything
+	          (path.index(access_path) == 0) # access to this path
 	          has_file_access = true
 	        end
 	      end
@@ -6185,8 +6185,8 @@ Takový import však není úplně dokonalý a vzhledem k tomu, jak dlouho můž
 
 Chcete-li získat seznam jmen autorů používaných v SVN, spusťte tento příkaz:
 
-	$ svn log --xml | grep author | sort -u | \
-	      perl -pe 's/.>(.?)<./$1 = /'
+	$ svn log --xml | grep -P "^<author" | sort -u | \
+	      perl -pe 's/<author>(.*?)<\/author>/$1 = /'
 
 Vytvoříte tím log ve formátu XML. Můžete v něm vyhledávat autory, vytvořit si vlastní seznam a XML zase vyjmout. (Tento příkaz pochopitelně funguje pouze na počítačích, v nichž je nainstalován grep, sort a perl.) Poté tento výstup přesměrujte do souboru users.txt, abyste mohli vedle každého záznamu přidat stejná data o uživatelích Git.
 
@@ -6234,7 +6234,7 @@ Všechny staré větve jsou nyní skutečnými větvemi Git a všechny staré zn
 Protože do něj chcete odeslat všechny své větve a značky, můžete použít příkaz:
 
 	$ git push origin --all
-        $ git push origin --tags
+	$ git push origin --tags
 
 Na novém serveru Git tak nyní máte v úhledném, čistém importu uloženy všechny větve a značky.
 
@@ -6884,7 +6884,7 @@ Jak jsme zmínili už v kapitole 2, existují dva typy značek: anotované a pro
 
 To je celá prostá značka – větev, která se nikdy nepřemisťuje. Anotovaná značka je už složitější. Vytvoříte-li anotovanou značku, Git vytvoří objekt značky a zapíše referenci, která na objekt ukazuje (neukazuje tedy na samotnou revizi). To je dobře vidět, vytvoříte-li anotovanou značku (-a udává, že se jedná o anotovanou značku):
 
-	$ git tag -a v1.1 1a410efbd13591db07496601ebc7a059dd55cfe9 –m 'test tag'
+	$ git tag -a v1.1 1a410efbd13591db07496601ebc7a059dd55cfe9 -m 'test tag'
 
 Pro objekt byla vytvořena tato hodnota SHA-1:
 
@@ -6946,7 +6946,7 @@ Vraťme se zpět do databáze objektů vašeho testovacího repozitáře Git. V 
 
 Git komprimuje obsah těchto souborů metodou zlib a uložená data tak nejsou příliš velká. Všechny tyto soubory zabírají dohromady pouhých 925 bytů. Do repozitáře tak nyní přidáme větší objem dat, na němž si budeme moci ukázat jednu zajímavou funkci systému Git. Z knihovny Grit, s níž jsme pracovali před časem, přidejte soubor „repo.rb“. Je to soubor se zdrojovým kódem o velikosti asi 12 kB:
 
-	$ curl http://github.com/mojombo/grit/raw/master/lib/grit/repo.rb > repo.rb
+	$ curl https://raw.github.com/mojombo/grit/master/lib/grit/repo.rb > repo.rb
 	$ git add repo.rb
 	$ git commit -m 'added repo.rb'
 	[master 484a592] added repo.rb
@@ -6964,8 +6964,8 @@ Pokud se podíváte na výsledný strom, uvidíte hodnotu SHA-1, kterou soubor r
 
 Pomocí příkazu git cat-file zjistíte aktuální velikost objektu:
 
-	$ git cat-file -s 9bc1dc421dcd51b4ac296e3e5b6e2a99cf44391e
-	12898
+	$ du -b .git/objects/9b/c1dc421dcd51b4ac296e3e5b6e2a99cf44391e
+	4102	.git/objects/9b/c1dc421dcd51b4ac296e3e5b6e2a99cf44391e
 
 Nyní soubor trochu upravíme a uvidíme, co se stane:
 
@@ -6983,8 +6983,8 @@ Prohlédněte si strom vytvořený touto revizí a uvidíte jednu zajímavou vě
 
 Nyní jde o úplně jiný blob. Přestože jste na konec 400řádkového souboru vložili jen jeden jediný řádek, Git uložil nový obsah jako úplně nový objekt:
 
-	$ git cat-file -s 05408d195263d853f09dca71d55116663690c27c
-	12908
+	$ du -b .git/objects/05/408d195263d853f09dca71d55116663690c27c
+	4109	.git/objects/05/408d195263d853f09dca71d55116663690c27c
 
 Na disku teď máte dva téměř identické 12kB objekty. Nebylo by krásné, kdyby Git mohl uložit jeden z nich v plné velikosti, ale druhý už jen jako rozdíl mezi oběma těmito objekty?
 
