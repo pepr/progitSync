@@ -13,7 +13,14 @@ def abstractNum(num):
 
 
 class Parser:
-    '''Parser pro druhý průchod, konzumující výstup prvního průchodu.'''
+    '''Parser pro druhý průchod, konzumující výstup prvního průchodu.
+
+       V ručně upraveném textovém souboru s českým překladem, který byl
+       předzpracován prvním průchodem (tj. vezmeme výsledek prvního průchodu),
+       rozpoznává významové prvky dokumentu, převede je do .markdown tvaru
+       a zapíše je do pass2.txt. (Ten se v další fázi později stane novým,
+       ručně upravovaným dokumentem, který budeme synchronizovat s originálem.)
+    '''
 
     # Regulární výrazy a jejich vzorky jsou společné celé třídě.
     #
@@ -423,4 +430,6 @@ class Parser:
         # Uzavřeme výstupní soubor.
         self.fout.close()
 
-
+        # Vracíme textovou informaci pro případný výpis na displeji.
+        subdir = os.path.basename(self.aux_dir)
+        return subdir + '/pass2.txt'

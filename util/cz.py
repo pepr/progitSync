@@ -24,17 +24,17 @@ if not os.path.isdir(en_aux_dir):
 # které vznikly ruční sazbou orientovanou na vzhled (tj. nikoliv
 # na zachování struktury dokumentu). Hlavním výsledkem je soubor
 # pass1.txt a vracený slovník toc.
-print('pass 1 ... ', end='')
+print('pass 1:')
 parser1 = pass1.Parser('../txtFromPDF/scott_chacon_pro_git_CZ.txt',
                        cs_aux_dir)
-czTOC = parser1.run()
-print('done')
+czTOC, msg = parser1.run()
+print('\t' + msg)
 
 # V druhém průchodu rozpoznáváme pass1.txt a generujeme pass2.txt.
-print('pass 2 ... ', end='')
+print('pass 2:')
 parser2 = pass2.Parser(os.path.join(cs_aux_dir, 'pass1.txt'), czTOC, cs_aux_dir)
-parser2.run()
-print('done')
+msg = parser2.run()
+print('\t' + msg)
 
 # Po ručních úpravách zdroje pro první průchod (provedena kontrola
 # pass2.txt lidskýma očima) okopírujeme pass2.txt ručně do odděleného
@@ -51,26 +51,23 @@ if not os.path.isfile(czfname_pass2man):
 en_src_dir = os.path.abspath('../../progit/en')
 
 # V třetím průchodu sesbíráme informace jednak z originálu a jednak
-# z překladu (stejným algoritmem). Vycházíme z druhého commitu originálního
-# gitovského repozitáře (dfaab52e5a438d7fcd0d9c9af63289e5e3985fba), ve kterém
-# byly originální zdrojové soubory přemístěny do podadresáře en. V prvním
-# commitu podadresář en neexistoval a byl zjevně zaveden až v okamžiku
-# prvních kroků překladatelů knihy.
+# z překladu (stejným algoritmem). Vycházíme z čerstvého commitu originálního
+# gitovského repozitáře (17bb7f8e z 25.11.2012).
 #
 # Zjištěné posloupnosti elementů dokumentů (nadpisy, odstavce, obrázky,
 # příklady kódu) porovnáváme za účelem zjištění rozdílů struktury. Některé
 # informace se porovnávají podrobněji (příklady kódu, identifikace obrázků),
 # u některých elementů se porovnává jen druh elementu (existence odstavce,
 # existence odrážky, úroveň nadpisu,...).
-print('pass 3 ... ')
+print('pass 3:')
 parser3 = pass3.Parser(czfname_pass2man, en_src_dir, cs_aux_dir, en_aux_dir)
-parser3.run()
-print('\tdone')
+msg = parser3.run()
+print('\t' + msg)
 
 # Ve čtvrtém průchodu vycházíme z předpokladu, že se struktura dokumentu
 # shoduje. Už generujeme cílovou strukturu cs/, ale pro další strojové
 # korekce budeme stále vycházet z informací získaných v předchozím kroku.
-print('pass 4 ... ')
+print('pass 4:')
 parser4 = pass4.Parser(parser3)
-parser4.run()
-print('\tdone')
+msg = parser4.run()
+print('\t' + msg)

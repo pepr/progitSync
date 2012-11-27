@@ -8,13 +8,19 @@ import shutil
 class Parser:
     '''Parser pro první průchod ručně získaným textovým souborem (z českého PDF).
 
+       Zpracuje český překlad z textového souboru, který byl získán
+       uložením PDF jako text a následnou ruční úpravou některých jevů,
+       které vznikly ruční sazbou orientovanou na vzhled (tj. nikoliv
+       na zachování struktury dokumentu).
+
        Generuje pass1.txt, který obsahuje zredukovaný obsah souboru fname.
        Pro účely srovnávání s originálem generuje czTOC.txt z řádků
        velkého obsahu na začátku dokumentu. Záhlaví stránek zachycuje
        do PageHeaders.txt. Zmíněné prvky při prvním průchodu do pass1.txt
        nezapisuje. Ostatní vypuštěné prvky (nepatřící ani do obsahu, ani
        k hlavičkám stránek) zapisuje do ignored.txt. Vše se generuje
-       do adresáře self.cs_aux_dir, který se nejdříve úplně promaže (vytvoří znovu).
+       do adresáře self.cs_aux_dir, který se nejdříve úplně promaže (vytvoří
+       znovu).
 
        Pro potřeby další fáze generuje slovník obsahu, kde klíčem je
        číslo kapitoly/podkapitoly/... a hodnotou je text jejího názvu.
@@ -25,7 +31,7 @@ class Parser:
 
     # Regulární výrazy pro rozpoznání částí dokumentu jsou stejné
     # pro všechny případné instance (ale bude jedna).
-    #    
+    #
     # Řádek obsahu má tvar: "1.1 Správa verzí -- 17"
     # kde '--' je čtverčíková pomlčka.
     patNum = r'(?P<num>(?P<num1>\d+)\.(?P<num2>\d+)?(\.(?P<num3>\d+))?)'
@@ -49,14 +55,19 @@ class Parser:
 
         # Slovník naplněný položkami obsahu, který funkce vrací.
         toc = {}
+        subdir = os.path.basename(self.cs_aux_dir)        # český výstup
+        info_files = [subdir +'/czTOC1.txt',
+                      subdir +'/PageHeaders.txt',
+                      subdir +'/ignored.txt',
+                      subdir +'/pass1.txt']
 
-        with open(os.path.join(self.cs_aux_dir, 'czTOC1.txt'), 'w', 
+        with open(os.path.join(self.cs_aux_dir, 'czTOC1.txt'), 'w',
                   encoding='utf-8') as ftoc,                            \
              open(os.path.join(self.cs_aux_dir, 'PageHeaders.txt'), 'w',
                   encoding='utf-8') as fph,                             \
-             open(os.path.join(self.cs_aux_dir, 'ignored.txt'), 'w', 
+             open(os.path.join(self.cs_aux_dir, 'ignored.txt'), 'w',
                   encoding='utf-8') as fignored,                        \
-             open(os.path.join(self.cs_aux_dir, 'pass1.txt'), 'w', 
+             open(os.path.join(self.cs_aux_dir, 'pass1.txt'), 'w',
                   encoding='utf-8') as fout,                            \
              open(self.fname, encoding='utf-8') as fin:
 
@@ -137,4 +148,4 @@ class Parser:
                     pass
 
         # Pro potřeby druhého průchodu vrátíme slovník s položkami obsahu.
-        return toc
+        return toc, '\n\t'.join(info_files)

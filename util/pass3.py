@@ -17,6 +17,7 @@ class Parser:
         self.cs_lst = None              # seznam elementů z českého překladu
         self.en_lst = None              # seznam elementů z anglického originálu
 
+        self.info_files = []
 
     def writePass3txtFiles(self):
         # Kopie českého vstupu do jednoho souboru. Při tomto průchodu
@@ -32,6 +33,13 @@ class Parser:
                   encoding='utf-8') as fout:
             for fname, lineno, line in gen.sourceFileLines(self.en_name_in):
                 fout.write('{}/{}:\t{}'.format(fname[1:2], lineno, line))
+
+        # Přidáme informaci o vytvářených souborech.
+        subdir = os.path.basename(self.cs_aux_dir)        # český výstup
+        self.info_files.append(subdir +'/pass3.txt')
+
+        subdir = os.path.basename(self.en_aux_dir)        # anglický výstup
+        self.info_files.append(subdir +'/pass3.txt')
 
 
     def loadElementLists(self):
@@ -62,6 +70,11 @@ class Parser:
                     self.cs_lst.append(elem)    # tento do seznamu přidáme
                     fout.write(repr(elem) + '\n')
 
+        # Přidáme informaci o výstupních souborech.
+        subdir = os.path.basename(self.cs_aux_dir)
+        self.info_files.append(subdir +'/pass3extra_lines.txt')
+        self.info_files.append(subdir +'/pass3elem.txt')
+
         # Elementy z anglického originálu do seznamu a do souboru.
         self.en_lst = []
         with open(os.path.join(self.en_aux_dir, 'pass3elem.txt'), 'w',
@@ -71,9 +84,15 @@ class Parser:
                 self.en_lst.append(elem)
                 fout.write(repr(elem) + '\n')
 
+        # Přidáme informaci o výstupním souboru.
+        subdir = os.path.basename(self.en_aux_dir)
+        self.info_files.append(subdir +'/pass3elem.txt')
+
 
     def checkStructDiffs(self):
         '''Generuje cs/pass3struct_diff.txt s rozdíly ve struktuře zdrojových řádků.'''
+
+        sync_flag = True   # optimistická inicializace
 
         # Zjištěné posloupnosti elementů dokumentů (nadpisy, odstavce, obrázky,
         # příklady kódu) porovnáváme za účelem zjištění rozdílů struktury -- zde
@@ -106,6 +125,10 @@ class Parser:
                    or (en_element.type == 'code'
                        and en_element.line.rstrip() != cs_element.line.rstrip()
                        and cs_element.lineno not in cs_line_may_differ):
+
+                    # Není to synchronní; shodíme příznak.
+                    sync_flag = False
+
                     # U cs jen číslo řádku, u en číslo kapitoly/číslo řádku.
                     f.write('\ncs {} -- en {}/{}:\n'.format(
                             cs_element.lineno,
@@ -119,6 +142,15 @@ class Parser:
                     # Typ a hodnota anglického elementu.
                     f.write('\t{}:\t{}\n'.format(en_element.type,
                                                  en_element.line.rstrip()))
+
+        # Přidáme informaci o výstupním souboru.
+        subdir = os.path.basename(self.cs_aux_dir)        # český výstup
+        self.info_files.append(subdir +'/pass3struct_diff.txt')
+
+        # Přidáme informaci o synchronnosti.
+        self.info_files.append(('-'*40) + ' struktura se ' +
+                               ('shoduje' if sync_flag else 'NESHODUJE'))
+
 
 
     def splitToFiles(self):
@@ -157,8 +189,8 @@ class Parser:
                 f = open(cs_fname, 'w', encoding='utf-8')
 
                 # Pro informaci vypíšeme relativní jméno originálu (je stejné
-                # jako jméno výstupního souboru).
-                print('\t' + en_fname)
+                # jako jméno výstupního souboru, přidáme natvrdo cs/).
+                self.info_files.append('cs/' + en_fname)
 
             # Zapíšeme řádek českého elementu.
             f.write(cs_element.line)
@@ -174,3 +206,5 @@ class Parser:
         self.loadElementLists()
         self.checkStructDiffs()
         self.splitToFiles()
+
+        return '\n\t'.join(self.info_files)
