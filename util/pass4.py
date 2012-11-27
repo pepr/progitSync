@@ -55,25 +55,41 @@ class Parser:
         self.info_files.append(('-'*30) + ' informace o obrázcích se ' +
                                ('shodují' if sync_flag else 'NESHODUJÍ'))
 
+
     def checkParaBackticks(self):
         '''Kontroluje synchronnost použití zpětných apostrofů v 'para' elementech.
-        
+
            Výsledky zapisuje do pass4backticks.txt.'''
-           
+
         sync_flag = True  # optimistická inicializace
         images_fname = os.path.join(self.cs_aux_dir, 'pass4backticks.txt')
         with open(images_fname, 'w', encoding='utf-8') as f:
             for en_el, cs_el in zip(self.en_lst, self.cs_lst):
-                
+
                 # Zpracováváme jen odstavce textu.
                 if en_el.type == 'para':
-                
+
                     # Najdeme všechny symboly uzavřené ve zpětných apostrofech
                     # v originálním odstavci.
-                    lst = self.rexBackticked.findall(en_el.line)
-                    
-                    if len(lst) > 0:
-                        f.write(repr(lst))
+                    enlst = self.rexBackticked.findall(en_el.line)
+                    cslst = self.rexBackticked.findall(cs_el.line)
+
+                    # Nestačí porovnávat délky seznamů, protože seznamy mohou
+                    # obsahovat různé sekvence (což se díky modifikaci textu
+                    # stalo). Proto musíme porovnat množiny. Ale nestačí porovnat
+                    # jen množiny, protože některý seznam by mohl být delší
+                    # (opakoval by se nějaký řetězec). Ostatní situace považujeme
+                    # za málo pravděpodobné.
+                    if set(enlst) != set(cslst) or len(enlst) != len(cslst):
+
+                        # Vytvoříme rozdílový seznam, do kterého vložíme
+                        # jen řetězce, které jsou v en navíc. To znamená,
+                        # že z anglického seznamu odstraníme ty, které už
+                        # jsou v českém odstavci označkované.
+                        dlst = enlst[:]   # kopie
+                        for s in cslst:
+                            if s in dlst:
+                                dlst.remove(s)
 
                         # Není shoda. Shodíme příznak...
                         sync_flag = False
@@ -84,27 +100,57 @@ class Parser:
                                 en_el.fname[1:2],
                                 en_el.lineno))
 
-                        # Typ a hodnota českého elementu.
-                        f.write('\t{}:\t{}\n'.format(cs_el.type,
-                                                     cs_el.line.rstrip()))
+                        # Nalezené posloupnosti symbolů.
+                        #f.write('\t' + repr(cslst) + '\n')
+                        #f.write('\t' + repr(enlst) + '\n')
+                        f.write('\t' + repr(dlst) + '\n')
 
-                        # Typ a hodnota anglického elementu.
-                        f.write('\t{}:\t{}\n'.format(en_el.type,
-                                                     en_el.line.rstrip()))
+                        # Anglický odstavec.
+                        f.write('\t{}\n'.format(en_el.line.rstrip()))
+
+                        # Český odstavec před úpravou.
+                        #f.write('\t{}\n'.format(cs_el.line.rstrip()))
+
+                        # Projdeme rozdílový seznam dosud neoznačkovaných řetězců
+                        # a jeden po druhém je v řádku obalíme.
+                        line = cs_el.line
+                        for s in set(dlst):
+                            replacement = '`' + s + '`'
+                            line = line.replace(s, replacement)
+                        cs_el.line = line
+
+                        # Český odstavec po úpravě.
+                        f.write('\t{}\n'.format(cs_el.line.rstrip()))
+
 
         # Přidáme informaci o synchronnosti použití zpětných apostrofů.
         subdir = os.path.basename(self.cs_aux_dir)        # český výstup
         self.info_files.append(subdir +'/pass4backticks.txt')
         self.info_files.append(('-'*30) + ' použití zpětných apostrofů se ' +
                                ('shoduje' if sync_flag else 'NESHODUJE'))
-        
+
+
+    def writePass4txtFile(self):
+        ''' Zapíše strojově modifikovaný soubor do pass4.txt.'''
+
+        with open(os.path.join(self.cs_aux_dir, 'pass4.txt'), 'w',
+                  encoding='utf-8') as fout:
+            for cs_element in self.cs_lst:
+                fout.write(cs_element.line)
+
+        # Přidáme informaci o vytvářeném souboru.
+        subdir = os.path.basename(self.cs_aux_dir)        # český výstup
+        self.info_files.append(subdir +'/pass4.txt')
+
+
 
     def run(self):
         '''Spouštěč jednotlivých fází parseru.'''
 
         self.checkImages()
         self.checkParaBackticks()
-        
+        self.writePass4txtFile()
+
         return '\n\t'.join(self.info_files)
 
     #

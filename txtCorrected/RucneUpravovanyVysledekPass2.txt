@@ -168,7 +168,7 @@ Existují dva jednoduché způsoby, jak nainstalovat Git v systému Mac. Tím ne
 Insert 18333fig0107.png
 Obrázek 1-7. Instalátor Git pro OS X
 
-Jiným obvyklým způsobem je instalace systému Git prostřednictvím systému MacPorts (http://www.macports.org). Máte-li systém MacPorts nainstalován, nainstalujte Git příkazem:
+Jiným obvyklým způsobem je instalace systému Git prostřednictvím systému MacPorts (`http://www.macports.org`). Máte-li systém MacPorts nainstalován, nainstalujte Git příkazem:
 
 	$ sudo port install git-core +svn +doc +bash_completion +gitweb
 
@@ -2141,7 +2141,7 @@ Pokud chcete své repozitáře umístit na server, jenž nemá účty pro všech
 
 Existuje několik způsobů, jak umožnit přístup všem členům vašeho týmu. Prvním způsobem je nastavit účty pro všechny, což není složité, ale může být poněkud zdlouhavé. Možná nebudete mít chuť spouštět příkaz adduser (přidat uživatele) a nastavovat dočasná hesla pro každého uživatele zvlášť.
 
-Druhým způsobem je vytvořit na počítači jediného uživatele ’git‘, požádat všechny uživatele, kteří mají mít oprávnění k zápisu, aby vám poslali veřejný SSH klíč, a přidat tento klíč do souboru ~/.ssh/authorized_keys vašeho nového uživatele ’git‘. Nyní budou mít všichni přístup k tomuto počítači prostřednictvím uživatele ’git‘. Tento postup nemá žádný vliv na data vašich revizí – SSH uživatel, jehož účtem se přihlašujete, neovlivní revize, které jste nahráli.
+Druhým způsobem je vytvořit na počítači jediného uživatele 'git', požádat všechny uživatele, kteří mají mít oprávnění k zápisu, aby vám poslali veřejný SSH klíč, a přidat tento klíč do souboru ~/.ssh/authorized_keys vašeho nového uživatele 'git'. Nyní budou mít všichni přístup k tomuto počítači prostřednictvím uživatele 'git'. Tento postup nemá žádný vliv na data vašich revizí – SSH uživatel, jehož účtem se přihlašujete, neovlivní revize, které jste nahráli.
 
 Dalším možným způsobem je nechat ověřovat SSH přístupy LDAP serveru nebo jinému centralizovanému zdroji ověření, který už možná máte nastavený. Dokud má každý uživatel shellový přístup k počítači, měly by fungovat všechny mechanismy ověřování SSH, které vás jen napadnou.
 
@@ -2183,7 +2183,7 @@ Budete-li potřebovat podrobnější návod k vytvoření SSH klíče v různýc
 
 ## Nastavení serveru ##
 
-Podívejme se nyní na nastavení SSH přístupu na straně serveru. V tomto příkladu použijeme k ověření uživatelů metodu authorized_keys. Předpokládáme také, že pracujete se standardní linuxovou distribucí, jako je např. Ubuntu. Nejprve vytvoříte uživatele ’git‘ a adresář .ssh pro tohoto uživatele.
+Podívejme se nyní na nastavení SSH přístupu na straně serveru. V tomto příkladu použijeme k ověření uživatelů metodu authorized_keys. Předpokládáme také, že pracujete se standardní linuxovou distribucí, jako je např. Ubuntu. Nejprve vytvoříte uživatele 'git' a adresář .ssh pro tohoto uživatele.
 
 	$ sudo adduser git
 	$ su git
@@ -2213,7 +2213,7 @@ Nyní pro ně můžete nastavit prázdný repozitář. Spusťte příkaz git ini
 	$ cd project.git
 	$ git --bare init
 
-John, Josie a Jessica pak mohou do tohoto repozitáře odeslat první verzi svého projektu: přidají si ho jako vzdálený repozitář a odešlou do něj svou větev. Nezapomeňte, že pokaždé, když chcete přidat projekt, se musí k počítači někdo přihlásit a vytvořit holý repozitář. Pro server, na kterém jste nastavili uživatele ’git‘ a repozitář, můžeme použít název hostitele gitserver. Pokud server provozujete interně a nastavíte DNS pro gitserver tak, aby ukazovalo na tento server, můžete používat i takovéto příkazy:
+John, Josie a Jessica pak mohou do tohoto repozitáře odeslat první verzi svého projektu: přidají si ho jako vzdálený repozitář a odešlou do něj svou větev. Nezapomeňte, že pokaždé, když chcete přidat projekt, se musí k počítači někdo přihlásit a vytvořit holý repozitář. Pro server, na kterém jste nastavili uživatele 'git' a repozitář, můžeme použít název hostitele gitserver. Pokud server provozujete interně a nastavíte DNS pro gitserver tak, aby ukazovalo na tento server, můžete používat i takovéto příkazy:
 
 	# on Johns computer
 	$ cd myproject
@@ -2233,7 +2233,7 @@ Ostatní nyní mohou velmi snadno repozitář naklonovat i do něj odesílat zm�
 
 Tímto způsobem lze rychle vytvořit a spustit server Git ke čtení i zápisu pro menší počet vývojářů.
 
-Pro větší bezpečnost máte možnost využít nástroj git-shell, který je distribuován se systémem Git. Pomocí něj lze snadno nastavit, aby uživatel ’git‘ prováděl pouze operace systému Git. Pokud ho nastavíte jako přihlašovací shell uživatele ’git‘, pak nebude mít uživatel ’git‘ normální shellový přístup k vašemu serveru. Chcete-li nástroj použít, zadejte pro přihlašovací shell vašeho uživatele git-shell místo bash nebo csh. V takovém případě pravděpodobně budete muset upravit soubor /etc/passwd:
+Pro větší bezpečnost máte možnost využít nástroj git-shell, který je distribuován se systémem Git. Pomocí něj lze snadno nastavit, aby uživatel 'git' prováděl pouze operace systému Git. Pokud ho nastavíte jako přihlašovací shell uživatele 'git', pak nebude mít uživatel 'git' normální shellový přístup k vašemu serveru. Chcete-li nástroj použít, zadejte pro přihlašovací shell vašeho uživatele git-shell místo bash nebo csh. V takovém případě pravděpodobně budete muset upravit soubor /etc/passwd:
 
 	$ sudo vim /etc/passwd
 
@@ -2245,7 +2245,7 @@ Změňte /bin/sh na /usr/bin/git-shell (nebo spusťte příkaz which git-shell, 
 
 	git:x:1000:1000::/home/git:/usr/bin/git-shell
 
-Uživatel ’git‘ nyní může používat SSH připojení k odesílání a stahování repozitářů Git, ale nemůže se přihlásit k počítači. Pokud to zkusíte, zobrazí se zamítnutí přihlášení:
+Uživatel 'git' nyní může používat SSH připojení k odesílání a stahování repozitářů Git, ale nemůže se přihlásit k počítači. Pokud to zkusíte, zobrazí se zamítnutí přihlášení:
 
 	$ ssh git@gitserver
 	fatal: What do you think I am? A shell?
@@ -2362,7 +2362,7 @@ Gitosis teď bude spravovat klíče za vás. Proto je třeba, abyste odstranili 
 
 	$ mv /home/git/.ssh/authorized_keys /home/git/.ssh/ak.bak
 
-Dále musíte znovu zapnout shell na uživatele ‘git’, jestliže jste ho změnili na příkaz git-shell. Uživatelé se stále ještě nebudou moci přihlásit, ale Gitosis za vás bude provádět správu. V souboru /etc/passwd tak nyní změníme řádek:
+Dále musíte znovu zapnout shell na uživatele `git’, jestliže jste ho změnili na příkaz git-shell. Uživatelé se stále ještě nebudou moci přihlásit, ale Gitosis za vás bude provádět správu. V souboru /etc/passwd tak nyní změníme řádek:
 
 	git:x:1000:1000::/home/git:/usr/bin/git-shell
 
@@ -2411,9 +2411,9 @@ Pokud se podíváte na soubor gitosis.conf, měl by udávat pouze informace o pr
 	writable = gitosis-admin
 	members = scott
 
-Tato informace znamená, že uživatel ’scott‘ – ten, jehož veřejným klíčem jste inicializovali Gitosis – je jediným uživatelem, který má přístup k projektu gitosis-admin.
+Tato informace znamená, že uživatel ’scott` – ten, jehož veřejným klíčem jste inicializovali Gitosis – je jediným uživatelem, který má přístup k projektu gitosis-admin.
 
-Nyní přidáme nový projekt. Přidáte novou část s názvem mobile, která bude obsahovat seznam vývojářů vašeho mobilního týmu a projektů, k nimž tito vývojáři potřebují přístup. Protože je v tuto chvíli jediným uživatelem v systému ’scott‘, přidáte ho jako jediného člena a vytvoříte pro něj nový projekt s názvem iphone_project:
+Nyní přidáme nový projekt. Přidáte novou část s názvem mobile, která bude obsahovat seznam vývojářů vašeho mobilního týmu a projektů, k nimž tito vývojáři potřebují přístup. Protože je v tuto chvíli jediným uživatelem v systému ’scott`, přidáte ho jako jediného člena a vytvoříte pro něj nový projekt s názvem iphone_project:
 
 	[group mobile]
 	writable = iphone_project
@@ -2451,7 +2451,7 @@ Na tomto projektu chcete spolupracovat s přáteli, a proto budete muset znovu p
 	$ cp /tmp/id_rsa.josie.pub keydir/josie.pub
 	$ cp /tmp/id_rsa.jessica.pub keydir/jessica.pub
 
-Nyní je můžete všechny přidat do týmu ’mobile‘, čímž získají oprávnění pro čtení i pro zápis k iphone_project:
+Nyní je můžete všechny přidat do týmu ’mobile`, čímž získají oprávnění pro čtení i pro zápis k iphone_project:
 
 	[group mobile]
 	writable = iphone_project
@@ -2662,7 +2662,7 @@ vložte tento skript:
 	    /opt/git/
 	respawn
 
-Z bezpečnostních důvodů důrazně doporučujeme, aby byl tento démon spuštěn jako uživatel, který má k repozitářům oprávnění pouze pro čtení. To lze snadno zajistit vytvořením nového uživatele `gitro‘ a spuštěním démona v jeho roli. My ho pro zjednodušení spustíme jako uživatele `git’, kterého už využívá nástroj Gitosis.
+Z bezpečnostních důvodů důrazně doporučujeme, aby byl tento démon spuštěn jako uživatel, který má k repozitářům oprávnění pouze pro čtení. To lze snadno zajistit vytvořením nového uživatele 'git-ro' a spuštěním démona v jeho roli. My ho pro zjednodušení spustíme jako uživatele `git’, kterého už využívá nástroj Gitosis.
 
 Při restartování počítače se démon Git spustí automaticky. V případě pádu démona bude jeho činnost automaticky obnovena. Pokud nechcete počítač restartovat, spusťte tento příkaz:
 
@@ -4458,7 +4458,7 @@ Toto je opravdu velmi častá situace. Někdo příkazem git add bezmyšlenkovit
 	Rewrite 6b9b3cf04e7c5686a9cb838c3f36a8cb6a0fc2bd (21/21)
 	Ref 'refs/heads/master' was rewritten
 
-Parametr --tree-filter spustí zadaný příkaz po každém checkoutu projektu a znovu zapíše jeho výsledky. V tomto případě odstraníte soubor s názvem passwords.txt ze všech snímků, ať v nich existuje, nebo neexistuje. Chcete-li odstranit všechny nedopatřením zapsané záložní soubory editoru, můžete spustit zhruba toto: git filter-branch --tree-filter ‘rm -f *~‘ HEAD.
+Parametr --tree-filter spustí zadaný příkaz po každém checkoutu projektu a znovu zapíše jeho výsledky. V tomto případě odstraníte soubor s názvem passwords.txt ze všech snímků, ať v nich existuje, nebo neexistuje. Chcete-li odstranit všechny nedopatřením zapsané záložní soubory editoru, můžete spustit zhruba toto: git filter-branch --tree-filter 'rm -f *~' HEAD.
 
 Uvidíte, jak Git přepisuje stromy a revize a poté přemístí ukazatel větve na konec. Většinou se vyplatí provádět toto všechno v testovací větvi a k tvrdému resetu hlavní větve přistoupit až poté, co se ujistíte, že výsledek odpovídá vašim očekáváním. Chcete-li spustit příkaz filter-branch na všech větvích, zadejte k příkazu parametr --all.
 
