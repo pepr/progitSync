@@ -152,7 +152,6 @@ class Parser:
                                ('shoduje' if sync_flag else 'NESHODUJE'))
 
 
-
     def splitToFiles(self):
         '''Jediný vstupního cs soubor do více souborů s cílovou strukturou.
 
@@ -175,10 +174,10 @@ class Parser:
 
                 # Zachytíme jméno anglického originálu a trochu je zneužijeme.
                 # Obsahuje relativní cestu vůči podadresáři "en/" originálu,
-                # takže je přímo připlácneme k vytvářenému  "cs/". Dodatečně
+                # takže je přímo připlácneme k "pass3cs/". Dodatečně
                 # oddělíme adresář a zajistíme jeho existenci.
                 en_fname = en_element.fname
-                cs_fname = os.path.join(self.cs_aux_dir, 'cs', en_fname)
+                cs_fname = os.path.join(self.cs_aux_dir, 'pass3cs', en_fname)
                 cs_fname = os.path.abspath(cs_fname)
 
                 cs_chapter_dir = os.path.dirname(cs_fname)
@@ -190,7 +189,7 @@ class Parser:
 
                 # Pro informaci vypíšeme relativní jméno originálu (je stejné
                 # jako jméno výstupního souboru, přidáme natvrdo cs/).
-                self.info_files.append('cs/' + en_fname)
+                self.info_files.append('.../pass3cs/' + en_fname)
 
             # Zapíšeme řádek českého elementu.
             f.write(cs_element.line)

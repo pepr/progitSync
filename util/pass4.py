@@ -10,7 +10,7 @@ class Parser:
        Konzumuje výstup třetího průchodu přímo ve formě objektu pass3.'''
 
     # Regulární výraz pro rozpoznání znaků uzavřených v opačných apostrofech.
-    rexBackticked = re.compile(r'`(?P<txt>\S.*?\S?)`')
+    rexBackticked = re.compile(r'`(\S.*?\S?)`')
 
     def __init__(self, pass3):
         self.cs_aux_dir = pass3.cs_aux_dir    # pomocný adresář pro české výstupy
@@ -55,6 +55,20 @@ class Parser:
         self.info_files.append(('-'*30) + ' informace o obrázcích se ' +
                                ('shodují' if sync_flag else 'NESHODUJÍ'))
 
+
+    def buildRex(self, lst):
+        '''Build a regular expression mathing substrings from the lst.'''
+        
+        # Build a list of escaped unique substrings from the input list.
+        # The order is not important.
+        lst2 = [re.escape(s) for s in set(lst)]
+        
+        # Join the escaped substrings to form the regular expression 
+        # pattern, build the regular expression, and return it.
+        pat = '|'.join(lst2)
+        rex = re.compile(pat)
+        return rex
+        
 
     def checkParaBackticks(self):
         '''Kontroluje synchronnost použití zpětných apostrofů v 'para' elementech.
@@ -109,15 +123,19 @@ class Parser:
                         f.write('\t{}\n'.format(en_el.line.rstrip()))
 
                         # Český odstavec před úpravou.
-                        #f.write('\t{}\n'.format(cs_el.line.rstrip()))
+                        f.write('\t{}\n'.format(cs_el.line.rstrip()))
+
+                        rex = self.buildRex(dlst)
+                        cs_el.line, n = rex.subn(r'`\g<0>`', cs_el.line)
 
                         # Projdeme rozdílový seznam dosud neoznačkovaných řetězců
                         # a jeden po druhém je v řádku obalíme.
-                        line = cs_el.line
-                        for s in set(dlst):
-                            replacement = '`' + s + '`'
-                            line = line.replace(s, replacement)
-                        cs_el.line = line
+                        if False:
+                            line = cs_el.line
+                            for s in set(dlst):
+                                replacement = '`' + s + '`'
+                                line = line.replace(s, replacement)
+                            cs_el.line = line
 
                         # Český odstavec po úpravě.
                         f.write('\t{}\n'.format(cs_el.line.rstrip()))
