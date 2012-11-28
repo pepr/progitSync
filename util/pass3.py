@@ -152,58 +152,11 @@ class Parser:
                                ('shoduje' if sync_flag else 'NESHODUJE'))
 
 
-    def splitToFiles(self):
-        '''Jediný vstupního cs soubor do více souborů s cílovou strukturou.
-
-           Využívá se informací z načtených seznamů elementů.
-           '''
-
-        assert len(self.cs_lst) > 0
-        assert len(self.en_lst) > 0
-
-        en_fname = None
-        cs_fname = None
-        f = None
-        for en_element, cs_element in zip(self.en_lst, self.cs_lst):
-            # Při změně souboru originálu uzavřeme původní, zajistíme
-            # existenci cílového adresáře a otevřeme nový výstupní soubor.
-            if en_element.fname != en_fname:
-                # Pokud byl otevřen výstupní soubor, uzavřeme jej.
-                if f is not None:
-                    f.close()
-
-                # Zachytíme jméno anglického originálu a trochu je zneužijeme.
-                # Obsahuje relativní cestu vůči podadresáři "en/" originálu,
-                # takže je přímo připlácneme k "pass3cs/". Dodatečně
-                # oddělíme adresář a zajistíme jeho existenci.
-                en_fname = en_element.fname
-                cs_fname = os.path.join(self.cs_aux_dir, 'pass3cs', en_fname)
-                cs_fname = os.path.abspath(cs_fname)
-
-                cs_chapter_dir = os.path.dirname(cs_fname)
-                if not os.path.isdir(cs_chapter_dir):
-                    os.makedirs(cs_chapter_dir)
-
-                # Otevřeme nový výstupní soubor.
-                f = open(cs_fname, 'w', encoding='utf-8')
-
-                # Pro informaci vypíšeme relativní jméno originálu (je stejné
-                # jako jméno výstupního souboru, přidáme natvrdo cs/).
-                self.info_files.append('.../pass3cs/' + en_fname)
-
-            # Zapíšeme řádek českého elementu.
-            f.write(cs_element.line)
-
-        # Uzavřeme soubor s poslední částí knihy.
-        f.close()
-
-
     def run(self):
         '''Spouštěč jednotlivých fází parseru.'''
 
         self.writePass3txtFiles()
         self.loadElementLists()
         self.checkStructDiffs()
-        self.splitToFiles()
 
         return '\n\t'.join(self.info_files)

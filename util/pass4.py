@@ -58,30 +58,44 @@ class Parser:
 
     def buildRex(self, lst):
         '''Build a regular expression mathing substrings from the lst.'''
-        
+
         # Build a list of escaped unique substrings from the input list.
-        # The order is not important.
+        # The order is not important now as it must be corrected later.
         lst2 = [re.escape(s) for s in set(lst)]
-        
-        # Join the escaped substrings to form the regular expression 
-        # pattern, build the regular expression, and return it.
-        pat = '|'.join(lst2)
+
+        # Join the escaped substrings to form the regular expression
+        # pattern, build the regular expression, and return it. There could
+        # be longer paterns that contain shorter patterns. The longer patterns
+        # should be matched first. This way, the lst2 must be reverse sorted
+        # by the length of the patterns.
+        pat = '|'.join(sorted(lst2, key=len, reverse=True))
         rex = re.compile(pat)
         return rex
-        
 
-    def checkParaBackticks(self):
+
+    def fixParaBackticks(self):
         '''Kontroluje synchronnost použití zpětných apostrofů v 'para' elementech.
 
            Výsledky zapisuje do pass4backticks.txt.'''
 
-        sync_flag = True  # optimistická inicializace
-        images_fname = os.path.join(self.cs_aux_dir, 'pass4backticks.txt')
-        with open(images_fname, 'w', encoding='utf-8') as f:
+        anomally_cnt = 0  # init -- počet odhalených anomálií
+        btfname = os.path.join(self.cs_aux_dir, 'pass4backticks.txt')
+        btfname_anomally = os.path.join(self.cs_aux_dir, 'pass4backticks_anomally.txt')
+
+        # Při řešení anomálií byly některé případy vyřešeny ručně, ale test
+        # náhrad by odstavec považoval stále za nevyřešený. Proto číslo řádku
+        # s odstavcem musíme přidat mezi přeskakované.
+        cs_skip = set([349, 668, 920, 1006, 1015, 1042, 1050, 1218, 1285, 1449,
+                       1458, 1728, 
+                      ])
+
+        with open(btfname, 'w', encoding='utf-8') as f, \
+             open(btfname_anomally, 'w', encoding='utf-8') as fa:
             for en_el, cs_el in zip(self.en_lst, self.cs_lst):
 
-                # Zpracováváme jen odstavce textu.
-                if en_el.type == 'para':
+                # Zpracováváme jen odstavce textu. Odstavce vykazující známou
+                # anomálii ale přeskakujeme.
+                if en_el.type == 'para' and cs_el.lineno not in cs_skip:
 
                     # Najdeme všechny symboly uzavřené ve zpětných apostrofech
                     # v originálním odstavci.
@@ -105,47 +119,86 @@ class Parser:
                             if s in dlst:
                                 dlst.remove(s)
 
-                        # Není shoda. Shodíme příznak...
-                        sync_flag = False
-
                         # ... a zapíšeme do souboru.
                         f.write('\ncs {} -- en {}/{}:\n'.format(
                                 cs_el.lineno,
                                 en_el.fname[1:2],
                                 en_el.lineno))
 
-                        # Nalezené posloupnosti symbolů.
-                        #f.write('\t' + repr(cslst) + '\n')
-                        #f.write('\t' + repr(enlst) + '\n')
-                        f.write('\t' + repr(dlst) + '\n')
-
-                        # Anglický odstavec.
-                        f.write('\t{}\n'.format(en_el.line.rstrip()))
-
                         # Český odstavec před úpravou.
+                        cspara1 = cs_el.line.rstrip()
+
+                        # Pokud je rozdílový seznam prázdný, nechceme nic
+                        # nahrazovat. Vzhledem k dalšímu způsobu ani nesmíme
+                        # nic nahrazovat, protože by se zkonstruoval nevhodný
+                        # regulární výraz, který by způsobil obalení kde čeho.
+                        # Náhradu tedy provádět nebudeme, ale považujeme to
+                        # stále za anomálii, která musí být zkontrolována.
+                        # V opačném případě vybudujeme regulární výraz
+                        # a provedeme náhradu. Zjišťujeme také, kolik náhrad
+                        # proběhlo.
+                        n = 0            # init
+                        if len(dlst) != 0:
+                            rex = self.buildRex(dlst)
+                            cs_el.line, n = rex.subn(r'`\g<0>`', cs_el.line)
+
+                        # Do souboru f zapisujeme záznam o všech nahrazovaných.
+                        # Rozdílový seznam a jeho délka, anglický odstavec,
+                        # český odstavec před náhradou a po ní.
+                        f.write('\t{}\n'.format(repr(dlst)))
+                        f.write('\t{}\n'.format(en_el.line.rstrip()))
+                        f.write('\t{}\n'.format(cspara1))
                         f.write('\t{}\n'.format(cs_el.line.rstrip()))
 
-                        rex = self.buildRex(dlst)
-                        cs_el.line, n = rex.subn(r'`\g<0>`', cs_el.line)
+                        # Znovu zjistíme počet obalených podřetězců v českém
+                        # odstavci. Znovu vypočítáme rozdílový seznam.
+                        cslst2 = self.rexBackticked.findall(cs_el.line)
+                        dlst2 = enlst[:]   # kopie
+                        for s in cslst2:
+                            if s in dlst2:
+                                dlst2.remove(s)
 
-                        # Projdeme rozdílový seznam dosud neoznačkovaných řetězců
-                        # a jeden po druhém je v řádku obalíme.
-                        if False:
-                            line = cs_el.line
-                            for s in set(dlst):
-                                replacement = '`' + s + '`'
-                                line = line.replace(s, replacement)
-                            cs_el.line = line
+                        # Anomálie nastává, pokud nastává alespoň jeden z případů:
+                        # - liší se množiny podřetězců v originále a v překladu,
+                        # - rozdílový seznam je neprázdný (tj. v překladu nebylo
+                        #   něco obaleno),
+                        # - liší se délky seznamů v originále a v překladu (tj.
+                        #   v překladu bylo obaleno jiné množství podřetězců),
+                        # - počet provedených náhrad je větší než délka původního
+                        #   rozdílového seznamu (může být redundantní vůči ostatním
+                        #   bodům).
+                        if set(enlst) != set(cslst2) or len(dlst2) > 0 \
+                           or len(enlst) != len(cslst2) or len(dlst) != n:
 
-                        # Český odstavec po úpravě.
-                        f.write('\t{}\n'.format(cs_el.line.rstrip()))
+                            # Za neshodu při synchronizaci považujeme pouze
+                            # vznik anomálie -- započítáme další anomálii.
+                            anomally_cnt += 1
 
+                            # Zapíšeme do souboru s anomáliemi.
+                            fa.write('\ncs {} -- en {}/{}:\n'.format(
+                                cs_el.lineno,
+                                en_el.fname[1:2],
+                                en_el.lineno))
+
+                            # Do souboru f zapisujeme záznam o všech nahrazovaných.
+                            # Rozdílový seznam a jeho délka, anglický odstavec,
+                            # český odstavec před náhradou a po ní.
+                            fa.write('\tenlst  = {} {}\n'.format(len(enlst), repr(enlst)))
+                            fa.write('\tcslst  = {} {}\n'.format(len(cslst), repr(cslst)))
+                            fa.write('\tdslst  = {} {}\n'.format(len(dlst), repr(dlst)))
+                            fa.write('\tcslst2 = {} {}\n'.format(len(cslst2), repr(cslst2)))
+                            fa.write('\tdslst2 = {} {}\n'.format(len(dlst2), repr(dlst2)))
+                            fa.write('\tsubn   = {}\n'.format(n))
+                            fa.write('\t{}\n'.format(en_el.line.rstrip()))
+                            fa.write('\t{}\n'.format(cspara1))
+                            fa.write('\t{}\n'.format(cs_el.line.rstrip()))
 
         # Přidáme informaci o synchronnosti použití zpětných apostrofů.
         subdir = os.path.basename(self.cs_aux_dir)        # český výstup
         self.info_files.append(subdir +'/pass4backticks.txt')
-        self.info_files.append(('-'*30) + ' použití zpětných apostrofů se ' +
-                               ('shoduje' if sync_flag else 'NESHODUJE'))
+        self.info_files.append(subdir +'/pass4backticks_anomally.txt')
+        self.info_files.append(('-'*30) + \
+                         ' anomálie u zpětných apostrofů: {}'.format(anomally_cnt))
 
 
     def writePass4txtFile(self):
@@ -161,13 +214,60 @@ class Parser:
         self.info_files.append(subdir +'/pass4.txt')
 
 
+    def splitToFiles(self):
+        '''Jediný vstupní cs soubor do více souborů s cílovou strukturou.
+
+           Využívá se informací z načtených seznamů elementů.
+           '''
+
+        assert len(self.cs_lst) > 0
+        assert len(self.en_lst) > 0
+
+        en_fname = None
+        cs_fname = None
+        f = None
+        for en_element, cs_element in zip(self.en_lst, self.cs_lst):
+            # Při změně souboru originálu uzavřeme původní, zajistíme
+            # existenci cílového adresáře a otevřeme nový výstupní soubor.
+            if en_element.fname != en_fname:
+                # Pokud byl otevřen výstupní soubor, uzavřeme jej.
+                if f is not None:
+                    f.close()
+
+                # Zachytíme jméno anglického originálu a trochu je zneužijeme.
+                # Obsahuje relativní cestu vůči podadresáři "en/" originálu,
+                # takže je přímo připlácneme k "pass3cs/". Dodatečně
+                # oddělíme adresář a zajistíme jeho existenci.
+                en_fname = en_element.fname
+                cs_fname = os.path.join(self.cs_aux_dir, 'pass4cs', en_fname)
+                cs_fname = os.path.abspath(cs_fname)
+
+                cs_chapter_dir = os.path.dirname(cs_fname)
+                if not os.path.isdir(cs_chapter_dir):
+                    os.makedirs(cs_chapter_dir)
+
+                # Otevřeme nový výstupní soubor.
+                f = open(cs_fname, 'w', encoding='utf-8')
+
+                # Pro informaci vypíšeme relativní jméno originálu (je stejné
+                # jako jméno výstupního souboru, přidáme natvrdo cs/).
+                self.info_files.append('.../pass4cs/' + en_fname)
+
+            # Zapíšeme řádek českého elementu.
+            f.write(cs_element.line)
+
+        # Uzavřeme soubor s poslední částí knihy.
+        f.close()
+
+
 
     def run(self):
         '''Spouštěč jednotlivých fází parseru.'''
 
         self.checkImages()
-        self.checkParaBackticks()
+        self.fixParaBackticks()
         self.writePass4txtFile()
+        self.splitToFiles()
 
         return '\n\t'.join(self.info_files)
 

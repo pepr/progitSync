@@ -192,7 +192,7 @@ Nastavení konfiguračních proměnných systému, které ovlivňují jak vzhled
 *	 soubor ~/.gitconfig je specifický pro váš uživatelský účet. Po zadání parametru --global bude Git používat pouze tento soubor;
 *	 konfigurační soubor v adresáři Git (tedy .git/config) jakéhokoli repozitáře, který právě používáte: je specifický pro tento konkrétní repozitář. Každá úroveň je nadřazená hodnotám úrovně předchozí, např. hodnoty v .git/config mají přednost před hodnotami v /etc/gitconfig.
 
-Ve Windows používá Git soubor .gitconfig, který je umístěný v domovském adresáři (u většiny uživatelů C:\Documents and Settings\$USER). Dále se pokusí vyhledat ještě soubor /etc/gitconfig, který je relativní vůči kořenovému adresáři. Ten je umístěn tam, kam jste se rozhodli nainstalovat Git po spuštění instalačního programu.
+Ve Windows používá Git soubor .gitconfig, který je umístěný v adresáři `$HOME` (u většiny uživatelů C:\Documents and Settings\$USER). Dále se pokusí vyhledat ještě soubor /etc/gitconfig, který je relativní vůči kořenovému adresáři. Ten je umístěn tam, kam jste se rozhodli nainstalovat Git po spuštění instalačního programu.
 
 ### Totožnost uživatele ###
 
@@ -232,7 +232,7 @@ Chcete-li zkontrolovat provedené nastavení, použijte příkaz git config --li
 
 Některé klíče se mohou objevit vícekrát, protože Git načítá stejný klíč z různých souborů (např. /etc/gitconfig a ~/.gitconfig). V takovém případě použije Git poslední hodnotu pro každý unikátní klíč, který vidí.
 
-Můžete také zkontrolovat, jakou hodnotu Git uchovává pro konkrétní položku. Zadejte příkaz git config key:
+Můžete také zkontrolovat, jakou hodnotu Git uchovává pro konkrétní položku. Zadejte příkaz git config {key}:
 
 	$ git config user.name
 	Scott Chacon
@@ -288,7 +288,7 @@ Repozitář naklonujete příkazem git clone [url]. Pokud například chcete nak
 
 	$ git clone git://github.com/schacon/grit.git
 
-Tímto příkazem vytvoříte adresář s názvem „grit“, inicializujete v něm adresář .git, stáhnete všechna data pro tento repozitář a systém rovněž stáhne pracovní kopii nejnovější verze. Přejdete-li do nového adresáře grit, uvidíte v něm soubory projektu připravené ke zpracování nebo jinému použití. Pokud chcete naklonovat repozitář do adresáře pojmenovaného jinak než „grit“, můžete název zadat jako další parametr na příkazovém řádku:
+Tímto příkazem vytvoříte adresář s názvem `grit`, inicializujete v něm adresář `.git`, stáhnete všechna data pro tento repozitář a systém rovněž stáhne pracovní kopii nejnovější verze. Přejdete-li do nového adresáře `grit`, uvidíte v něm soubory projektu připravené ke zpracování nebo jinému použití. Pokud chcete naklonovat repozitář do adresáře pojmenovaného jinak než grit, můžete název zadat jako další parametr na příkazovém řádku:
 
 	$ git clone git://github.com/schacon/grit.git mygrit
 
@@ -328,7 +328,7 @@ To znamená, že žádné soubory nejsou připraveny k zapsání a pracovní adr
 	#	README
 	nothing added to commit but untracked files present (use "git add" to track)
 
-Vidíte, že nový soubor README není sledován, protože je ve výpisu stavů uveden v části „Untracked files“. Není-li soubor sledován, obecně to znamená, že Git ví o souboru, který nebyl v předchozím snímku (v předchozí revizi), a nezařadí ho ani do dalších snímků, dokud mu k tomu nedáte výslovný příkaz. Díky tomu se nemůže stát, že budou do revizí nedopatřením zahrnuty vygenerované binární soubory nebo jiné soubory, které si nepřejete zahrnout. Vy si ale přejete soubor README zahrnout, a proto spusťme jeho sledování.
+Vidíte, že nový soubor `README` není sledován, protože je ve výpisu stavů uveden v části „Untracked files“. Není-li soubor sledován, obecně to znamená, že Git ví o souboru, který nebyl v předchozím snímku (v předchozí revizi), a nezařadí ho ani do dalších snímků, dokud mu k tomu nedáte výslovný příkaz. Díky tomu se nemůže stát, že budou do revizí nedopatřením zahrnuty vygenerované binární soubory nebo jiné soubory, které si nepřejete zahrnout. Vy si ale přejete soubor README zahrnout, a proto spusťme jeho sledování.
 
 ### Sledování nových souborů ###
 
@@ -346,7 +346,7 @@ Když nyní znovu provedete příkaz k výpisu stavů (git status), uvidíte, ž
 	#	new file:   README
 	#
 
-Můžeme říci, že je připraven k zapsání, protože je uveden v části „Changes to be committed“, tedy „Změny k zapsání“. Pokud v tomto okamžiku zapíšete revizi, v historickém snímku bude verze souboru z okamžiku, kdy jste spustili příkaz git add. Možná si vzpomínáte, že když jste před časem spustili příkaz git init, provedli jste potom příkaz git add (soubor). Příkaz jste zadávali kvůli zahájení sledování souborů ve vašem adresáři. Příkaz git add je doplněn uvedením cesty buď k souboru, nebo k adresáři. Pokud se jedná o adresář, příkaz přidá rekurzivně všechny soubory v tomto adresáři.
+Můžeme říci, že je připraven k zapsání, protože je uveden v části „Changes to be committed“, tedy „Změny k zapsání“. Pokud v tomto okamžiku zapíšete revizi, v historickém snímku bude verze souboru z okamžiku, kdy jste spustili příkaz `git add`. Možná si vzpomínáte, že když jste před časem spustili příkaz `git init`, provedli jste potom příkaz `git add (soubory)`. Příkaz jste zadávali kvůli zahájení sledování souborů ve vašem adresáři. Příkaz `git add` je doplněn uvedením cesty buď k souboru, nebo k adresáři. Pokud se jedná o adresář, příkaz přidá rekurzivně všechny soubory v tomto adresáři.
 
 ### Připravení změněných souborů ###
 
@@ -423,7 +423,7 @@ Toto jsou pravidla pro masky, které můžete použít v souboru .gitignore:
 *	Chcete-li označit adresář, můžete masku zakončit lomítkem (/).
 *	Pokud řádek začíná vykřičníkem (!), maska na něm je negována.
 
-Masky souborů jsou jako zjednodušené regulární výrazy, které používá shell. Hvězdička (*) označuje žádný nebo více znaků; [abc] označuje jakýkoli znak uvedený v závorkách (v tomto případě a, b nebo c); otazník (?) označuje jeden znak; znaky v závorkách oddělené pomlčkou ([0-9]) označují jakýkoli znak v daném rozmezí (v našem případě 0 až 9).
+Masky souborů jsou jako zjednodušené regulární výrazy, které používá shell. Hvězdička (`*`) označuje žádný nebo více znaků; `[abc]` označuje jakýkoli znak uvedený v závorkách (v tomto případě `a`, `b` nebo `c`); otazník (`?`) označuje jeden znak; znaky v závorkách oddělené pomlčkou (`[0-9]`) označují jakýkoli znak v daném rozmezí (v našem případě 0 až 9).
 
 Tady je další příklad souboru .gitignore:
 
@@ -474,7 +474,7 @@ Chcete-li vidět, co jste změnili, avšak ještě nepřipravili k zapsání, za
 
 Tento příkaz srovná obsah vašeho pracovního adresáře a oblasti připravených změn. Výsledek vám ukáže provedené změny, které jste dosud nepřipravili k zapsání.
 
-Chcete-li vidět, co jste připravili a co bude součástí příští revize, použijte a co bude součástí příští revize, použijte příkaz diff --cached. (Ve verzích Git 1.6.1 a novějších můžete použít také příkaz git diff –-staged, který se možná snáze pamatuje.) Tento příkaz srovná připravené změny s poslední revizí:
+Chcete-li vidět, co jste připravili a co bude součástí příští revize, použijte a co bude součástí příští revize, použijte příkaz `git diff --cached`. (Ve verzích Git 1.6.1 a novějších můžete použít také příkaz `git diff --staged`, který se možná snáze pamatuje.) Tento příkaz srovná připravené změny s poslední revizí:
 
 	$ git diff --cached
 	diff --git a/README b/README
@@ -665,7 +665,7 @@ Výsledek je však stejný, jako byste provedli následující:
 	$ git rm README.txt
 	$ git add README
 
-Git implicitně zjistí, že se jedná o přejmenování, a proto nehraje roli, zda přejmenujete soubor tímto způsobem, nebo pomocí příkazu mv. Jediným skutečným rozdílem je, že mv je jediný příkaz, zatímco u druhého způsobu potřebujete příkazy tři – příkaz mv je pouze zjednodušením. Důležitější je, že můžete použít jakýkoli způsob přejmenování a příkaz add/rm provést později, před zapsáním revize.
+Git implicitně zjistí, že se jedná o přejmenování, a proto nehraje roli, zda přejmenujete soubor tímto způsobem, nebo pomocí příkazu `mv`. Jediným skutečným rozdílem je, že `mv` je jediný příkaz, zatímco u druhého způsobu potřebujete příkazy tři — příkaz `mv` je pouze zjednodušením. Důležitější je, že můžete použít jakýkoli způsob přejmenování a příkaz add/rm provést později, před zapsáním revize.
 
 ## Zobrazení historie revizí ##
 
@@ -838,7 +838,7 @@ To je jen několik základních parametrů k formátování výstupu pro příka
 
 ### Omezení výstupu logu ###
 
-Kromě parametrů k formátování výstupu lze pro git log použít také celou řadu omezujících parametrů, tj. takových, které zobrazí jen definovanou podmnožinu revizí. My už jsme se s jedním takovým parametrem setkali. Byl to parametr -2, který zobrazí pouze dvě poslední revize. Obecně lze tedy říci, že můžete zadat parametr -<n>, kde n je libovolné celé číslo pro zobrazení posledních n revizí. Je však třeba dodat, že tuto funkci asi nebudete využívat příliš často. Git totiž standardně redukuje všechny výpisy stránkovačem, a proto se vždy najednou zobrazí pouze jedna stránka logu.
+Kromě parametrů k formátování výstupu lze pro `git log` použít také celou řadu omezujících parametrů, tj. takových, které zobrazí jen definovanou podmnožinu revizí. My už jsme se s jedním takovým parametrem setkali. Byl to parametr `-2`, který zobrazí pouze dvě poslední revize. Obecně lze tedy říci, že můžete zadat parametr `-<n>`, kde `n` je libovolné celé číslo pro zobrazení posledních `n` revizí. Je však třeba dodat, že tuto funkci asi nebudete využívat příliš často. Git totiž standardně redukuje všechny výpisy stránkovačem, a proto se vždy najednou zobrazí pouze jedna stránka logu.
 
 Velmi užitečné jsou naproti tomu časově omezující parametry, jako --since a --until („od“ a „do“). Například tento příkaz zobrazí seznam všech revizí pořízených za poslední dva týdny (2 weeks):
 
@@ -917,7 +917,7 @@ Následující dvě části popisují, jak vrátit změny provedené v oblasti p
 	#       modified:   benchmarks.rb
 	#
 
-Přímo pod nadpisem „Changes to be committed“ (Změny k zapsání) se říká: pro návrat z oblasti připravených změn použijte příkaz git reset HEAD <soubor>... Budeme se tedy řídit touto radou a vrátíme soubor benchmarks.rb z oblasti připravených změn:
+Přímo pod nadpisem „Changes to be committed“ (Změny k zapsání) se říká: pro návrat z oblasti připravených změn použijte příkaz `git reset HEAD <soubor>...` Budeme se tedy řídit touto radou a vrátíme soubor `benchmarks.rb` z oblasti připravených změn:
 
 	$ git reset HEAD benchmarks.rb
 	benchmarks.rb: locally modified
@@ -1003,7 +1003,7 @@ To znamená, že můžeme velmi snadno stáhnout příspěvky od kteréhokoli z 
 
 ### Přidávání vzdálených repozitářů ###
 
-V předchozích částech už jsem se letmo dotkl přidávání vzdálených repozitářů. V této části se dostávám k tomu, jak přesně při přidávání postupovat. Chcete-li přidat nový vzdálený repozitář Git ve formě zkráceného názvu, na nějž lze snadno odkazovat, spusťte příkaz git remote add [zkrácený název] [url]:
+V předchozích částech už jsem se letmo dotkl přidávání vzdálených repozitářů. V této části se dostávám k tomu, jak přesně při přidávání postupovat. Chcete-li přidat nový vzdálený repozitář Git ve formě zkráceného názvu, na nějž lze snadno odkazovat, spusťte příkaz `git remote add [zkrácený název] [url]`:
 
 	$ git remote
 	origin
@@ -1012,7 +1012,7 @@ V předchozích částech už jsem se letmo dotkl přidávání vzdálených rep
 	origin	git://github.com/schacon/ticgit.git
 	pb	git://github.com/paulboone/ticgit.git
 
-Řetězec pb nyní můžete používat na příkazovém řádku místo kompletní adresy URL. Pokud například chcete vyzvednout (fetch) všechny informace, které má Paul, ale vy je ještě nemáte ve svém repozitáři, můžete spustit příkaz git fetch pb:
+Řetězec `pb` nyní můžete používat na příkazovém řádku místo kompletní adresy URL. Pokud například chcete vyzvednout (fetch) všechny informace, které má Paul, ale vy je ještě nemáte ve svém repozitáři, můžete spustit příkaz `git fetch pb`:
 
 	$ git fetch pb
 	remote: Counting objects: 58, done.
@@ -1039,7 +1039,7 @@ Pokud máte větev nastavenou ke sledování vzdálené větve (více informací
 
 ### Posílání do vzdálených repozitářů ###
 
-Pokud se váš projekt nachází ve fázi, kdy ho chcete sdílet s ostatními, můžete ho odeslat (push) na vzdálený server. Příkaz pro tuto akci je jednoduchý: git push [název vzdáleného repozitáře] [název větve]. Pokud chcete poslat svou hlavní větev na server origin (i tady platí, že proces klonování vám nastaví názvy „master“ i „origin“ automaticky), můžete k odeslání své práce na server použít tento příkaz:
+Pokud se váš projekt nachází ve fázi, kdy ho chcete sdílet s ostatními, můžete ho odeslat (push) na vzdálený server. Příkaz pro tuto akci je jednoduchý: `git push [název vzdáleného repozitáře] [název větve]`. Pokud chcete poslat svou hlavní větev na server `origin` (i tady platí, že proces klonování vám nastaví názvy `master` i `origin` automaticky), můžete k odeslání své práce na server použít tento příkaz:
 
 	$ git push origin master
 
@@ -1047,7 +1047,7 @@ Tento příkaz bude funkční, pouze pokud jste klonovali ze serveru, k němuž 
 
 ### Prohlížení vzdálených repozitářů ###
 
-Jestliže chcete získat více informací o konkrétním vzdáleném repozitáři, můžete použít příkaz git remote show [název vzdáleného repozitáře]. Pokud použijete tento příkaz v kombinaci s konkrétním zkráceným názvem (např. origin), bude výstup vypadat zhruba následovně:
+Jestliže chcete získat více informací o konkrétním vzdáleném repozitáři, můžete použít příkaz `git remote show [název vzdáleného repozitáře]`. Pokud použijete tento příkaz v kombinaci s konkrétním zkráceným názvem (např. `origin`), bude výstup vypadat zhruba následovně:
 
 	$ git remote show origin
 	* remote origin
@@ -1215,7 +1215,7 @@ Pokud spustíte pro značku příkaz git show tentokrát, nezobrazí se k ní ž
 
 ### Ověřování značek ###
 
-Chcete-li ověřit podepsanou značku, použijte příkaz git tag -v [název značky]. Tento příkaz využívá k ověření podpisu program GPG. Aby příkaz správně fungoval, musíte mít ve své klíčence veřejný klíč podepisujícího (signer).
+Chcete-li ověřit podepsanou značku, použijte příkaz `git tag -v [název značky]`. Tento příkaz využívá k ověření podpisu program GPG. Aby příkaz správně fungoval, musíte mít ve své klíčence veřejný klíč podepisujícího (signer).
 
 	$ git tag -v v1.4.2.1
 	object 883653babd8ee7ea23e6a5c392bb739348b1eb61
@@ -1253,7 +1253,7 @@ Revizi lze označit značkou i poté, co jste ji už opustili. Předpokládejme,
 	964f16d36dfccde844893cac5b347e7b3d44abbc commit the todo
 	8a5cbc430f1a9c3d00faaeffd07798508422908a updated readme
 
-Nyní předpokládejme, že jste zapomněli označit projekt ve verzi 1.2, která byla obsažena v revizi označené jako „updated rakefile“. Značku můžete přidat dodatečně. Pro označení revize značkou zadejte na konec příkazu kontrolní součet revize (nebo jeho část):
+Nyní předpokládejme, že jste projektu zapomněli přidělit značku `v1.2`, která byla obsažena v revizi označené jako „updated rakefile“. Značku můžete přidat dodatečně. Pro označení revize značkou zadejte na konec příkazu kontrolní součet revize (nebo jeho část):
 
 	$ git tag -a v1.2 -m 'version 1.2' 9fceb02
 
@@ -1282,7 +1282,7 @@ Můžete se podívat, že jste revizi označil:
 
 ### Sdílení značek ###
 
-Příkaz git push nepřenáší značky na vzdálené servery automaticky. Pokud jste vytvořili značku, budete ji muset na sdílený server poslat ručně. Tento proces je stejný jako sdílení vzdálených větví. Spusťte příkaz git push origin [název značky].
+Příkaz `git push` nepřenáší značky na vzdálené servery automaticky. Pokud jste vytvořili značku, budete ji muset na sdílený server poslat ručně. Tento proces je stejný jako sdílení vzdálených větví. Spusťte příkaz `git push origin [název značky]`.
 
 	$ git push origin v1.5
 	Counting objects: 50, done.
@@ -1446,7 +1446,7 @@ Obrázek 3-7 ukazuje výsledek.
 Insert 18333fig0307.png
 Obrázek 3-7. Větev, na niž ukazuje soubor HEAD, se posouvá vpřed s každou revizí.
 
-Výsledek je zajímavý z toho důvodu, že se větev testing posunula vpřed, zatímco hlavní větev stále ukazuje na revizi, na níž jste se nacházeli v okamžiku, kdy jste spustili příkaz git checkout a přepnuli tím větve. Přepněme zpět na hlavní větev.
+Výsledek je zajímavý z toho důvodu, že se větev `testing` posunula vpřed, zatímco větev `master` stále ukazuje na revizi, na níž jste se nacházeli v okamžiku, kdy jste spustili příkaz `git checkout` a přepnuli tím větve. Přepněme zpět na větev `master`.
 
 	$ git checkout master
 
@@ -1455,7 +1455,7 @@ Výsledek ukazuje obrázek 3-8.
 Insert 18333fig0308.png
 Obrázek 3-8. Ukazatel HEAD se po příkazu git checkout přesune na jinou větev.
 
-Tento příkaz provedl dvě věci. Přemístil ukazatel HEAD zpět, takže nyní ukazuje na hlavní větev, a vrátil soubory ve vašem pracovním adresáři zpět ke snímku, na nějž hlavní větev ukazuje. To také znamená, že změny, které od teď provedete, se odštěpí od starší verze projektu. V podstatě dočasně vrátíte všechny změny, které jste provedli ve větvi testing, a vydáte se jiným směrem.
+Tento příkaz provedl dvě věci. Přemístil ukazatel `HEAD` zpět, takže nyní ukazuje na větev `master`, a vrátil soubory ve vašem pracovním adresáři zpět ke snímku, na nějž větev `master` ukazuje. To také znamená, že změny, které od teď provedete, se odštěpí od starší verze projektu. V podstatě dočasně vrátíte všechny změny, které jste provedli ve větvi testing, a vydáte se jiným směrem.
 
 Proveďme pár změn a zapišme další revizi:
 
@@ -1572,11 +1572,11 @@ Nyní můžete přepnout zpět na větev s rozdělanou prací a pokračovat na c
 Insert 18333fig0315.png
 Obrázek 3-15. Větev iss53 může nezávisle postupovat vpřed.
 
-Za zmínku stojí, že práce, kterou jste udělali ve větvi hotfix, není obsažena v souborech ve větvi iss53. Pokud potřebujete tyto změny do větve natáhnout, můžete začlenit větev master do větve iss53 – použijte příkaz git merge master. Druhou možností je s integrací změn vyčkat a provést ji až ve chvíli, kdy budete chtít větev iss53 natáhnout zpět do větve.
+Za zmínku stojí, že práce, kterou jste udělali ve větvi `hotfix`, není obsažena v souborech ve větvi `iss53`. Pokud potřebujete tyto změny do větve natáhnout, můžete začlenit větev `master` do větve `iss53` – použijte příkaz `git merge master`. Druhou možností je s integrací změn vyčkat a provést ji až ve chvíli, kdy budete chtít větev `iss53` natáhnout zpět do větve `master`.
 
 ### Základní slučování ###
 
-Předpokládejme, že jste dokončili práci na chybě č. 53 a nyní byste ji rádi začlenili do hlavní větve. Učiníte tak začleněním větve iss53, které bude probíhat velmi podobně jako předchozí začlenění větve hotfix. Jediné, co pro to musíte udělat, je přepnout na větev, do níž chcete tuto větev začlenit, a spustit příkaz git merge.
+Předpokládejme, že jste dokončili práci na chybě č. 53 a nyní byste ji rádi začlenili do větve `master`. Učiníte tak začleněním větve `iss53`, které bude probíhat velmi podobně jako předchozí začlenění větve `hotfix`. Jediné, co pro to musíte udělat, je přepnout na větev, do níž chcete tuto větev začlenit, a spustit příkaz `git merge`.
 
 	$ git checkout master
 	$ git merge iss53
@@ -1715,7 +1715,7 @@ Nyní se zobrazila jiná větev. Jelikož obsahuje práci, která ještě nebyla
 	error: The branch 'testing' is not an ancestor of your current HEAD.
 	If you are sure you want to delete it, run 'git branch -D testing'.
 
-Pokud jste si jistí, že chcete větev smazat, spusťte příkaz git branch -D testing. Pokud chcete větev skutečně odstranit a zahodit práci, kterou obsahuje, můžete to provést pomocí parametru -D.
+Pokud chcete větev skutečně odstranit a zahodit práci, kterou obsahuje, můžete si to vynutit parametrem `-D` (jak napovídá užitečná zpráva pod řádkem s chybovým hlášením).
 
 ## Možnosti při práci s větvemi ##
 
@@ -1725,7 +1725,7 @@ Teď, když jste absolvovali základní seznámení s větvemi a jejich slučov�
 
 Vzhledem k tomu, že Git používá jednoduché třícestné slučování, je velmi snadné začleňovat jednu větev do druhé i několikrát v rámci dlouhého časového intervalu. Můžete tak mít několik větví, které jsou stále otevřené a které používáte pro různé fáze vývojového cyklu. Pravidelně můžete začleňovat práci z jedné větve do ostatních.
 
-Mnoho vývojářů systému Git používá pracovní postup, při němž je tato metoda zcela ideální. V hlavní větvi mají pouze kód, který je stoprocentně stabilní, třeba jen kód, který byl nebo bude součástí vydání. Kromě ní mají další paralelní větev, pojmenovanou např. develop nebo next, v níž skutečně pracují nebo testují stabilitu kódu. Tato větev nemusí být nutně stabilní, ale jakmile se dostane do stabilního stavu, může být začleněna do hlavní větve. Používá se k natahování tematických větví (těch dočasných, jako byla vaše větev iss53) ve chvíli, kdy je k tomu vše připraveno a nehrozí, že práce neprojde testy nebo bude způsobovat chyby.
+Mnoho vývojářů systému Git používá pracovní postup, při němž je tato metoda zcela ideální. Ve větvi `master` mají pouze kód, který je stoprocentně stabilní — třeba jen kód, který byl nebo bude součástí vydání. Kromě ní mají další paralelní větev, pojmenovanou `develop` nebo `next`, v níž skutečně pracují nebo testují stabilitu kódu. Tato větev nemusí být nutně stabilní, ale jakmile se dostane do stabilního stavu, může být začleněna do větve `master`. Používá se k natahování tematických větví (těch dočasných, jako byla vaše větev `iss53`) ve chvíli, kdy je k tomu vše připraveno a nehrozí, že práce neprojde testy nebo bude způsobovat chyby.
 
 Ve skutečnosti hovoříme o ukazatelích pohybujících se vzhůru po linii revizí, které zapisujete. Stabilní větve leží v linii historie revizí níže a nové, neověřené větve se nacházejí nad nimi (viz obrázek 3-18).
 
