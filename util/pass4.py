@@ -86,7 +86,9 @@ class Parser:
         # náhrad by odstavec považoval stále za nevyřešený. Proto číslo řádku
         # s odstavcem musíme přidat mezi přeskakované.
         cs_skip = set([349, 668, 920, 1006, 1015, 1042, 1050, 1218, 1285, 1449,
-                       1458, 1728, 
+                       1458, 1728, 1765, 1767, 1796, 1806, 1832, 1848, 1854, 
+                       1899, 1908, 1921, 2158, 2304, 2504, 2958, 3782, 5347,
+                       5913, 6061, 6114, 6218, 6845, 6849, 
                       ])
 
         with open(btfname, 'w', encoding='utf-8') as f, \
