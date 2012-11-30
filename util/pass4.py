@@ -216,7 +216,7 @@ class Parser:
         self.info_files.append(subdir +'/pass4.txt')
 
 
-    def splitToFiles(self):
+    def splitToChapterFiles(self):
         '''Jediný vstupní cs soubor do více souborů s cílovou strukturou.
 
            Využívá se informací z načtených seznamů elementů.
@@ -269,7 +269,7 @@ class Parser:
         self.checkImages()
         self.fixParaBackticks()
         self.writePass4txtFile()
-        self.splitToFiles()
+        self.splitToChapterFiles()
 
         return '\n\t'.join(self.info_files)
 
