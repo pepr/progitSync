@@ -292,7 +292,7 @@ Tímto příkazem vytvoříte adresář s názvem `grit`, inicializujete v něm 
 
 	$ git clone git://github.com/schacon/grit.git mygrit
 
-Tento příkaz učiní totéž co příkaz předchozí, jen cílový adresář se bude jmenovat „mygrit“.
+Tento příkaz učiní totéž co příkaz předchozí, jen cílový adresář se bude jmenovat mygrit.
 
 Git nabízí celou řadu různých přenosových protokolů. Předchozí příklad využívá protokol git://, můžete se ale setkat také s protokolem http(s):// nebo user@server:/path.git, který používá přenosový protokol SSH. V kapitole 4 budou představeny všechny dostupné parametry pro nastavení serveru pro přístup do repozitáře Git, včetně jejich předností a nevýhod.
 
@@ -874,7 +874,7 @@ Z téměř 20 000 revizí v historii zdrojového kódu Git zobrazí tento přík
 
 ### Grafické uživatelské rozhraní pro procházení historie ###
 
-Chcete-li použít graficky výrazněji zpracovaný nástroj k procházení historie revizí, možná oceníte Tcl/Tk program nazvaný „gitk“, který je distribuován spolu se systémem Git. Gitk je v zásadě grafická verze příkazu git log a umožňuje téměř všechny možnosti filtrování jako git log. Pokud do příkazového řádku ve svém projektu zadáte příkaz gitk, otevře se okno podobné jako na obrázku 2-2.
+Chcete-li použít graficky výrazněji zpracovaný nástroj k procházení historie revizí, možná oceníte Tcl/Tk program nazvaný gitk, který je distribuován spolu se systémem Git. Gitk je v zásadě grafická verze příkazu git log a umožňuje téměř všechny možnosti filtrování jako git log. Pokud do příkazového řádku ve svém projektu zadáte příkaz gitk, otevře se okno podobné jako na obrázku 2-2.
 
 Insert 18333fig0202.png
 Obrázek 2-2. Graficky zpracovaná historie v nástroji „gitk“
@@ -1327,7 +1327,7 @@ Při zadávání příkazu Git stiskněte klávesu Tab a měla by se objevit nab
 	$ git co<tab><tab>
 	commit config
 
-Pokud zadáte – stejně jako v našem příkladu nahoře – „git co“ a dvakrát stisknete klávesu Tab, systém vám navrhne „commit“ a „config“. Doplníte-li ještě m<tab>, skript automaticky dokončí příkaz na git commit.
+Pokud zadáte – stejně jako v našem příkladu nahoře – git co a dvakrát stisknete klávesu Tab, systém vám navrhne „commit“ a „config“. Doplníte-li ještě m<tab>, skript automaticky dokončí příkaz na git commit.
 
 Automatické dokončování pravděpodobně více využijete v případě parametrů. Pokud například zadáváte příkaz git log a nemůžete si vzpomenout na některý z parametrů, můžete zadat jeho začátek a stisknout klávesu Tab, aby vám systém navrhl možná dokončení.
 

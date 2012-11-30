@@ -86,9 +86,9 @@ class Parser:
         # náhrad by odstavec považoval stále za nevyřešený. Proto číslo řádku
         # s odstavcem musíme přidat mezi přeskakované.
         cs_skip = set([349, 668, 920, 1006, 1015, 1042, 1050, 1218, 1285, 1449,
-                       1458, 1728, 1765, 1767, 1796, 1806, 1832, 1848, 1854, 
+                       1458, 1728, 1765, 1767, 1796, 1806, 1832, 1848, 1854,
                        1899, 1908, 1921, 2158, 2304, 2504, 2958, 3782, 5347,
-                       5913, 6061, 6114, 6218, 6845, 6849, 
+                       5913, 6061, 6114, 6218, 6845, 6849,
                       ])
 
         with open(btfname, 'w', encoding='utf-8') as f, \
@@ -203,6 +203,81 @@ class Parser:
                          ' anomálie u zpětných apostrofů: {}'.format(anomally_cnt))
 
 
+    def reportBadDoubleQuotes(self):
+        '''Kontroluje použití zprávných uvozovek v českých elementech.
+
+           V 'para' elementech musí být „takové“, v 'code' elementech
+           zase "takové" a v ostatních elementech uvidíme.
+
+           Výsledky zapisuje do pass4dquotes.txt.'''
+
+        cnt = 0         # init -- počet odhalených chyb
+        fname = os.path.join(self.cs_aux_dir, 'pass4dquotes.txt')
+
+        with open(fname, 'w', encoding='utf-8') as f:
+
+            # Regulární výraz pro nevhodné uvozovky v odstavcích.
+            rexBadParaQuotes = re.compile(r'["”]')  # české musí být „takhle“
+            rexBadCodeQuotes = re.compile(r'[„“”]')  # české musí být „takhle“
+
+            for en_el, cs_el in zip(self.en_lst, self.cs_lst):
+
+                # Zpracováváme jen odstavce textu.
+                if cs_el.type in ('para', 'li', 'uli', 'imgcaption', 'title'):
+
+                    if rexBadParaQuotes.search(cs_el.line) is not None:
+
+                        # Našla se nevhodná uvozovka. Započítáme ji
+                        # a zapíšeme do souboru.
+                        cnt += 1
+
+                        f.write('\ncs {} -- en {}/{}, {}:\n'.format(
+                                cs_el.lineno,
+                                en_el.fname[1:2],
+                                en_el.lineno,
+                                repr(cs_el.type)))
+
+                        f.write('\t{}\n'.format(en_el.line.rstrip()))
+                        f.write('\t{}\n'.format(cs_el.line.rstrip()))
+
+                elif cs_el.type == 'code':
+
+                    if rexBadCodeQuotes.search(cs_el.line) is not None:
+
+                        # Našla se nevhodná uvozovka. Započítáme ji
+                        # a zapíšeme do souboru.
+                        cnt += 1
+
+                        f.write('\ncs {} -- en {}/{}, {}:\n'.format(
+                                cs_el.lineno,
+                                en_el.fname[1:2],
+                                en_el.lineno,
+                                repr(cs_el.type)))
+
+                        f.write('\t{}\n'.format(en_el.line.rstrip()))
+                        f.write('\t{}\n'.format(cs_el.line.rstrip()))
+
+                elif cs_el.type not in ('empty', 'img'):
+                        # Neznámý typ elementu.
+                        cnt += 1
+
+                        f.write('\ncs {} -- en {}/{}, {} -- neznámý typ:\n'.format(
+                                cs_el.lineno,
+                                en_el.fname[1:2],
+                                en_el.lineno,
+                                repr(cs_el.type)))
+
+                        f.write('\t{}\n'.format(en_el.line.rstrip()))
+                        f.write('\t{}\n'.format(cs_el.line.rstrip()))
+
+
+        # Přidáme informaci o synchronnosti použití zpětných apostrofů.
+        subdir = os.path.basename(self.cs_aux_dir)        # český výstup
+        self.info_files.append(subdir +'/pass4dquotes.txt')
+        self.info_files.append(('-'*30) + \
+               ' elementy s chybnými uvozovkami: {}'.format(cnt))
+
+
     def writePass4txtFile(self):
         ''' Zapíše strojově modifikovaný soubor do pass4.txt.'''
 
@@ -268,6 +343,7 @@ class Parser:
 
         self.checkImages()
         self.fixParaBackticks()
+        self.reportBadDoubleQuotes()
         self.writePass4txtFile()
         self.splitToChapterFiles()
 
