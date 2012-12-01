@@ -278,6 +278,59 @@ class Parser:
                ' elementy s chybnými uvozovkami: {}'.format(cnt))
 
 
+    def reportEmAndStrong(self):
+        '''Sbírá odstavce s *emphasize* a **strong** vyznačením.
+
+           Výsledky zapisuje do pass4em_strong.txt.'''
+
+        cnt = 0         # init -- počet odhalených chyb
+        fname = os.path.join(self.cs_aux_dir, 'pass4em_strong.txt')
+
+        with open(fname, 'w', encoding='utf-8') as f:
+
+            # Regulární výraz pro nevhodné uvozovky v odstavcích.
+            rexEmStrong = re.compile(r'\*{1,2}(\S.*?\S?)\*{1,2}')
+
+            for en_el, cs_el in zip(self.en_lst, self.cs_lst):
+
+                # Zpracováváme jen odstavce textu.
+                if cs_el.type in ('para', 'li', 'uli', 'imgcaption', 'title'):
+
+                    if rexEmStrong.search(cs_el.line) is not None:
+
+                        # Našlo se vyznačení.
+                        cnt += 1
+
+                        f.write('\ncs {} -- en {}/{}, {}:\n'.format(
+                                cs_el.lineno,
+                                en_el.fname[1:2],
+                                en_el.lineno,
+                                repr(cs_el.type)))
+
+                        f.write('\t{}\n'.format(en_el.line.rstrip()))
+                        f.write('\t{}\n'.format(cs_el.line.rstrip()))
+
+                elif cs_el.type not in ('empty', 'img', 'code'):
+                        # Neznámý typ elementu.
+                        cnt += 1
+
+                        f.write('\ncs {} -- en {}/{}, {} -- neznámý typ:\n'.format(
+                                cs_el.lineno,
+                                en_el.fname[1:2],
+                                en_el.lineno,
+                                repr(cs_el.type)))
+
+                        f.write('\t{}\n'.format(en_el.line.rstrip()))
+                        f.write('\t{}\n'.format(cs_el.line.rstrip()))
+
+
+        # Přidáme informaci o synchronnosti použití zpětných apostrofů.
+        subdir = os.path.basename(self.cs_aux_dir)        # český výstup
+        self.info_files.append(subdir +'/pass4em_strong.txt')
+        self.info_files.append(('-'*30) + \
+               ' elementy s *em* a **strong**: {}'.format(cnt))
+
+
     def writePass4txtFile(self):
         ''' Zapíše strojově modifikovaný soubor do pass4.txt.'''
 
@@ -344,6 +397,7 @@ class Parser:
         self.checkImages()
         self.fixParaBackticks()
         self.reportBadDoubleQuotes()
+        self.reportEmAndStrong()
         self.writePass4txtFile()
         self.splitToChapterFiles()
 
