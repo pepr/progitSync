@@ -62,13 +62,13 @@ class Parser:
                       subdir +'/pass1.txt']
 
         with open(os.path.join(self.cs_aux_dir, 'czTOC1.txt'), 'w',
-                  encoding='utf-8') as ftoc,                            \
+                  encoding='utf-8', newline='\n') as ftoc,              \
              open(os.path.join(self.cs_aux_dir, 'PageHeaders.txt'), 'w',
-                  encoding='utf-8') as fph,                             \
+                  encoding='utf-8', newline='\n') as fph,               \
              open(os.path.join(self.cs_aux_dir, 'ignored.txt'), 'w',
-                  encoding='utf-8') as fignored,                        \
+                  encoding='utf-8', newline='\n') as fignored,          \
              open(os.path.join(self.cs_aux_dir, 'pass1.txt'), 'w',
-                  encoding='utf-8') as fout,                            \
+                  encoding='utf-8', newline='\n') as fout,              \
              open(self.fname, encoding='utf-8') as fin:
 
             status = 0

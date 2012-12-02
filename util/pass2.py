@@ -221,7 +221,8 @@ class Parser:
 
 
     def run(self):
-        self.fout = open(os.path.join(self.aux_dir, 'pass2.txt'), 'w', encoding='utf-8')
+        self.fout = open(os.path.join(self.aux_dir, 'pass2.txt'), 'w', 
+                         encoding='utf-8', newline='\n')
 
         with open(self.fname_in, encoding='utf-8') as fin:
 

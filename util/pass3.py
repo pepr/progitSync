@@ -22,7 +22,8 @@ class Parser:
     def writePass3txtFiles(self):
         # Kopie českého vstupu do jednoho souboru. Při tomto průchodu
         # pochází z jednoho souboru, takže jméno souboru vynecháme.
-        with open(os.path.join(self.cs_aux_dir, 'pass3.txt'), 'w', encoding='utf-8') as fout:
+        with open(os.path.join(self.cs_aux_dir, 'pass3.txt'), 'w',
+                  encoding='utf-8', newline='\n') as fout:
             for fname, lineno, line in gen.sourceFileLines(self.cs_name_in):
                 fout.write('{:4d}:\t{}'.format(lineno, line))
 
@@ -30,7 +31,7 @@ class Parser:
         # v dlouhých řádcích nebudeme vypisovat jméno souboru, ale
         # jen číslo kapitoly (jeden znak relativní cesty).
         with open(os.path.join(self.en_aux_dir, 'pass3.txt'), 'w',
-                  encoding='utf-8') as fout:
+                  encoding='utf-8', newline='\n') as fout:
             for fname, lineno, line in gen.sourceFileLines(self.en_name_in):
                 fout.write('{}/{}:\t{}'.format(fname[1:2], lineno, line))
 
@@ -57,9 +58,9 @@ class Parser:
         cs_skip = set(range(4137, 4154))
         self.cs_lst = []
         with open(os.path.join(self.cs_aux_dir, 'pass3elem.txt'), 'w',
-                  encoding='utf-8') as fout, \
+                  encoding='utf-8', newline='\n') as fout, \
              open(os.path.join(self.cs_aux_dir, 'pass3extra_lines.txt'), 'w',
-                  encoding='utf-8') as foutextra:
+                  encoding='utf-8', newline='\n') as foutextra:
             for relname, lineno, line in gen.sourceFileLines(self.cs_name_in):
                 elem = docelement.Element(relname, lineno, line)
                 if lineno in cs_skip:
@@ -78,7 +79,7 @@ class Parser:
         # Elementy z anglického originálu do seznamu a do souboru.
         self.en_lst = []
         with open(os.path.join(self.en_aux_dir, 'pass3elem.txt'), 'w',
-                  encoding='utf-8') as fout:
+                  encoding='utf-8', newline='\n') as fout:
             for relname, lineno, line in gen.sourceFileLines(self.en_name_in):
                 elem = docelement.Element(relname, lineno, line)
                 self.en_lst.append(elem)
@@ -98,7 +99,8 @@ class Parser:
         # příklady kódu) porovnáváme za účelem zjištění rozdílů struktury -- zde
         # jen typy elementů.
         struct_diff_fname = os.path.join(self.cs_aux_dir, 'pass3struct_diff.txt')
-        with open(struct_diff_fname, 'w', encoding='utf-8') as f:
+        with open(struct_diff_fname, 'w',
+                  encoding='utf-8', newline='\n') as f:
 
             # Některé příklady jsou přeložené. V nich rozdíly povolíme.
             cs_line_may_differ = set(range(244, 247))

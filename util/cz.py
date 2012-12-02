@@ -4,6 +4,8 @@
 '''Skript pro zpracování extrahovaného txt z českého překladu v podobě PDF.'''
 
 import os
+import sys
+
 import pass1
 import pass2
 import pass3

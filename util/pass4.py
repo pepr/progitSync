@@ -26,7 +26,7 @@ class Parser:
     def checkImages(self):
         sync_flag = True  # optimistická inicializace
         images_fname = os.path.join(self.cs_aux_dir, 'pass4img_diff.txt')
-        with open(images_fname, 'w', encoding='utf-8') as f:
+        with open(images_fname, 'w', encoding='utf-8', newline='\n') as f:
             for en_el, cs_el in zip(self.en_lst, self.cs_lst):
                 if    en_el.type == 'img' and en_el.attrib != cs_el.attrib \
                    or en_el.type == 'imgcaption' \
@@ -91,8 +91,8 @@ class Parser:
                        5913, 6061, 6114, 6218, 6845, 6849,
                       ])
 
-        with open(btfname, 'w', encoding='utf-8') as f, \
-             open(btfname_anomally, 'w', encoding='utf-8') as fa:
+        with open(btfname, 'w', encoding='utf-8', newline='\n') as f, \
+             open(btfname_anomally, 'w', encoding='utf-8', newline='\n') as fa:
             for en_el, cs_el in zip(self.en_lst, self.cs_lst):
 
                 # Zpracováváme jen odstavce textu. Odstavce vykazující známou
@@ -214,7 +214,7 @@ class Parser:
         cnt = 0         # init -- počet odhalených chyb
         fname = os.path.join(self.cs_aux_dir, 'pass4dquotes.txt')
 
-        with open(fname, 'w', encoding='utf-8') as f:
+        with open(fname, 'w', encoding='utf-8', newline='\n') as f:
 
             # Regulární výraz pro nevhodné uvozovky v odstavcích.
             rexBadParaQuotes = re.compile(r'["”]')  # české musí být „takhle“
@@ -286,7 +286,7 @@ class Parser:
         cnt = 0         # init -- počet odhalených chyb
         fname = os.path.join(self.cs_aux_dir, 'pass4em_strong.txt')
 
-        with open(fname, 'w', encoding='utf-8') as f:
+        with open(fname, 'w', encoding='utf-8', newline='\n') as f:
 
             # Regulární výraz pro nevhodné uvozovky v odstavcích.
             rexEmStrong = re.compile(r'\*{1,2}(\S.*?\S?)\*{1,2}')
@@ -335,7 +335,7 @@ class Parser:
         ''' Zapíše strojově modifikovaný soubor do pass4.txt.'''
 
         with open(os.path.join(self.cs_aux_dir, 'pass4.txt'), 'w',
-                  encoding='utf-8') as fout:
+                  encoding='utf-8', newline='\n') as fout:
             for cs_element in self.cs_lst:
                 fout.write(cs_element.line)
 
@@ -377,7 +377,7 @@ class Parser:
                     os.makedirs(cs_chapter_dir)
 
                 # Otevřeme nový výstupní soubor.
-                f = open(cs_fname, 'w', encoding='utf-8')
+                f = open(cs_fname, 'w', encoding='utf-8', newline='\n')
 
                 # Pro informaci vypíšeme relativní jméno originálu (je stejné
                 # jako jméno výstupního souboru, přidáme natvrdo cs/).
