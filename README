@@ -4,6 +4,11 @@ progitCZ
 (As the project is related to Czech translation of the English original,
 I will try to be bilingual here -- English paragraph first, Czech second.)
 
+master: The things to be pulled from github.com/progit/progit (and only
+from the "zero" tag on).
+
+develop: The branch with the util subdirectory and with the sources that
+were technically and manually synchronized with the original.
 
 Project for synchronizing and maintaining the Czech translation
 of Scott Chacon's "Pro Git". His Git repository with the sources
