@@ -632,7 +632,7 @@ Příkaz git rm lze používat v kombinaci se soubory, adresáři a maskami soub
 
 	$ git rm log/\*.log
 
-Všimněte si tu zpětného lomítka (\) před znakem *. Je tu proto, že Git provádí své vlastní nahrazování masek souborů nad to, které provádí váš shell. Tímto příkazem odstraníte všechny soubory s příponou .log z adresáře log/. Provést můžete také tento příkaz:
+Všimněte si tu zpětného lomítka (`\`) před znakem `*`. Je tu proto, že Git provádí své vlastní nahrazování masek souborů nad to, které provádí váš shell. Tímto příkazem odstraníte všechny soubory s příponou `.log` z adresáře `log/`. Provést můžete také tento příkaz:
 
 	$ git rm \*~
 
@@ -2411,7 +2411,7 @@ Pokud se podíváte na soubor gitosis.conf, měl by udávat pouze informace o pr
 	writable = gitosis-admin
 	members = scott
 
-Tato informace znamená, že uživatel ’scott` – ten, jehož veřejným klíčem jste inicializovali Gitosis – je jediným uživatelem, který má přístup k projektu gitosis-admin.
+Tato informace znamená, že uživatel 'scott' – ten, jehož veřejným klíčem jste inicializovali Gitosis – je jediným uživatelem, který má přístup k projektu gitosis-admin.
 
 Nyní přidáme nový projekt. Přidáte novou část s názvem mobile, která bude obsahovat seznam vývojářů vašeho mobilního týmu a projektů, k nimž tito vývojáři potřebují přístup. Protože je v tuto chvíli jediným uživatelem v systému 'scott', přidáte ho jako jediného člena a vytvoříte pro něj nový projekt s názvem iphone_project:
 
@@ -2662,7 +2662,7 @@ vložte tento skript:
 	    /opt/git/
 	respawn
 
-Z bezpečnostních důvodů důrazně doporučujeme, aby byl tento démon spuštěn jako uživatel, který má k repozitářům oprávnění pouze pro čtení. To lze snadno zajistit vytvořením nového uživatele 'git-ro' a spuštěním démona v jeho roli. My ho pro zjednodušení spustíme jako uživatele `git’, kterého už využívá nástroj Gitosis.
+Z bezpečnostních důvodů důrazně doporučujeme, aby byl tento démon spuštěn jako uživatel, který má k repozitářům oprávnění pouze pro čtení. To lze snadno zajistit vytvořením nového uživatele 'git-ro' a spuštěním démona v jeho roli. My ho pro zjednodušení spustíme jako uživatele 'git', kterého už využívá nástroj Gitosis.
 
 Při restartování počítače se démon Git spustí automaticky. V případě pádu démona bude jeho činnost automaticky obnovena. Pokud nechcete počítač restartovat, spusťte tento příkaz:
 
@@ -4421,7 +4421,7 @@ Po uložení zprávy budete mít jedinou revizi, která bude obsahovat všechny 
 
 ### Rozdělení revize ###
 
-Rozdělení revize vrátí všechny změny v revizi obsažené a po částech je znovu připraví a zapíše do tolika revizí, kolik určíte jako konečný počet. Řekněme, že chcete rozdělit třeba prostřední ze svých tří revizí. Revizi „updated README formatting and added blame“ chcete rozdělit do dvou jiných: updated README formatting“ jako první a „added blame“ jako druhou. Můžete to provést pomocí skriptu rebase -i. U revize, kterou si přejete rozdělit, změňte instrukci na edit:
+Rozdělení revize vrátí všechny změny v revizi obsažené a po částech je znovu připraví a zapíše do tolika revizí, kolik určíte jako konečný počet. Řekněme, že chcete rozdělit třeba prostřední ze svých tří revizí. Revizi „updated README formatting and added blame“ chcete rozdělit do dvou jiných: „updated README formatting“ jako první a „added blame“ jako druhou. Můžete to provést pomocí skriptu rebase -i. U revize, kterou si přejete rozdělit, změňte instrukci na edit:
 
 	pick f7f3f6d changed my name a bit
 	edit 310154e updated README formatting and added blame
@@ -5002,7 +5002,7 @@ Je-li tato hodnota nastavena, Git barevně zvýrazní výstup přicházející n
 
 Možnost color.ui = always využijete zřídka. Chcete-li použít barevné kódy v přesměrovaném výstupu, můžete většinou místo toho přidat k příkazu Git příznak --color. Po jeho zadání příkaz použije barevné kódy. Téměř vždy vystačíte s příkazem color.ui = true.
 
-#### color.* ####
+#### `color.*` ####
 
 Pokud byste rádi nastavili přesněji jak budou zvýrazněny různé příkazy nebo máte starší verzi, nabízí Git nastavení barev pro jednotlivé příkazy. Každý z příslušných parametrů může nabývat hodnoty na true (pravda), false (nepravda) nebo always (vždy):
 
@@ -5336,7 +5336,7 @@ Při příštím checkoutu tohoto souboru Git vloží SHA blobu:
 
 Tento výsledek má však omezené použití. Pokud nahradíte klíčové slovo v systému CVS nebo Subversion, můžete přidat časový údaj (datestamp) – SHA tu není moc platné, protože je generováno náhodně a nelze podle něj určit, zda je jedna revize starší než jiná.
 
-Jak zjistíte, můžete pro substituce v souborech určených k zapsání/checkoutu napsat i vlastní filtry. Jedná se o filtry clean a smudge. V souboru .gitattributes můžete určit filtr pro konkrétní umístění a nastavit skripty, jimiž budou zpracovány soubory těsně před jejich zapsáním („clean“ – viz obrázek 7-2) a těsně před checkoutem („smudge – viz obrázek 7-3). Tyto filtry lze nastavit k různým šikovným úkonům.
+Jak zjistíte, můžete pro substituce v souborech určených k zapsání/checkoutu napsat i vlastní filtry. Jedná se o filtry clean a smudge. V souboru .gitattributes můžete určit filtr pro konkrétní umístění a nastavit skripty, jimiž budou zpracovány soubory těsně před jejich zapsáním („clean“ – viz obrázek 7-2) a těsně před checkoutem („smudge“ – viz obrázek 7-3). Tyto filtry lze nastavit k různým šikovným úkonům.
 
 Insert 18333fig0702.png
 Obrázek 7-2. Filtr smudge spuštěný při checkoutu – git checkout
