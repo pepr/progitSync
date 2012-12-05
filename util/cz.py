@@ -32,11 +32,20 @@ csfname_pass1input = '../txtFromPDF/scott_chacon_pro_git_CZ.txt'
 # Po manuálních úpravách výše zmíněného souboru dospějeme ke stavu,
 # kdy bude vhodné výsledek uložit a poté manuálně upravovat tento.
 # Používá už markdown syntaxi.
-czfname_pass3input = '../txtCorrected/RucneUpravovanyVysledekPass2.txt'
+csfname_pass3input = '../txtCorrected/RucneUpravovanyVysledekPass2.txt'
+
+# Po všech konverzích dospějeme do stavu, kdy máme vše uložené v cs/.
+# Pokud existuje, přeskakují se fáze 3 a 4. Dále se vše udržuje uvnitř ručně.
+csdir_final = '../txtCorrected/cs'
+
+if os.path.isdir(csdir_final):
+    print('\nKonverze dokončeny. Udržovat ručně v adresáři\n'\
+          '\n\t' + repr(csdir_final) + '\n\a\a\a')
+    sys.exit(0)
 
 # Pokud ručně okopírovaný výsledek druhého průchodu (používaný jako
 # vstup třetího průchodu) dosud neexistuje, zavoláme první dva průchody.
-if not os.path.isfile(czfname_pass3input):
+if not os.path.isfile(csfname_pass3input):
 
     # Hlavním výsledkem prvního průchodu je soubor pass1.txt a vracený
     # slovník toc.
@@ -56,9 +65,9 @@ if not os.path.isfile(czfname_pass3input):
     # souboru, který budeme dále upravovat ručně. (Kdykoliv je možné srovnat
     # jej s nadále generovaným pass2.txt.) V tomto místě kontrolujeme, zda
     # soubor existuje.
-    if not os.path.isfile(czfname_pass3input):
+    if not os.path.isfile(csfname_pass3input):
         print('\n\n\a\a\aRučně okopírovat pass2.txt do\n\t',
-              repr(czfname_pass3input) + ' !!!\n\n')
+              repr(csfname_pass3input) + ' !!!\n\n')
         sys.exit(1)
 
 # V třetím průchodu sesbíráme informace jednak z originálu a jednak
@@ -71,7 +80,7 @@ if not os.path.isfile(czfname_pass3input):
 # u některých elementů se porovnává jen druh elementu (existence odstavce,
 # existence odrážky, úroveň nadpisu,...).
 print('pass 3:')
-parser3 = pass3.Parser(czfname_pass3input, en_src_dir, cs_aux_dir, en_aux_dir)
+parser3 = pass3.Parser(csfname_pass3input, en_src_dir, cs_aux_dir, en_aux_dir)
 msg = parser3.run()
 print('\t' + msg)
 
