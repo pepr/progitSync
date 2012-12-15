@@ -1,4 +1,6 @@
-# progitCZ -- sychronization of sources #
+[![Build Status](https://secure.travis-ci.org/pepr/progitCZ.png?branch=master)](https://travis-ci.org/pepr/progitCZ)
+
+# progitCZ -- sychronization of sources
 
 (As the project is related to Czech translation of the English original,
 I will try to be bilingual here -- English paragraph first, Czech second.)
@@ -26,7 +28,7 @@ http://knihy.nic.cz/
 (konkrétně http://knihy.nic.cz/files/nic/edice/scott_chacon_pro_git.pdf).
 
 
-The goals/Cíle:
+## The goals/Cíle:
 
 
 1. The first goal of this (gitbookCZ) project is to convert the translation
