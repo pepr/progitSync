@@ -11,6 +11,9 @@ možná trošku nešikovné, ale fork neumožňuje sbírání připomínek a pro
 
 ----------------
 
+As the project is related to the Czech translation of the English original,
+I will try to be bilingual only a bit here.
+
 Project for synchronizing and for improvement of the Czech translation
 of Scott Chacon's "Pro Git". The Git repository with the sources
 of the book is available at https://github.com/progit/progit.
@@ -20,9 +23,6 @@ of the CZ.NIC association (see http://knihy.nic.cz/page/351/ -- switch
 to English/Czech at the top of the page). The book is available both as printed
 book and the free PDF document at http://knihy.nic.cz/
 (http://knihy.nic.cz/files/nic/edice/scott_chacon_pro_git.pdf).
-
-As the project is related to the Czech translation of the English original,
-I will try to be bilingual only a bit here.
 
 -----------------
 
