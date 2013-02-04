@@ -1,151 +1,179 @@
 #!python3
 # -*- coding: utf-8 -*-
 
+import docelement
+import gen
 import os
-import re
-import shutil
 
 class Parser:
-    '''Parser pro první průchod ručně získaným textovým souborem (z českého PDF).
+    '''Parser konzumující již dříve synchronizované české a anglické
+       vstupy přímo z adresáře progit/en a progit/cs.'''
 
-       Zpracuje český překlad z textového souboru, který byl získán
-       uložením PDF jako text a následnou ruční úpravou některých jevů,
-       které vznikly ruční sazbou orientovanou na vzhled (tj. nikoliv
-       na zachování struktury dokumentu).
+    def __init__(self, cs_name_in, en_name_in, cs_aux_dir, en_aux_dir):
+        self.cs_name_in = cs_name_in    # jméno vstupního souboru/adresáře s českou verzí
+        self.en_name_in = en_name_in    # jméno vstupního souboru/adresáře s anglickou verzí
+        self.cs_aux_dir = cs_aux_dir    # pomocný adresář pro české výstupy
+        self.en_aux_dir = en_aux_dir    # pomocný adresář pro anglické výstupy
 
-       Generuje pass1.txt, který obsahuje zredukovaný obsah souboru fname.
-       Pro účely srovnávání s originálem generuje czTOC.txt z řádků
-       velkého obsahu na začátku dokumentu. Záhlaví stránek zachycuje
-       do PageHeaders.txt. Zmíněné prvky při prvním průchodu do pass1.txt
-       nezapisuje. Ostatní vypuštěné prvky (nepatřící ani do obsahu, ani
-       k hlavičkám stránek) zapisuje do ignored.txt. Vše se generuje
-       do adresáře self.cs_aux_dir, který se nejdříve úplně promaže (vytvoří
-       znovu).
+        self.cs_lst = None              # seznam elementů z českého překladu
+        self.en_lst = None              # seznam elementů z anglického originálu
 
-       Pro potřeby další fáze generuje slovník obsahu, kde klíčem je
-       číslo kapitoly/podkapitoly/... a hodnotou je text jejího názvu.
-       Tento slovník se později používá pro rozpoznání řádků, které
-       sice mohou vypadat jako nadpis, ale nejsou jím (například seznam
-       číslovaných položek).
-    '''
+        self.info_files = []
 
-    # Regulární výrazy pro rozpoznání částí dokumentu jsou stejné
-    # pro všechny případné instance (ale bude jedna).
-    #
-    # Řádek obsahu má tvar: "1.1 Správa verzí -- 17"
-    # kde '--' je čtverčíková pomlčka.
-    patNum = r'(?P<num>(?P<num1>\d+)\.(?P<num2>\d+)?(\.(?P<num3>\d+))?)'
-    patTOCitem = patNum + r'\s+(?P<title>.+?)(\s+\u2014)?(\s+(?P<pageno>\d+)\s*)'
+    def writePass1txtFiles(self):
+        # Kopie českého vstupu do jednoho souboru. Při tomto průchodu
+        # pochází z jednoho souboru, takže jméno souboru vynecháme.
+        with open(os.path.join(self.cs_aux_dir, 'pass1.txt'), 'w',
+                  encoding='utf-8', newline='\n') as fout:
+            for fname, lineno, line in gen.sourceFileLines(self.cs_name_in):
+                fout.write('{}/{}:\t{}'.format(fname[1:2], lineno, line))
 
-    rexTOCline = re.compile(r'^' + patTOCitem + r'$')
-    rexObsah = re.compile(r'^\u2014\s+(?P<title>Obsah.*?)(\s+(?P<pageno>\d+)\s*)$')
-    rexKapitola = re.compile(r'^\d+\.\s+Kapitola\s+\d+\s*$')
+        # Kopie anglického vstupu do jednoho souboru. Pro lepší orientaci
+        # v dlouhých řádcích nebudeme vypisovat jméno souboru, ale
+        # jen číslo kapitoly (jeden znak relativní cesty).
+        with open(os.path.join(self.en_aux_dir, 'pass1.txt'), 'w',
+                  encoding='utf-8', newline='\n') as fout:
+            for fname, lineno, line in gen.sourceFileLines(self.en_name_in):
+                fout.write('{}/{}:\t{}'.format(fname[1:2], lineno, line))
+
+        # Přidáme informaci o vytvářených souborech.
+        subdir = os.path.basename(self.cs_aux_dir)        # český výstup
+        self.info_files.append(subdir +'/pass1.txt')
+
+        subdir = os.path.basename(self.en_aux_dir)        # anglický výstup
+        self.info_files.append(subdir +'/pass1.txt')
 
 
-    def __init__(self, fname, cs_aux_dir):
-        self.fname = fname
-        self.cs_aux_dir = cs_aux_dir
+    def loadElementLists(self):
+        '''Načte elementy dokumentů do členských seznamů.
+
+           Jako vedlejší efekt zachytí reprezentaci seznamů elementů
+           do souborů pass1elem.txt v pomocných adresářích.'''
+
+        # Elementy z českého překladu do seznamu a do souboru. Do českého
+        # překladu jsou vloženy navíc úseky jako vysvětlivky anglického
+        # originálu, který byl ponechán v původním tvaru. Při srovnávání
+        # struktury se musí přeskočit. Zapíšeme je ale do zvláštního
+        # souboru pass1extra_lines.txt. Natvrdo naplníme slovník množin
+        # čísel přeskakovaných řádků pro jednotlivé kapitoly.
+        cs_skip = {
+            '06-git-tools/01-chapter6.markdown':
+                set(range(396, 413))
+            }
+        self.cs_lst = []
+        with open(os.path.join(self.cs_aux_dir, 'pass1elem.txt'), 'w',
+                  encoding='utf-8', newline='\n') as fout, \
+             open(os.path.join(self.cs_aux_dir, 'pass1extra_lines.txt'), 'w',
+                  encoding='utf-8', newline='\n') as foutextra:
+            for relname, lineno, line in gen.sourceFileLines(self.cs_name_in):
+                elem = docelement.Element(relname, lineno, line)
+                if lineno in cs_skip.get(relname, {}):
+                    # Přeskočíme elementy, které byly doplněny navíc.
+                    # Prostě je nepřidáme do seznamu.
+                    foutextra.write('{:4d}:\t{}'.format(lineno, line))
+                else:
+                    self.cs_lst.append(elem)    # tento do seznamu přidáme
+                    fout.write(repr(elem) + '\n')
+
+        # Přidáme informaci o výstupních souborech.
+        subdir = os.path.basename(self.cs_aux_dir)
+        self.info_files.append(subdir +'/pass1extra_lines.txt')
+        self.info_files.append(subdir +'/pass1elem.txt')
+
+        # Elementy z anglického originálu do seznamu a do souboru.
+        self.en_lst = []
+        with open(os.path.join(self.en_aux_dir, 'pass1elem.txt'), 'w',
+                  encoding='utf-8', newline='\n') as fout:
+            for relname, lineno, line in gen.sourceFileLines(self.en_name_in):
+                elem = docelement.Element(relname, lineno, line)
+                self.en_lst.append(elem)
+                fout.write(repr(elem) + '\n')
+
+        # Přidáme informaci o výstupním souboru.
+        subdir = os.path.basename(self.en_aux_dir)
+        self.info_files.append(subdir +'/pass1elem.txt')
+
+
+    def checkStructDiffs(self):
+        '''Generuje cs/pass1struct_diff.txt s rozdíly ve struktuře zdrojových řádků.'''
+
+        sync_flag = True   # optimistická inicializace
+
+        # Zjištěné posloupnosti elementů dokumentů (nadpisy, odstavce, obrázky,
+        # příklady kódu) porovnáváme za účelem zjištění rozdílů struktury -- zde
+        # jen typy elementů.
+        struct_diff_fname = os.path.join(self.cs_aux_dir, 'pass1struct_diff.txt')
+        with open(struct_diff_fname, 'w',
+                  encoding='utf-8', newline='\n') as f:
+
+            # Některé příklady jsou přeložené. V nich rozdíly povolíme.
+            cs_line_may_differ = {
+                '01-introduction/01-chapter1.markdown':
+                    set([246, 247, 248]),
+
+                '02-git-basics/01-chapter2.markdown':
+                    set([172, 173, 174, 175, 176, 177, 389])
+                        .union(range(535, 551))
+                        .union(range(570, 580))
+                        .union(range(597, 603))
+                        .union([774]),
+
+                '04-git-server/01-chapter4.markdown':
+                    set([528, 529, 530]),
+
+                '05-distributed-git/01-chapter5.markdown':
+                    set([90, 92, 93, 94, 95, 96, 97, 99, 101, 103, 104]),
+
+                '07-customizing-git/01-chapter7.markdown':
+                    set([40, 42, 44, 53, 55, 57]),
+
+              }
+
+            for en_element, cs_element in zip(self.en_lst, self.cs_lst):
+
+                # Pro nejhrubší synchronizaci se budeme řídit pouze typy
+                # elementů. (Nejméně přísné pravidlo synchronizace.)
+                #
+                # Pokud se typy shodují, pak přísnější pravidlo
+                # synchronizace vyžaduje, aby se shodovaly řádky
+                # s příkladem kódu.
+                if en_element.type != cs_element.type \
+                   or (en_element.type == 'code'
+                       and en_element.line.rstrip() != cs_element.line.rstrip()
+                       and cs_element.lineno not in cs_line_may_differ.get(cs_element.fname, {})):
+
+                    # Není to synchronní; shodíme příznak.
+                    sync_flag = False
+
+                    # U obou jméno souboru/číslo řádku.
+                    f.write('\ncs {}/{} -- en {}/{}:\n'.format(
+                            cs_element.fname,
+                            cs_element.lineno,
+                            en_element.fname,
+                            en_element.lineno))
+
+                    # Typ a hodnota českého elementu.
+                    f.write('\t{}:\t{}\n'.format(cs_element.type,
+                                                 cs_element.line.rstrip()))
+
+                    # Typ a hodnota anglického elementu.
+                    f.write('\t{}:\t{}\n'.format(en_element.type,
+                                                 en_element.line.rstrip()))
+
+        # Přidáme informaci o výstupním souboru.
+        subdir = os.path.basename(self.cs_aux_dir)        # český výstup
+        self.info_files.append(subdir +'/pass1struct_diff.txt')
+
+        # Přidáme informaci o synchronnosti.
+        self.info_files.append(('-'*40) + ' struktura se ' +
+                               ('shoduje' if sync_flag else 'NESHODUJE'))
 
 
     def run(self):
-        # Vytvoříme čerstvý pomocný podadresář s extrahovanými informacemi.
-        if os.path.isdir(self.cs_aux_dir):
-            shutil.rmtree(self.cs_aux_dir)
-        os.mkdir(self.cs_aux_dir)
+        '''Spouštěč jednotlivých fází parseru.'''
 
-        # Slovník naplněný položkami obsahu, který funkce vrací.
-        toc = {}
-        subdir = os.path.basename(self.cs_aux_dir)        # český výstup
-        info_files = [subdir +'/czTOC1.txt',
-                      subdir +'/PageHeaders.txt',
-                      subdir +'/ignored.txt',
-                      subdir +'/pass1.txt']
+        self.writePass1txtFiles()
+        self.loadElementLists()
+        self.checkStructDiffs()
 
-        with open(os.path.join(self.cs_aux_dir, 'czTOC1.txt'), 'w',
-                  encoding='utf-8', newline='\n') as ftoc,              \
-             open(os.path.join(self.cs_aux_dir, 'PageHeaders.txt'), 'w',
-                  encoding='utf-8', newline='\n') as fph,               \
-             open(os.path.join(self.cs_aux_dir, 'ignored.txt'), 'w',
-                  encoding='utf-8', newline='\n') as fignored,          \
-             open(os.path.join(self.cs_aux_dir, 'pass1.txt'), 'w',
-                  encoding='utf-8', newline='\n') as fout,              \
-             open(self.fname, encoding='utf-8') as fin:
-
-            status = 0
-            while status != 888:
-
-                line = fin.readline()
-                if line == '':
-                    status = 888                    # EOF
-
-                if status == 0:             # ------- ignorujeme do FF (před Obsahem)
-                    fignored.write(line)            # všechny řádky do prvního FormFeed
-                    if line.startswith('\f'):       # ... se ignorují
-                        status = 1
-
-                elif status == 1:           # ------- záhlaví stránek před Obsahem
-                    fph.write(line)
-                    fignored.write('PH: ' + line)
-                    m = self.rexObsah.match(line)
-                    if m:
-                        status = 2                  # začneme sbírat řádky obsahu
-                    else:
-                        status = 0                  # ignorujeme do dalšího FF
-
-                elif status == 2:           # ------- sbíráme řádky obsahu
-                    if line.startswith('\f'):       # FormFeed ukončuje Obsah
-                        fignored.write(line)
-                        status = 3
-                    else:
-                        m = self.rexTOCline.match(line)  # je to řádek s položkou obsahu?
-                        if m:
-                            # Zapíšeme v očištěné podobě, bez čísla stránky.
-                            num = m.group('num')
-                            title = m.group('title')
-                            ftoc.write('{} {}\n'.format(num, title))
-
-                            # Řádek obsahu zachytíme do slovníku pro potřeby
-                            # druhého průchodu.
-                            toc[num] = title
-
-                            # Řádek obsahu ale nezapisujeme do výstupního
-                            # filtrovaného souboru.
-                            fignored.write('TOC: ' + line)
-                        else:
-                            fignored.write(line)    # ignorujeme prázdné...
-
-
-                elif status == 3:           # ------- záhlaví stránky po Obsahu
-                    fph.write(line)
-                    fignored.write('PH: ' + line)
-
-                    # Na výstupu nahradíme FormFee + page heading značkou,
-                    # která by mohla ulehčit řešení speciálních případů
-                    # při dalším průchodu.
-                    fout.write('---------- pagesep\n')
-
-                    mKap = self.rexKapitola.match(line)  # stránka s velkým názvem kapitoly
-                    mObsah = self.rexObsah.match(line)   # stránka s obsahem kapitoly
-                    if mKap or mObsah:
-                        status = 5          # ignorovat celou stránku (po Obsahu)
-                    else:
-                        status = 4          # sbírat následující řádky
-
-
-                elif status == 4:           # ------- textové řádky lines
-                    if line.startswith('\f'):       # FormFeed
-                        fignored.write(line)
-                        status = 3
-                    else:
-                        fout.write(line)    # běžný platný řádek
-
-                elif status == 5:           # ------- ignorujeme stránku (po Obsahu)
-                    fignored.write(line)            # všechny řádky do prvního FormFeed
-                    if line.startswith('\f'):       # ... se ignorují
-                        status = 3
-
-                elif status == 888:         # ------- akce po EOF
-                    pass
-
-        # Pro potřeby druhého průchodu vrátíme slovník s položkami obsahu.
-        return toc, '\n\t'.join(info_files)
+        return '\n\t'.join(self.info_files)

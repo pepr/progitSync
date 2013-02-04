@@ -4,433 +4,451 @@
 import os
 import re
 
-def abstractNum(num):
-    '''Get the number of the title and construct the '#', '##', or '###'.'''
-    lst = num.split('.')
-    if lst[-1] == '':    # chapter numbering ends with dot
-        del lst[-1]
-    return '#' * len(lst)
-
-
 class Parser:
-    '''Parser pro druhý průchod, konzumující výstup prvního průchodu.
+    '''Parser pro značkování a kontroly.
 
-       V ručně upraveném textovém souboru s českým překladem, který byl
-       předzpracován prvním průchodem (tj. vezmeme výsledek prvního průchodu),
-       rozpoznává významové prvky dokumentu, převede je do .markdown tvaru
-       a zapíše je do pass2.txt. (Ten se v další fázi později stane novým,
-       ručně upravovaným dokumentem, který budeme synchronizovat s originálem.)
-    '''
+       Konzumuje výstup prvního průchodu přímo ve formě objektu pass1.'''
 
-    # Regulární výrazy a jejich vzorky jsou společné celé třídě.
-    #
-    # Vícekrát použitý vzorek pro číslo s tečkami.
-    patNum = r'(?P<num>(?P<num1>\d+)\.(?P<num2>\d+)?(\.(?P<num3>\d+))?)'
+    # Regulární výraz pro rozpoznání znaků uzavřených v opačných apostrofech.
+    rexBackticked = re.compile(r'`(\S.*?\S?)`')
 
-    # Řádek obsahující pouze číslo (kapitoly, podkapitoly, ..., bodu seznamu.
-    rexNum = re.compile(r'^' + patNum + r'\s*$')
+    def __init__(self, pass1):
+        self.cs_aux_dir = pass1.cs_aux_dir    # pomocný adresář pro české výstupy
+        self.en_aux_dir = pass1.en_aux_dir    # pomocný adresář pro anglické výstupy
 
-    # Číslovaný nadpis.
-    rexTitle = re.compile(r'^' + patNum + r'\s+(?P<title>.+?)\s*$')
+        self.en_lst = pass1.en_lst
+        self.cs_lst = pass1.cs_lst
 
-    # Nečíslovaná odrážka korektně explicitně zapsaná (markdown syntaxe).
-    rexBullet = re.compile(r'^(?P<uli>\*\t.+?)\s*$')
-
-    # Dobře rozpoznaná nečíslovaná odrážka zapsaná Unicode znakem.
-    rexUBullet = re.compile('^\u2022' + r'\s*(?P<text>.*?)\s*$')
-
-    # Pouze zahajovací znak (dobře rozpoznaný) špatně zalomeného
-    # textu nečíslované odrážky. Musí se k němu přidat jeden nebo
-    # víc dalších řádků.
-    rexUXBullet = re.compile('^\u2022' + r'\s*$')
-
-    # Značka přechodu mezi stránkami. Je generovaná v prvním průchodu,
-    # takže můžeme volit jednoduchý výraz.
-    rexPagesep = re.compile(r'^---------- pagesep$')
-
-    # Umístění obrázku s číslem. Může následovat popisný text,
-    # ale bývá zalomený za ještě jedním prázdným řádkem.
-    patObrazek = r'^Obrázek\s+(?P<num>\d+-\d+)\.(\s+(?P<text>.+?))?\s*$'
-    rexObrazek = re.compile(patObrazek)
-
-    # Řádek reprezentující příklad sázený jako kódový řádek
-    # neproporcionálním písmem. U této aplikace je uvozen jedním tabulátorem
-    # nebo 8 mezerami.
-    rexCode = re.compile(r'^(\t| {8}| {4})(?P<text>.*)$')
-
-    # Řádek, který má být pravděpodobně změněn na příklad textového řádku.
-    rexXCode = re.compile(r'^(?P<text>[$#].*)$')
-
-    # Řádek se symbolicky uvedeným nadpisem 4. úrovně (#### Nadpis ####).
-    rexH4Title = re.compile(r'^(?P<h4title>####\s+.+\s+####)\s*$')
+        self.info_files = []
+        self.backticked_set = set()
 
 
-    def __init__(self, fname, toc, aux_dir):
-        self.fname_in = fname   # jméno vstupního souboru
-        self.toc = toc          # toc = Table Of Content
-        self.aux_dir = aux_dir  # adresář pro generovaný výstupní soubor
+    def checkImages(self):
+        sync_flag = True  # optimistická inicializace
+        images_fname = os.path.join(self.cs_aux_dir, 'pass2img_diff.txt')
+        with open(images_fname, 'w', encoding='utf-8', newline='\n') as f:
+            for en_el, cs_el in zip(self.en_lst, self.cs_lst):
+                if    en_el.type == 'img' and en_el.attrib != cs_el.attrib \
+                   or en_el.type == 'imgcaption' \
+                      and en_el.attrib[0] != cs_el.attrib[0]:
 
-        self.type = None        # init -- symbolický typ řádku (jeho význam)
-        self.parts = []         # init -- seznam částí řádku dle významu
-        self.collection = []    # init -- kolekce sesbíraných řádků
+                    # Není shoda. Shodíme příznak...
+                    sync_flag = False
 
-        self.fout = None        # souborový objekt otevřený pro výstup.
-        self.status = None      # init -- stav konečného automatu
+                    # ... a zapíšeme do souboru.
+                    f.write('\ncs {}/{} -- en {}/{}:\n'.format(
+                            cs_el.fname,
+                            cs_el.lineno,
+                            en_el.fname,
+                            en_el.lineno))
 
+                    # Typ a hodnota českého elementu.
+                    f.write('\t{}:\t{}\n'.format(cs_el.type,
+                                                 cs_el.line.rstrip()))
 
-    def png_name(self, num):
-        '''Pro číslo 'x-y' vrací '18333fig0x0y.png'''
+                    # Typ a hodnota anglického elementu.
+                    f.write('\t{}:\t{}\n'.format(en_el.type,
+                                                 en_el.line.rstrip()))
 
-        n1, n2 = num.split('-')
-        return '18333fig{:02}{:02}.png'.format(int(n1), int(n2))
-
-
-    def collect(self, text=None):
-        '''Přidá aktuální parts do výstupní kolekce oddělí mezerou.'''
-
-        if len(self.collection) > 0:
-            self.collection.append(' ')
-
-        if text is not None:
-            self.collection.append(text)
-        else:
-            self.collection.extend(self.parts)
-
-
-    def write_collection(self):
-        '''Zapíše kolekci na výstup jako jeden řádek a vyprázdní ji.'''
-
-        if len(self.collection) > 0:
-            self.fout.write(''.join(self.collection) + '\n')
-            self.collection = []
+        # Přidáme informaci o synchronnosti obrázků.
+        subdir = os.path.basename(self.cs_aux_dir)        # český výstup
+        self.info_files.append(subdir +'/pass2img_diff.txt')
+        self.info_files.append(('-'*30) + ' informace o obrázcích se ' +
+                               ('shodují' if sync_flag else 'NESHODUJÍ'))
 
 
-    def parse_line(self):
-        '''Rozloží self.line na self.type a self.parts.'''
+    def buildRex(self, lst):
+        '''Build a regular expression mathing substrings from the lst.'''
 
-        if self.line == '':
-            # Prázdný řádek indikuje konec načítaného souboru. Python
-            # platný řádek souboru nikdy nevrátí jako zcela prázdný.
-            # Z pohledu řešeného problému to tedy není prázdný řádek
-            # ve významu oddělovače.
-            self.type = 'EOF'
-            self.parts = None
+        # Build a list of escaped unique substrings from the input list.
+        # The order is not important now as it must be corrected later.
+        lst2 = [re.escape(s) for s in set(lst)]
 
-        elif self.line.isspace():
-            # Řádek obsahující jen whitespace považujeme za prázdný
-            # řádek ve významu oddělovače.
-            self.type = 'empty'
-            self.parts = ['']   # reprezentací bude prázdný řetězec
+        # Join the escaped substrings to form the regular expression
+        # pattern, build the regular expression, and return it. There could
+        # be longer paterns that contain shorter patterns. The longer patterns
+        # should be matched first. This way, the lst2 must be reverse sorted
+        # by the length of the patterns.
+        pat = '|'.join(sorted(lst2, key=len, reverse=True))
+        rex = re.compile(pat)
+        return rex
 
-        else:
-            # Budeme testovat přes regulární výrazy a v případě
-            # rozpoznání určíme typ, rozložíme na části a ukončíme
-            # běh metody. (Dalo by se to zoptimalizovat, ale nestojí
-            # to za námahu).
-            m = self.rexTitle.match(self.line)
-            if m:
-                num = m.group('num')
-                title = m.group('title')
 
-                # Pokud je číslo a hodnota nadpisu zachycena v toc, jde
-                # skutečně o nadpis. Pokud ne, budeme to pokládat za položku
-                # číslovaného seznamu.
-                if num in self.toc and title == self.toc[num]:
-                    self.type = 'title'
-                    self.parts = [num, title]
-                else:
-                    self.type = 'li'
-                    self.parts = [num + '\t', title]
+    def fixParaBackticks(self):
+        '''Kontroluje synchronnost použití zpětných apostrofů v 'para' elementech.
 
-                return
+           Výsledky zapisuje do pass2backticks.txt.'''
 
-            # Pouze číslo s tečkou/tečkami.
-            m = self.rexNum.match(self.line)
-            if m:
-                num = m.group('num')
-                self.type = 'num'
-                self.parts = [num]
-                return
+        async_cnt = 0     # init -- počet nesynchronních výskytů
+        anomally_cnt = 0  # init -- počet odhalených anomálií
+        btfname = os.path.join(self.cs_aux_dir, 'pass2backticks.txt')
+        btfname_anomally = os.path.join(self.cs_aux_dir, 'pass2backticks_anomally.txt')
 
-            # Symbolicky uvedený nadpis 4. úrovně.
-            m = self.rexH4Title.match(self.line)
-            if m:
-                self.type = 'h4title'
-                self.parts = [m.group('h4title')]
-                return
+        # Při řešení anomálií byly některé případy vyřešeny ručně, ale test
+        # náhrad by odstavec považoval stále za nevyřešený. Proto číslo řádku
+        # s odstavcem musíme přidat mezi přeskakované.
+        cs_skip = {
+            '01-introduction/01-chapter1.markdown':
+                set([193, 197]),
 
-            # Nečíslovaná odrážka (bullet) -- markdown syntaxe.
-            m = self.rexBullet.match(self.line)
-            if m:
-                text = m.group('text')
-                self.type = 'uli'        # ListItem nečíslovaného seznamu
-                self.parts = ['*\t', text]  # markdown reprezentace...
-                return
+            '02-git-basics/01-chapter2.markdown':
+                set([91, 410, 662, 748, 757, 784, 792, 960, 1027]),
 
-            # Úvodní unicode znak nečíslované odrážky.
-            m = self.rexUXBullet.match(self.line)
-            if m:
-                self.type = 'xuli'          # jen znak zahajující odrážku
-                self.parts = ['*\t']
-                return
+            '03-git-branching/01-chapter3.markdown':
+                set([68, 77, 347, 384, 386, 415, 425, 451, 467, 473,
+                     518, 527, 540]),
 
-            # Nečíslovaná odrážka s unicode znakem, asi bez tabulátoru.
-            m = self.rexUBullet.match(self.line)
-            if m:
-                text = m.group('text')
-                self.type = 'uli'           # ListItem nečíslovaného seznamu
-                self.parts = ['*\t', text]  # markdown reprezentace...
-                return
+            '04-git-server/01-chapter4.markdown':
+                set([178, 324, 524, 560]),
 
-            # Obrázek s popisem.
-            m = self.rexObrazek.match(self.line)
-            if m:
-                text = m.group('text')
-                if text is None:
-                    text = ''           # korekce
-                num = m.group('num')
-                self.type = 'obrazek'
-                self.parts = ['Insert {}\n'.format(self.png_name(num)) + \
-                              'Obrázek {}. {}'.format(num, text)]
-                return
+            '05-distributed-git/01-chapter5.markdown':
+                set([115]),
 
-            # Rozhraní mezi stránkami.
-            m = self.rexPagesep.match(self.line)
-            if m:
-                self.type = 'pagesep'
-                self.parts = []
-                return
+            '07-customizing-git/01-chapter7.markdown':
+                set([462]),
 
-            # Řádek s potenciálním příkladem kódu.
-            m = self.rexXCode.match(self.line)
-            if m:
-                self.type = 'xcode'
-                self.parts = ['\t', m.group('text')]
-                return
+            '08-git-and-other-scms/01-chapter8.markdown':
+                set([90, 238, 291, 395]),
 
-            # Řádek se zadaným příkladem kódu.
-            m = self.rexCode.match(self.line)
-            if m:
-                self.type = 'code'
-                self.parts = ['\t', m.group('text')]
-                return
+            '09-git-internals/01-chapter9.markdown':
+                set([332, 336]),
 
-            # Nerozpoznaný případ.
-            self.type = '?'
-            self.parts = [ self.line.rstrip() ]
+            }
+
+        with open(btfname, 'w', encoding='utf-8', newline='\n') as f, \
+             open(btfname_anomally, 'w', encoding='utf-8', newline='\n') as fa:
+            for en_el, cs_el in zip(self.en_lst, self.cs_lst):
+
+                # Zpracováváme jen odstavce textu a testy s odrážek a číslovaných
+                # seznamů. Odstavce vykazující známou anomálii ale přeskakujeme.
+                if en_el.type in ['para', 'uli', 'li'] \
+                   and cs_el.lineno not in cs_skip.get(cs_el.fname, {}):
+
+                    # Najdeme všechny symboly uzavřené ve zpětných apostrofech
+                    # v originálním odstavci.
+                    enlst = self.rexBackticked.findall(en_el.line)
+                    cslst = self.rexBackticked.findall(cs_el.line)
+
+                    # Nestačí porovnávat délky seznamů, protože seznamy mohou
+                    # obsahovat různé sekvence (což se díky modifikaci textu
+                    # stalo). Proto musíme porovnat množiny. Ale nestačí porovnat
+                    # jen množiny, protože některý seznam by mohl být delší
+                    # (opakoval by se nějaký řetězec). Ostatní situace považujeme
+                    # za málo pravděpodobné.
+                    if set(enlst) != set(cslst) or len(enlst) != len(cslst):
+
+                        # Vytvoříme rozdílový seznam, do kterého vložíme
+                        # jen řetězce, které jsou v en navíc. To znamená,
+                        # že z anglického seznamu odstraníme ty, které už
+                        # jsou v českém odstavci označkované.
+                        dlst = enlst[:]   # kopie
+                        for s in cslst:
+                            if s in dlst:
+                                dlst.remove(s)
+
+                        # Započítáme a zapíšeme do souboru.
+                        async_cnt += 1
+                        f.write('\ncs {}/{} -- en {}/{}:\n'.format(
+                                cs_el.fname,
+                                cs_el.lineno,
+                                en_el.fname,
+                                en_el.lineno))
+
+                        # Český odstavec před úpravou.
+                        cspara1 = cs_el.line.rstrip()
+
+                        # Pokud je rozdílový seznam prázdný, nechceme nic
+                        # nahrazovat. Vzhledem k dalšímu způsobu ani nesmíme
+                        # nic nahrazovat, protože by se zkonstruoval nevhodný
+                        # regulární výraz, který by způsobil obalení kde čeho.
+                        # Náhradu tedy provádět nebudeme, ale považujeme to
+                        # stále za anomálii, která musí být zkontrolována.
+                        # V opačném případě vybudujeme regulární výraz
+                        # a provedeme náhradu. Zjišťujeme také, kolik náhrad
+                        # proběhlo.
+                        n = 0            # init
+                        if len(dlst) != 0:
+                            rex = self.buildRex(dlst)
+                            cs_el.line, n = rex.subn(r'`\g<0>`', cs_el.line)
+
+                        # Do souboru f zapisujeme záznam o všech nahrazovaných.
+                        # Rozdílový seznam a jeho délka, anglický odstavec,
+                        # český odstavec před náhradou a po ní.
+                        f.write('\t{}\n'.format(repr(dlst)))
+                        f.write('\t{}\n'.format(en_el.line.rstrip()))
+                        f.write('\t{}\n'.format(cspara1))
+                        f.write('\t{}\n'.format(cs_el.line.rstrip()))
+
+                        # Znovu zjistíme počet obalených podřetězců v českém
+                        # odstavci. Znovu vypočítáme rozdílový seznam.
+                        cslst2 = self.rexBackticked.findall(cs_el.line)
+                        dlst2 = enlst[:]   # kopie
+                        for s in cslst2:
+                            if s in dlst2:
+                                dlst2.remove(s)
+
+                        # Anomálie nastává, pokud nastává alespoň jeden z případů:
+                        # - liší se množiny podřetězců v originále a v překladu,
+                        # - rozdílový seznam je neprázdný (tj. v překladu nebylo
+                        #   něco obaleno),
+                        # - liší se délky seznamů v originále a v překladu (tj.
+                        #   v překladu bylo obaleno jiné množství podřetězců),
+                        # - počet provedených náhrad je větší než délka původního
+                        #   rozdílového seznamu (může být redundantní vůči ostatním
+                        #   bodům).
+                        if set(enlst) != set(cslst2) or len(dlst2) > 0 \
+                           or len(enlst) != len(cslst2) or len(dlst) != n:
+
+                            # Za neshodu při synchronizaci považujeme pouze
+                            # vznik anomálie -- započítáme další anomálii.
+                            anomally_cnt += 1
+
+                            # Zapíšeme do souboru s anomáliemi.
+                            fa.write('\ncs {} -- en {}/{}:\n'.format(
+                                cs_el.lineno,
+                                en_el.fname[1:2],
+                                en_el.lineno))
+
+                            # Do souboru f zapisujeme záznam o všech nahrazovaných.
+                            # Rozdílový seznam a jeho délka, anglický odstavec,
+                            # český odstavec před náhradou a po ní.
+                            fa.write('\tenlst  = {} {}\n'.format(len(enlst), repr(enlst)))
+                            fa.write('\tcslst  = {} {}\n'.format(len(cslst), repr(cslst)))
+                            fa.write('\tdslst  = {} {}\n'.format(len(dlst), repr(dlst)))
+                            fa.write('\tcslst2 = {} {}\n'.format(len(cslst2), repr(cslst2)))
+                            fa.write('\tdslst2 = {} {}\n'.format(len(dlst2), repr(dlst2)))
+                            fa.write('\tsubn   = {}\n'.format(n))
+                            fa.write('\t{}\n'.format(en_el.line.rstrip()))
+                            fa.write('\t{}\n'.format(cspara1))
+                            fa.write('\t{}\n'.format(cs_el.line.rstrip()))
+
+        # Přidáme informaci o synchronnosti použití zpětných apostrofů.
+        subdir = os.path.basename(self.cs_aux_dir)        # český výstup
+        self.info_files.append(subdir +'/pass2backticks.txt')
+        self.info_files.append(('-'*30) + \
+                         ' nesynchronnost zpětných apostrofů: {}'.format(async_cnt))
+        self.info_files.append(subdir +'/pass2backticks_anomally.txt')
+        self.info_files.append(('-'*30) + \
+                         ' anomálie u zpětných apostrofů: {}'.format(anomally_cnt))
+
+
+    def reportBadDoubleQuotes(self):
+        '''Kontroluje použití zprávných uvozovek v českých elementech.
+
+           V 'para' elementech musí být „takové“, v 'code' elementech
+           zase "takové" a v ostatních elementech uvidíme.
+
+           Výsledky zapisuje do pass2dquotes.txt.'''
+
+        cnt = 0         # init -- počet odhalených chyb
+        fname = os.path.join(self.cs_aux_dir, 'pass2dquotes.txt')
+
+        with open(fname, 'w', encoding='utf-8', newline='\n') as f:
+
+            # Regulární výraz pro nevhodné uvozovky v odstavcích.
+            rexBadParaQuotes = re.compile(r'["”]')  # české musí být „takhle“
+            rexBadCodeQuotes = re.compile(r'[„“”]')
+
+            for en_el, cs_el in zip(self.en_lst, self.cs_lst):
+
+                # Zpracováváme jen odstavce textu.
+                if cs_el.type in ('para', 'li', 'uli', 'imgcaption', 'title'):
+
+                    if rexBadParaQuotes.search(cs_el.line) is not None:
+
+                        # Našla se nevhodná uvozovka. Započítáme ji
+                        # a zapíšeme do souboru.
+                        cnt += 1
+
+                        f.write('\ncs {}/{} -- en {}/{}, {}:\n'.format(
+                                cs_el.fname,
+                                cs_el.lineno,
+                                en_el.fname,
+                                en_el.lineno,
+                                repr(cs_el.type)))
+
+                        f.write('\t{}\n'.format(en_el.line.rstrip()))
+                        f.write('\t{}\n'.format(cs_el.line.rstrip()))
+
+                elif cs_el.type == 'code':
+
+                    if rexBadCodeQuotes.search(cs_el.line) is not None:
+
+                        # Našla se nevhodná uvozovka. Započítáme ji
+                        # a zapíšeme do souboru.
+                        cnt += 1
+
+                        f.write('\ncs {}/{} -- en {}/{}, {}:\n'.format(
+                                cs_el.fname,
+                                cs_el.lineno,
+                                en_el.fname,
+                                en_el.lineno,
+                                repr(cs_el.type)))
+
+                        f.write('\t{}\n'.format(en_el.line.rstrip()))
+                        f.write('\t{}\n'.format(cs_el.line.rstrip()))
+
+                elif cs_el.type not in ('empty', 'img'):
+                        # Neznámý typ elementu.
+                        cnt += 1
+
+                        f.write('\ncs {}/{} -- en {}/{}, {}:\n'.format(
+                                cs_el.fname,
+                                cs_el.lineno,
+                                en_el.fname,
+                                en_el.lineno,
+                                repr(cs_el.type)))
+
+                        f.write('\t{}\n'.format(en_el.line.rstrip()))
+                        f.write('\t{}\n'.format(cs_el.line.rstrip()))
+
+
+        # Přidáme informaci o synchronnosti použití zpětných apostrofů.
+        subdir = os.path.basename(self.cs_aux_dir)        # český výstup
+        self.info_files.append(subdir +'/pass2dquotes.txt')
+        self.info_files.append(('-'*30) + \
+               ' elementy s chybnými uvozovkami: {}'.format(cnt))
+
+
+    def reportEmAndStrong(self):
+        '''Sbírá odstavce s *emphasize* a **strong** vyznačením.
+
+           Výsledky zapisuje do pass2em_strong.txt.'''
+
+        cnt = 0         # init -- počet odhalených chyb
+        fname = os.path.join(self.cs_aux_dir, 'pass2em_strong.txt')
+
+        with open(fname, 'w', encoding='utf-8', newline='\n') as f:
+
+            # Regulární výraz pro jednoduché nebo dvojité hvězdičky.
+            rexEmStrong = re.compile(r'(\*{1,2})(\S.*?\S?)\1')
+
+            for en_el, cs_el in zip(self.en_lst, self.cs_lst):
+
+                # Zpracováváme jen odstavce textu.
+                if cs_el.type in ('para', 'li', 'uli', 'imgcaption', 'title'):
+
+                    if rexEmStrong.search(cs_el.line) is not None:
+
+                        # Našlo se vyznačení.
+                        cnt += 1
+
+                        f.write('\ncs {}/{} -- en {}/{}, {}:\n'.format(
+                                cs_el.fname,
+                                cs_el.lineno,
+                                en_el.fname,
+                                en_el.lineno,
+                                repr(cs_el.type)))
+
+                        f.write('\t{}\n'.format(en_el.line.rstrip()))
+                        f.write('\t{}\n'.format(cs_el.line.rstrip()))
+
+                elif cs_el.type not in ('empty', 'img', 'code'):
+                        # Neznámý typ elementu.
+                        cnt += 1
+
+                        f.write('\ncs {}/{} -- en {}/{}, neznámý element {}:\n'.format(
+                                cs_el.fname,
+                                cs_el.lineno,
+                                en_el.fname,
+                                en_el.lineno,
+                                repr(cs_el.type)))
+
+                        f.write('\t{}\n'.format(en_el.line.rstrip()))
+                        f.write('\t{}\n'.format(cs_el.line.rstrip()))
+
+
+        # Přidáme informaci o synchronnosti použití zpětných apostrofů.
+        subdir = os.path.basename(self.cs_aux_dir)        # český výstup
+        self.info_files.append(subdir +'/pass2em_strong.txt')
+        self.info_files.append(('-'*30) + \
+               ' elementy s *em* a **strong**: {}'.format(cnt))
+
+
+    def writePass2txtFile(self):
+        ''' Zapíše strojově modifikovaný soubor do pass2.txt.'''
+
+        with open(os.path.join(self.cs_aux_dir, 'pass2.txt'), 'w',
+                  encoding='utf-8', newline='\n') as fout:
+            for cs_element in self.cs_lst:
+                fout.write(cs_element.line)
+
+        # Přidáme informaci o vytvářeném souboru.
+        subdir = os.path.basename(self.cs_aux_dir)        # český výstup
+        self.info_files.append(subdir +'/pass2.txt')
+
+
+    def splitToChapterFiles(self):
+        '''Jediný vstupní cs soubor do více souborů s cílovou strukturou.
+
+           Využívá se informací z načtených seznamů elementů.
+           '''
+
+        assert len(self.cs_lst) > 0
+        assert len(self.en_lst) > 0
+
+        en_fname = None
+        cs_fname = None
+        f = None
+        for en_element, cs_element in zip(self.en_lst, self.cs_lst):
+            # Při změně souboru originálu uzavřeme původní, zajistíme
+            # existenci cílového adresáře a otevřeme nový výstupní soubor.
+            if en_element.fname != en_fname:
+                # Pokud byl otevřen výstupní soubor, uzavřeme jej.
+                if f is not None:
+                    f.close()
+
+                # Zachytíme jméno anglického originálu a trochu je zneužijeme.
+                # Obsahuje relativní cestu vůči podadresáři "en/" originálu,
+                # takže je přímo připlácneme k "pass1cs/". Dodatečně
+                # oddělíme adresář a zajistíme jeho existenci.
+                en_fname = en_element.fname
+                cs_fname = os.path.join(self.cs_aux_dir, 'pass2cs', en_fname)
+                cs_fname = os.path.abspath(cs_fname)
+
+                cs_chapter_dir = os.path.dirname(cs_fname)
+                if not os.path.isdir(cs_chapter_dir):
+                    os.makedirs(cs_chapter_dir)
+
+                # Otevřeme nový výstupní soubor.
+                f = open(cs_fname, 'w', encoding='utf-8', newline='\n')
+
+                # Pro informaci vypíšeme relativní jméno originálu (je stejné
+                # jako jméno výstupního souboru, přidáme natvrdo cs/).
+                self.info_files.append('.../pass2cs/' + en_fname)
+
+            # Zapíšeme řádek českého elementu.
+            f.write(cs_element.line)
+
+        # Uzavřeme soubor s poslední částí knihy.
+        f.close()
+
 
 
     def run(self):
-        self.fout = open(os.path.join(self.aux_dir, 'pass2.txt'), 'w', 
-                         encoding='utf-8', newline='\n')
+        '''Spouštěč jednotlivých fází parseru.'''
 
-        with open(self.fname_in, encoding='utf-8') as fin:
+        self.checkImages()
+        self.fixParaBackticks()
+        self.reportBadDoubleQuotes()
+        self.reportEmAndStrong()
+        self.writePass2txtFile()
+        self.splitToChapterFiles()
 
-            self.status = 0
-            while self.status != 888:
+        return '\n\t'.join(self.info_files)
 
-                self.line = fin.readline()
-                self.parse_line()
-
-                if self.type == 'EOF':
-                    self.status = 888
-
-                if self.status == 0:            # ------- základní stav
-                    if self.type == 'empty':
-                        self.collect()
-                        self.write_collection() # zapíše prázdný řádek
-
-                    elif self.type == 'pagesep':
-                        self.write_collection() # nezapíše nic
-
-                    elif self.type == 'title':
-                        # Číslo nadpisu změníme na abstraktní označení
-                        # a zapíšeme řádek nadpisu.
-                        xxx = abstractNum(self.parts[0])
-                        self.collect(xxx)
-                        self.collect(self.parts[1])
-                        self.collect(xxx)
-                        self.write_collection()
-
-                        # Většině nadpisů chybí oddělení prázdným řádkem.
-                        # Přidáme jej natvrdo.
-                        self.collect('')
-                        self.write_collection()
-
-                    elif self.type == 'h4title':
-                        # Symbolicky uvedený nadpis čtvrté úrovně.
-                        self.collect()
-                        self.write_collection()
-
-                    elif self.type == 'xcode':
-                        self.collect()
-                        self.write_collection() # řádky kódu se neslepují
-                        self.status = 1         # další řádky až do empty
-
-                    elif self.type == 'code':
-                        # Správně a explicitně určený řádek s příkladem kódu
-                        # nebo s nějakým textovým výstupem. Provedeme výstup
-                        # tohoto řádku a nečiníme žádné speciální předpoklady.
-                        self.collect()
-                        self.write_collection()
-
-                    elif self.type == 'xuli':
-                        # Dobře rozpoznaný zahajovací znak odrážky.
-                        self.collect()
-                        self.status = 2         # sběr textu odrážky
-
-                    elif self.type == 'uli':
-                        # Dobře rozpoznaný zahajovací znak + řádek odrážky.
-                        self.collect()
-                        self.status = 3         # sběr textu odrážky
-
-                    elif self.type == 'li':
-                        # Dobře rozpoznaná položka číslovaného seznamu.
-                        self.collect()
-                        self.status = 6         # sběr textu položky
-
-                    elif self.type == 'num':
-                        # Pravděpodobně špatně zalomený nadpis nebo položka
-                        # číslovaného seznamu.
-                        self.collect()
-                        self.status = 4        # očekává se řádek s textem
-
-                    elif self.type == 'obrazek':
-                        # Instrukce pro vložení obrázku.
-                        self.collect()
-                        self.write_collection()
-
-                    elif self.type == '?':
-                        # Začátek textu běžného odstavce.
-                        self.collect()
-                        self.status = 7        # očekává se řádek s textem
-                    else:
-                        # Diagnostický výstup.
-                        self.fout.write('{}|{}\n'.format(self.type,
-                                                         ' '.join(self.parts)))
-
-                elif self.status == 1:          # ------- až do empty jako code
-                    if self.type == 'empty':
-                        self.collect()
-                        self.write_collection() # prázdný řádek na výstup
-                        self.status = 0
-                    else:
-                        # Typ a parts položky mohou být odhadnuty chybně. Tento
-                        # řádek se nachází v souvislém bloku za 'xcode', takže
-                        # jej budeme reinterpretovat jako 'xcode'.
-                        self.type = 'xcode'
-                        self.parts = ['\t', self.line.rstrip()]
-                        self.collect()
-                        self.write_collection() # řádky kódu se neslepují
-
-                elif self.status == 2:          # ------- první řádek odrážky
-                    self.collect(self.line.strip())
-                    self.status = 3
-
-                elif self.status == 3:          # ------- další řádek odrážky
-                    if self.type == '?':
-                        self.collect()          # pokračovat ve sběru
-                    elif self.type == 'empty':
-                        self.write_collection()
-                        self.collect()          # ukončeno prázdným řádkem
-                        self.write_collection()
-                        self.status = 0
-                    elif self.type == 'uli':
-                        self.write_collection() # předchozí odrážka
-                        self.collect()          # řádek s další odrážkou
-                        self.status = 3         # zůstaneme ve stejném stavu
-                    elif self.type == 'xuli':
-                        self.write_collection() # předchozí odrážka
-                        self.collect()          # jen značka
-                        self.status = 2
-                    else:
-                        self.status = 'unknown after {}'.format(self.status)
-
-                elif self.status == 4:          # ------- očekává text po num
-                    if self.type == '?':
-                        num = self.collection[0]
-                        text = self.parts[0]
-
-                        if num in self.toc and self.toc[num] == text:
-                            # Je to nadpis. Nahradíme číslo abstraktním označením
-                            # úrovně.
-                            self.collect()
-                            xxx = abstractNum(self.collection[0])
-                            self.collection[0] = xxx
-                            self.collect(xxx)
-                            self.write_collection()
-
-                            # Prázdný řádek po špatně zalomeném nadpisu.
-                            self.collect('')
-                            self.write_collection()
-                            self.status = 0     # do základního stavu
-                        else:
-                            # Je to číslovaná položka seznamu.
-                            self.collection[0] = num + '\t' # přidat tabulátor
-                            self.collect()      # zahájit sběr číslované položky
-                            self.status = 5
-                    else:
-                        self.status = 'unknown after {}'.format(self.status)
-
-                elif self.status == 5:          # ------- sběr špatně zalomené 3. item
-                    if self.type == '?':
-                        self.collect()          # pokračovat ve sběru
-                    elif self.type == 'empty':
-                        self.write_collection()
-                        self.collect()          # ukončeno prázdným řádkem
-                        self.write_collection()
-                        self.status = 0
-                    elif self.type == 'pagesep':
-                        self.write_collection()
-                        self.collect('')        # ukončeno prázdným řádkem
-                        self.write_collection()
-                        self.status = 0
-                    elif self.type == 'num':
-                        self.write_collection() # předchozí bod
-                        self.collect()          # jen číslo
-                        self.status = 4
-                    else:
-                        self.status = 'unknown after {}'.format(self.status)
-
-                elif self.status == 6:          # ------- řádek za položkou číslovaného seznamu
-                    if self.type == '?':
-                        self.collect()          # pokračovat ve sběru
-                    elif self.type == 'empty':
-                        self.write_collection()
-                        self.collect()          # ukončeno prázdným řádkem
-                        self.write_collection()
-                        self.status = 0
-                    elif self.type == 'li':
-                        self.write_collection() # vypíšeme předchozí bod
-                        self.collect()          # zahájíme sběr dalšího
-                        # Zůstaneme ve stejném stavu.
-                    else:
-                        self.status = 'unknown after {}'.format(self.status)
-
-                elif self.status == 7:          # ------- sběr řádků odstavce
-                    if self.type == '?':
-                        self.collect()          # pokračovat ve sběru
-                    elif self.type == 'empty':
-                        self.write_collection()
-                        self.collect()          # ukončeno prázdným řádkem
-                        self.write_collection()
-                        self.status = 0
-                    elif self.type == 'pagesep':
-                        pass                    # zlom stránky ignorujeme
-                    else:
-                        self.status = 'unknown after {}'.format(self.status)
-
-                elif self.status == 888:        # ------- akce po EOF
-                    pass
-
-                else:
-                    # Neznámý stav. Indikujeme na výstupu a vypíšeme
-                    # sesbíranou kolekci.
-                    self.fout.write('!!! Neznámý stav: {}\n'.format(self.status))
-
-        # Uzavřeme výstupní soubor.
-        self.fout.close()
-
-        # Vracíme textovou informaci pro případný výpis na displeji.
-        subdir = os.path.basename(self.aux_dir)
-        return subdir + '/pass2.txt'
+    #
+    # Hledáme značkování uvnitř 'para' elementů. U některých podřetězců můžeme
+    # do českého překladu doplnit značkování přímo:
+    #  - opačné apostrofy obalují úryvky kódu, který by měl být převzatý 1:1,
+    #  - kontrolujeme výskyt podřetězců v opačných apostrofech v cs,
+    #  - plníme množinu podřetězců v opačných apostrofech (zapíšeme seřazené
+    #    do souboru),
+    #  - navrhneme doplnění opačných apostrofů i do míst, kde jsou v originále
+    #    zapomenuty (není jasné, co vše se najde; zatím do odděleného souboru),
+    #  - obyčejné dvojité uvozovky měníme na české (? -- zatím do odděleného souboru),
+    #
+    # Další typy značkování jen nahlásíme a budeme asi doplňovat ručně
+    # (kurzíva, tučné, ...).
+    #
+    # V 'para' kontrolovat správnost odkazů na obrázky (vůči originálu).
