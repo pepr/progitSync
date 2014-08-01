@@ -105,13 +105,13 @@ class Parser:
                 set([115]),
 
             '07-customizing-git/01-chapter7.markdown':
-                set([]),
+                set([463]),
 
             '08-git-and-other-scms/01-chapter8.markdown':
-                set([]),
+                set([90, 238, 291, 395]),
 
             '09-git-internals/01-chapter9.markdown':
-                set([]),
+                set([30, 332, 336]),
 
             }
 
@@ -119,11 +119,14 @@ class Parser:
              open(btfname_anomally, 'w', encoding='utf-8', newline='\n') as fa:
 
             # V log souboru upozorníme na ignorované odstavce.
-            f.write('Ignorované odstavce:\n')
+            f.write('Přeskakované odstavce -- viz fixParaBackticks() v pass2.py:\n')
             for k in sorted(cs_skip):
                 chapter = k.split('/')[1][3:11]
                 f.write('  {}: {!r}\n'.format(chapter, sorted(cs_skip[k])))
-            f.write('=' * 78 + '\n\n')
+            f.write('=' * 78 + '\n')
+
+            fa.write('Anomálie')
+            fa.write('=' * 78 + '\n')
 
             for en_el, cs_el in zip(self.en_lst, self.cs_lst):
 
