@@ -92,34 +92,42 @@ class Parser:
                 set([193, 197]),
 
             '02-git-basics/01-chapter2.markdown':
-                set([91, 410, 662, 748, 757, 784, 792, 960, 1027]),
+                set([92, 424, 763, 850, 886, 894, 1063, 1130]),
 
             '03-git-branching/01-chapter3.markdown':
-                set([68, 77, 347, 384, 386, 415, 425, 451, 467, 473,
-                     518, 527, 540]),
+                set([18, 68, 77, 355, 392, 394, 423, 433, 459, 475, 481,
+                     526, 535, 548]),
 
             '04-git-server/01-chapter4.markdown':
-                set([178, 324, 524, 560]),
+                set([179, 330, 530]),
 
             '05-distributed-git/01-chapter5.markdown':
                 set([115]),
 
             '07-customizing-git/01-chapter7.markdown':
-                set([462]),
+                set([]),
 
             '08-git-and-other-scms/01-chapter8.markdown':
-                set([90, 238, 291, 395]),
+                set([]),
 
             '09-git-internals/01-chapter9.markdown':
-                set([332, 336]),
+                set([]),
 
             }
 
         with open(btfname, 'w', encoding='utf-8', newline='\n') as f, \
              open(btfname_anomally, 'w', encoding='utf-8', newline='\n') as fa:
+
+            # V log souboru upozorníme na ignorované odstavce.
+            f.write('Ignorované odstavce:\n')
+            for k in sorted(cs_skip):
+                chapter = k.split('/')[1][3:11]
+                f.write('  {}: {!r}\n'.format(chapter, sorted(cs_skip[k])))
+            f.write('=' * 78 + '\n\n')
+
             for en_el, cs_el in zip(self.en_lst, self.cs_lst):
 
-                # Zpracováváme jen odstavce textu a testy s odrážek a číslovaných
+                # Zpracováváme jen odstavce textu a testy z odrážek a číslovaných
                 # seznamů. Odstavce vykazující známou anomálii ale přeskakujeme.
                 if en_el.type in ['para', 'uli', 'li'] \
                    and cs_el.lineno not in cs_skip.get(cs_el.fname, {}):
@@ -400,7 +408,7 @@ class Parser:
 
                 # Zachytíme jméno anglického originálu a trochu je zneužijeme.
                 # Obsahuje relativní cestu vůči podadresáři "en/" originálu,
-                # takže je přímo připlácneme k "pass1cs/". Dodatečně
+                # takže je přímo připlácneme k "pass2cs/". Dodatečně
                 # oddělíme adresář a zajistíme jeho existenci.
                 en_fname = en_element.fname
                 cs_fname = os.path.join(self.cs_aux_dir, 'pass2cs', en_fname)
@@ -414,7 +422,7 @@ class Parser:
                 f = open(cs_fname, 'w', encoding='utf-8', newline='\n')
 
                 # Pro informaci vypíšeme relativní jméno originálu (je stejné
-                # jako jméno výstupního souboru, přidáme natvrdo cs/).
+                # jako jméno výstupního souboru, ale v jiném adresáři).
                 self.info_files.append('.../pass2cs/' + en_fname)
 
             # Zapíšeme řádek českého elementu.

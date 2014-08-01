@@ -112,17 +112,16 @@ class Parser:
                     set([246, 247, 248]),
 
                 '02-git-basics/01-chapter2.markdown':
-                    set([172, 173, 174, 175, 176, 177, 389])
-                        .union(range(535, 551))
-                        .union(range(570, 580))
-                        .union(range(597, 603))
-                        .union([774]),
-
-                '04-git-server/01-chapter4.markdown':
-                    set([528, 529, 530]),
+                    set([175, 176, 178,
+                         180, 182, 184, 186,
+                         405])
+                        .union(range(577, 593))
+                        .union(range(617, 629))
+                        .union(range(653, 659))
+                        .union([876]),
 
                 '05-distributed-git/01-chapter5.markdown':
-                    set([90, 92, 93, 94, 95, 96, 97, 99, 101, 103, 104]),
+                    set(range(90, 105)),
 
                 '07-customizing-git/01-chapter7.markdown':
                     set([40, 42, 44, 53, 55, 57]),
