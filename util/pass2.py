@@ -82,6 +82,7 @@ class Parser:
         async_cnt = 0     # init -- počet nesynchronních výskytů
         anomally_cnt = 0  # init -- počet odhalených anomálií
         btfname = os.path.join(self.cs_aux_dir, 'pass2backticks.txt')
+        btfname_skipped = os.path.join(self.cs_aux_dir, 'pass2backticks_skiped.txt')
         btfname_anomally = os.path.join(self.cs_aux_dir, 'pass2backticks_anomally.txt')
 
         # Při řešení anomálií byly některé případy vyřešeny ručně, ale test
@@ -89,7 +90,7 @@ class Parser:
         # s odstavcem musíme přidat mezi přeskakované.
         cs_skip = {
             '01-introduction/01-chapter1.markdown':
-                set([193, 197]),
+                set([193, 197, 237, 250]),
 
             '02-git-basics/01-chapter2.markdown':
                 set([92, 424, 763, 850, 886, 894, 1063, 1130]),
@@ -115,25 +116,42 @@ class Parser:
 
             }
 
-        with open(btfname, 'w', encoding='utf-8', newline='\n') as f, \
+        with open(btfname, 'w', encoding='utf-8', newline='\n') as fout, \
+             open(btfname_skipped, 'w', encoding='utf-8', newline='\n') as fskip, \
              open(btfname_anomally, 'w', encoding='utf-8', newline='\n') as fa:
 
-            # V log souboru upozorníme na ignorované odstavce.
-            f.write('Přeskakované odstavce -- viz fixParaBackticks() v pass2.py:\n')
+            # Hlavička souboru s problémy. Upozorníme na ignorované odstavce.
+            fout.write('Přeskakované odstavce -- viz fixParaBackticks() v pass2.py:\n')
             for k in sorted(cs_skip):
                 chapter = k.split('/')[1][3:11]
-                f.write('  {}: {!r}\n'.format(chapter, sorted(cs_skip[k])))
-            f.write('=' * 78 + '\n')
+                fout.write('  {}: {!r}\n'.format(chapter, sorted(cs_skip[k])))
+            fout.write('=' * 78 + '\n')
+
+            # Hlavička souboru s odstavci, jejichž porovnávání bylo potlačeno.
+            # Někdy bychom ale mohli chtít prohlédnout, jestli je to potlačeno
+            # správně.
+            fskip.write('Přeskakované odstavce -- viz fixParaBackticks() v pass2.py:\n')
+            for k in sorted(cs_skip):
+                chapter = k.split('/')[1][3:11]
+                fskip.write('  {}: {!r}\n'.format(chapter, sorted(cs_skip[k])))
+            fskip.write('=' * 78 + '\n')
 
             fa.write('Anomálie')
             fa.write('=' * 78 + '\n')
 
+            # V cyklu porovnáme a zpracujeme prvky z obou dokumentů.
             for en_el, cs_el in zip(self.en_lst, self.cs_lst):
 
                 # Zpracováváme jen odstavce textu a testy z odrážek a číslovaných
                 # seznamů. Odstavce vykazující známou anomálii ale přeskakujeme.
-                if en_el.type in ['para', 'uli', 'li'] \
-                   and cs_el.lineno not in cs_skip.get(cs_el.fname, {}):
+                if en_el.type in ['para', 'uli', 'li']:
+
+                    if cs_el.lineno not in cs_skip.get(cs_el.fname, {}):
+                        f = fout
+                        skipped = False
+                    else:
+                        f = fskip
+                        skipped = True
 
                     # Najdeme všechny symboly uzavřené ve zpětných apostrofech
                     # v originálním odstavci.
@@ -158,7 +176,8 @@ class Parser:
                                 dlst.remove(s)
 
                         # Započítáme a zapíšeme do souboru.
-                        async_cnt += 1
+                        if not skipped:
+                            async_cnt += 1
                         f.write('\ncs {}/{} -- en {}/{}:\n'.format(
                                 cs_el.fname,
                                 cs_el.lineno,
@@ -212,7 +231,8 @@ class Parser:
 
                             # Za neshodu při synchronizaci považujeme pouze
                             # vznik anomálie -- započítáme další anomálii.
-                            anomally_cnt += 1
+                            if not skipped:
+                                anomally_cnt += 1
 
                             # Zapíšeme do souboru s anomáliemi.
                             fa.write('\ncs {} -- en {}/{}:\n'.format(
@@ -236,6 +256,7 @@ class Parser:
         # Přidáme informaci o synchronnosti použití zpětných apostrofů.
         subdir = os.path.basename(self.cs_aux_dir)        # český výstup
         self.info_files.append(subdir +'/pass2backticks.txt')
+        self.info_files.append(subdir +'/pass2backticks_skiped')
         self.info_files.append(('-'*30) + \
                          ' nesynchronnost zpětných apostrofů: {}'.format(async_cnt))
         self.info_files.append(subdir +'/pass2backticks_anomally.txt')
