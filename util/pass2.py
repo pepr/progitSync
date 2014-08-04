@@ -355,7 +355,7 @@ class Parser:
              open(fname_diff, 'w', encoding='utf-8', newline='\n') as fdiff:
 
             # Regulární výraz pro jednoduché nebo dvojité hvězdičky.
-            rexEmStrong = re.compile(r'(\*{1,2})([^*]+?)\1')
+            rexEmStrong = re.compile(r'([*_]{1,2})([^*_]+?)\1')
 
             for en_el, cs_el in zip(self.en_lst, self.cs_lst):
 
