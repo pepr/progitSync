@@ -349,22 +349,29 @@ class Parser:
 
         cnt = 0         # init -- počet odhalených chyb
         fname = os.path.join(self.cs_aux_dir, 'pass2em_strong.txt')
+        fname_diff = os.path.join(self.cs_aux_dir, 'pass2em_strong_diff.txt')
 
-        with open(fname, 'w', encoding='utf-8', newline='\n') as f:
+        with open(fname, 'w', encoding='utf-8', newline='\n') as f,\
+             open(fname_diff, 'w', encoding='utf-8', newline='\n') as fdiff:
 
             # Regulární výraz pro jednoduché nebo dvojité hvězdičky.
-            rexEmStrong = re.compile(r'(\*{1,2})(\S.*?\S?)\1')
+            rexEmStrong = re.compile(r'(\*{1,2})([^*]+?)\1')
 
             for en_el, cs_el in zip(self.en_lst, self.cs_lst):
 
-                # Zpracováváme jen odstavce textu.
+                # Pokud jde o typ elementu s běžným textem...
                 if cs_el.type in ('para', 'li', 'uli', 'imgcaption', 'title'):
 
-                    if rexEmStrong.search(cs_el.line) is not None:
+                    # Najdeme všechny označkované řetězce z originálního
+                    # a z českého odstavce.
+                    enlst = rexEmStrong.findall(en_el.line)
+                    cslst = rexEmStrong.findall(cs_el.line)
 
-                        # Našlo se vyznačení.
-                        cnt += 1
-
+                    # Pokud se něco našlo, zobrazíme originál a český vedle sebe.
+                    # Pokud se liší počet označkovaných posloupností, započítáme
+                    # to jako další problém k vyřešení a zobrazíme podobu odstavců
+                    # do souboru s rozdíly.
+                    if enlst or cslst:
                         f.write('\ncs {}/{} -- en {}/{}, {}:\n'.format(
                                 cs_el.fname,
                                 cs_el.lineno,
@@ -372,27 +379,35 @@ class Parser:
                                 en_el.lineno,
                                 repr(cs_el.type)))
 
+                        # Počty označkovaných posloupností.
+                        f.write('\t{} : {}\n'.format(len(enlst), len(cslst)))
+
+                        # Odstavce.
                         f.write('\t{}\n'.format(en_el.line.rstrip()))
                         f.write('\t{}\n'.format(cs_el.line.rstrip()))
 
-                elif cs_el.type not in ('empty', 'img', 'code'):
-                        # Neznámý typ elementu.
-                        cnt += 1
+                        # Pokud se počet liší, zaznamenáme totéž ještě jednou
+                        # do souboru s předpokládanými rozdíly.
+                        if len(enlst) != len(cslst):
+                            cnt += 1
+                            fdiff.write('\ncs {}/{} -- en {}/{}, {}:\n'.format(
+                                        cs_el.fname,
+                                        cs_el.lineno,
+                                        en_el.fname,
+                                        en_el.lineno,
+                                        repr(cs_el.type)))
 
-                        f.write('\ncs {}/{} -- en {}/{}, neznámý element {}:\n'.format(
-                                cs_el.fname,
-                                cs_el.lineno,
-                                en_el.fname,
-                                en_el.lineno,
-                                repr(cs_el.type)))
+                            # Počty označkovaných posloupností.
+                            fdiff.write('\t{} : {}\n'.format(len(enlst), len(cslst)))
 
-                        f.write('\t{}\n'.format(en_el.line.rstrip()))
-                        f.write('\t{}\n'.format(cs_el.line.rstrip()))
+                            # Odstavce.
+                            fdiff.write('\t{}\n'.format(en_el.line.rstrip()))
+                            fdiff.write('\t{}\n'.format(cs_el.line.rstrip()))
 
-
-        # Přidáme informaci o synchronnosti použití zpětných apostrofů.
+        # Přidáme informaci o provedení kontroly.
         subdir = os.path.basename(self.cs_aux_dir)        # český výstup
         self.info_files.append(subdir +'/pass2em_strong.txt')
+        self.info_files.append(subdir +'/pass2em_strong_diff.txt')
         self.info_files.append(('-'*30) + \
                ' elementy s *em* a **strong**: {}'.format(cnt))
 
