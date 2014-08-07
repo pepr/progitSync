@@ -58,7 +58,7 @@ class Parser:
 
 
     def buildRex(self, lst):
-        '''Build a regular expression mathing substrings from the lst.'''
+        '''Build a regular expression matching substrings from the lst.'''
 
         # Build a list of escaped unique substrings from the input list.
         # The order is not important now as it must be corrected later.

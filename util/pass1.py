@@ -103,8 +103,9 @@ class Parser:
         # příklady kódu) porovnáváme za účelem zjištění rozdílů struktury -- zde
         # jen typy elementů.
         struct_diff_fname = os.path.join(self.cs_aux_dir, 'pass1struct_diff.txt')
-        with open(struct_diff_fname, 'w',
-                  encoding='utf-8', newline='\n') as f:
+        para_len_fname = os.path.join(self.cs_aux_dir, 'pass1paralen.txt')
+        with open(struct_diff_fname, 'w', encoding='utf-8', newline='\n') as f, \
+             open(para_len_fname, 'w', encoding='utf-8', newline='\n') as flen:
 
             # Některé příklady jsou přeložené. V nich rozdíly povolíme.
             cs_line_may_differ = {
@@ -159,9 +160,25 @@ class Parser:
                     f.write('\t{}:\t{}\n'.format(en_element.type,
                                                  en_element.line.rstrip()))
 
+                # V případě shody struktury provedeme heuristickou kontrolu
+                # na délku odstavců. Využívá se skutečnosti, že odstavec
+                # je většinou napsán na jednom dlouhém řádku -- každopádně
+                # stejně v obou jazycích.
+                elif en_element.type in ('para', 'uli', 'li'):
+                    # U obou identifikaci kapitoly, čísla porovnávaných řádků,
+                    # délky porovnávaných řádků a poměr délek.
+                    flen.write('{} cs/{} -- en/{}:\t{}:{}\t({})\n'.format(
+                               os.path.split(cs_element.fname)[0],
+                               cs_element.lineno,
+                               en_element.lineno,
+                               len(cs_element.line),
+                               len(en_element.line),
+                               len(cs_element.line) / len(en_element.line)))
+
         # Přidáme informaci o výstupním souboru.
         subdir = os.path.basename(self.cs_aux_dir)        # český výstup
         self.info_files.append(subdir +'/pass1struct_diff.txt')
+        self.info_files.append(subdir +'/pass1paralen.txt')
 
         # Přidáme informaci o synchronnosti.
         self.info_files.append(('-'*40) + ' struktura se ' +
