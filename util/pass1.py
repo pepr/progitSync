@@ -18,30 +18,32 @@ class Parser:
         self.cs_lst = None              # seznam elementů z českého překladu
         self.en_lst = None              # seznam elementů z anglického originálu
 
-        self.info_files = []
+        self.info_lines = []            # sběr informačních řádků pro stdout
 
     def writePass1txtFiles(self):
         # Kopie českého vstupu do jednoho souboru. Při tomto průchodu
         # pochází z jednoho souboru, takže jméno souboru vynecháme.
-        with open(os.path.join(self.cs_aux_dir, 'pass1.txt'), 'w',
-                  encoding='utf-8', newline='\n') as fout:
+        cs_single_fname = os.path.join(self.cs_aux_dir, 'pass1.txt')
+        with open(cs_single_fname, 'w', encoding='utf-8', newline='\n') as fout:
             for fname, lineno, line in gen.sourceFileLines(self.cs_name_in):
                 fout.write('{}/{}:\t{}'.format(fname[1:2], lineno, line))
 
         # Kopie anglického vstupu do jednoho souboru. Pro lepší orientaci
         # v dlouhých řádcích nebudeme vypisovat jméno souboru, ale
         # jen číslo kapitoly (jeden znak relativní cesty).
-        with open(os.path.join(self.en_aux_dir, 'pass1.txt'), 'w',
-                  encoding='utf-8', newline='\n') as fout:
+        en_single_fname = os.path.join(self.en_aux_dir, 'pass1.txt')
+        with open(en_single_fname, 'w', encoding='utf-8', newline='\n') as fout:
             for fname, lineno, line in gen.sourceFileLines(self.en_name_in):
                 fout.write('{}/{}:\t{}'.format(fname[1:2], lineno, line))
 
         # Přidáme informaci o vytvářených souborech.
-        subdir = os.path.basename(self.cs_aux_dir)        # český výstup
-        self.info_files.append(subdir +'/pass1.txt')
+        path, fname = os.path.split(cs_single_fname)    # český výstup
+        subdir = os.path.basename(path)
+        self.info_lines.append('/'.join((subdir, fname)))
 
-        subdir = os.path.basename(self.en_aux_dir)        # anglický výstup
-        self.info_files.append(subdir +'/pass1.txt')
+        path, fname = os.path.split(en_single_fname)    # anglický výstup
+        subdir = os.path.basename(path)
+        self.info_lines.append('/'.join((subdir, fname)))
 
 
     def loadElementLists(self):
@@ -56,10 +58,13 @@ class Parser:
         # struktury se musí přeskočit. Zapíšeme je ale do zvláštního
         # souboru pass1extra_lines.txt. Natvrdo naplníme slovník množin
         # čísel přeskakovaných řádků pro jednotlivé kapitoly.
-        cs_skip = {
-            '06-git-tools/01-chapter6.markdown':
-                set(range(396, 413))
-            }
+        ##cs_skip = {
+        ##    '06-git-tools/01-chapter6.markdown':
+        ##        set(range(396, 413))
+        ##    }
+        ########## implementovat jiný nástroj založený na obsahu externího
+        # souboru s výjimkami ???
+        #
         self.cs_lst = []
         with open(os.path.join(self.cs_aux_dir, 'pass1elem.txt'), 'w',
                   encoding='utf-8', newline='\n') as fout, \
@@ -67,7 +72,7 @@ class Parser:
                   encoding='utf-8', newline='\n') as foutextra:
             for relname, lineno, line in gen.sourceFileLines(self.cs_name_in):
                 elem = docelement.Element(relname, lineno, line)
-                if lineno in cs_skip.get(relname, {}):
+                if False:    ##??? lineno in cs_skip.get(relname, {}):
                     # Přeskočíme elementy, které byly doplněny navíc.
                     # Prostě je nepřidáme do seznamu.
                     foutextra.write('{:4d}:\t{}'.format(lineno, line))
@@ -77,8 +82,8 @@ class Parser:
 
         # Přidáme informaci o výstupních souborech.
         subdir = os.path.basename(self.cs_aux_dir)
-        self.info_files.append(subdir +'/pass1extra_lines.txt')
-        self.info_files.append(subdir +'/pass1elem.txt')
+        self.info_lines.append(subdir +'/pass1extra_lines.txt')
+        self.info_lines.append(subdir +'/pass1elem.txt')
 
         # Elementy z anglického originálu do seznamu a do souboru.
         self.en_lst = []
@@ -91,7 +96,7 @@ class Parser:
 
         # Přidáme informaci o výstupním souboru.
         subdir = os.path.basename(self.en_aux_dir)
-        self.info_files.append(subdir +'/pass1elem.txt')
+        self.info_lines.append(subdir +'/pass1elem.txt')
 
 
     def checkStructDiffs(self):
@@ -177,11 +182,11 @@ class Parser:
 
         # Přidáme informaci o výstupním souboru.
         subdir = os.path.basename(self.cs_aux_dir)        # český výstup
-        self.info_files.append(subdir +'/pass1struct_diff.txt')
-        self.info_files.append(subdir +'/pass1paralen.txt')
+        self.info_lines.append(subdir +'/pass1struct_diff.txt')
+        self.info_lines.append(subdir +'/pass1paralen.txt')
 
         # Přidáme informaci o synchronnosti.
-        self.info_files.append(('-'*40) + ' struktura se ' +
+        self.info_lines.append(('-'*40) + ' struktura se ' +
                                ('shoduje' if sync_flag else 'NESHODUJE'))
 
 
@@ -192,4 +197,4 @@ class Parser:
         self.loadElementLists()
         self.checkStructDiffs()
 
-        return '\n\t'.join(self.info_files)
+        return '\n\t'.join(self.info_lines)
