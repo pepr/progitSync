@@ -5,6 +5,13 @@ import docelement
 import gen
 import os
 
+def short_name(fname):
+    '''Vrací jméno pro log -- jen poslední podadresář s holým jménem.'''
+    path, name = os.path.split(fname)
+    subdir = os.path.basename(path)
+    return '/'.join((subdir, name))
+
+
 class Parser:
     '''Parser konzumující již dříve synchronizované české a anglické
        vstupy přímo z adresáře progit/en a progit/cs.'''
@@ -37,13 +44,8 @@ class Parser:
                 fout.write('{}/{}:\t{}'.format(fname[1:2], lineno, line))
 
         # Přidáme informaci o vytvářených souborech.
-        path, fname = os.path.split(cs_single_fname)    # český výstup
-        subdir = os.path.basename(path)
-        self.info_lines.append('/'.join((subdir, fname)))
-
-        path, fname = os.path.split(en_single_fname)    # anglický výstup
-        subdir = os.path.basename(path)
-        self.info_lines.append('/'.join((subdir, fname)))
+        self.info_lines.append(short_name(cs_single_fname))
+        self.info_lines.append(short_name(en_single_fname))
 
 
     def loadElementLists(self):
@@ -55,48 +57,102 @@ class Parser:
         # Elementy z českého překladu do seznamu a do souboru. Do českého
         # překladu jsou vloženy navíc úseky jako vysvětlivky anglického
         # originálu, který byl ponechán v původním tvaru. Při srovnávání
-        # struktury se musí přeskočit. Zapíšeme je ale do zvláštního
-        # souboru pass1extra_lines.txt. Natvrdo naplníme slovník množin
-        # čísel přeskakovaných řádků pro jednotlivé kapitoly.
-        ##cs_skip = {
-        ##    '06-git-tools/01-chapter6.markdown':
-        ##        set(range(396, 413))
-        ##    }
-        ########## implementovat jiný nástroj založený na obsahu externího
-        # souboru s výjimkami ???
-        #
-        self.cs_lst = []
-        with open(os.path.join(self.cs_aux_dir, 'pass1elem.txt'), 'w',
-                  encoding='utf-8', newline='\n') as fout, \
-             open(os.path.join(self.cs_aux_dir, 'pass1extra_lines.txt'), 'w',
-                  encoding='utf-8', newline='\n') as foutextra:
-            for relname, lineno, line in gen.sourceFileLines(self.cs_name_in):
-                elem = docelement.Element(relname, lineno, line)
-                if False:    ##??? lineno in cs_skip.get(relname, {}):
-                    # Přeskočíme elementy, které byly doplněny navíc.
-                    # Prostě je nepřidáme do seznamu.
-                    foutextra.write('{:4d}:\t{}'.format(lineno, line))
+        # struktury se musí přeskočit -- nevkládají se do seznamu českých
+        # elementů. Pro účely detekce přeskakovaných úseků si vybudujeme
+        # slovník seznamů řádků podle obsahu souboru s extra řádky, který
+        # je uložen v adresáři s tímto skriptem/modulem. Klíčem slovníku
+        # je první řádek z takové posloupnosti.
+        path, scriptname = os.path.split(__file__)
+        cs_def_extras_fname = os.path.join(path, 'cs_def_extras.txt')
+        cs_extras = {}
+        status = 0
+        lst = None
+        with open(cs_def_extras_fname, encoding='utf-8') as f:
+            for line in f:
+                if status == 0:
+                    # První řádek bude klíčem slovníku, získáme odkaz
+                    # na seznam řádků.
+                    lst = cs_extras.setdefault(line, [])
+                    assert len(lst) == 0
+
+                    lst.append(line)
+                    status = 1
+
+                elif status == 1:
+                    # Druhý a další řádek nebo konec posloupnosti
+                    if line.startswith('====='):    # minimálně 5
+                        lst = None
+                        status = 0
+                    else:
+                        lst.append(line)
+
                 else:
-                    self.cs_lst.append(elem)    # tento do seznamu přidáme
-                    fout.write(repr(elem) + '\n')
+                    raise NotImplementedError('status = {}\n'.format(status))
+
+        # Přidáme informaci o souboru s definicemi.
+        self.info_lines.append(short_name(cs_def_extras_fname))
+
+        # Procházíme elementy. Pokud narazíme na řádek, který zahajuje
+        # vynechávanou posloupnost, začneme porovnávat další řádky.
+        # Pokud nejde o vynechávanou posloupnost, zpracováváme řádky
+        # normálně, pokud jde, přeskočíme ji, ale zapíšeme vše do
+        # pass1extra_lines.txt. Kvůli backtrackingu načteme nejdříve
+        # všechny elementy do seznamu.
+        self.cs_lst = []
+        for relname, lineno, line in gen.sourceFileLines(self.cs_name_in):
+            elem = docelement.Element(relname, lineno, line)
+            self.cs_lst.append(elem)
+
+        cs_elem_fname = os.path.join(self.cs_aux_dir, 'pass1elem.txt')
+        cs_extra_fname = os.path.join(self.cs_aux_dir, 'pass1extra_lines.txt')
+        with open(cs_elem_fname, 'w', encoding='utf-8', newline='\n') as fout, \
+             open(cs_extra_fname, 'w', encoding='utf-8', newline='\n') as foutextra:
+
+            index = 0       # index zpracovávaného elementu
+            while index < len(self.cs_lst):  # pozor, délka se dynamicky mění
+                elem = self.cs_lst[index]
+
+                if elem.line in cs_extras:
+                    # Mohla by to být vložená (extra) posloupnost.
+                    # Porovnáme řádky v délce extra posloupnosti.
+                    e_lines = [e.line for e in self.cs_lst[index:index+len(cs_extras[elem.line])]]
+                    if e_lines == cs_extras[elem.line]:
+                        # Zaznamenáme přeskočené řádky.
+                        foutextra.write('{}/{}:\n'.format(elem.fname, elem.lineno))
+                        foutextra.write('\n'.join(e_lines))
+                        foutextra.write('\n====================\n\n')
+
+                        # Přeskočené řádky vypustíme ze seznamu elementů.
+                        del self.cs_lst[index:index+len(cs_extras[elem.line])]
+
+                        # Index posuneme o jeden zpět, protože se posloupnost
+                        # vypustila a index se bude zvyšovat o jedničku.
+                        index -= 1
+
+                # Posuneme se na další element, který se má zpracovat.
+                # Pokud se něco vynechávalo, provedla se korekce, aby
+                # to tady fungovalo.
+                index += 1
+
+            # Přefiltrované elementy vypíšeme do určeného souboru.
+            for elem in self.cs_lst:
+                fout.write(repr(elem) + '\n')
 
         # Přidáme informaci o výstupních souborech.
-        subdir = os.path.basename(self.cs_aux_dir)
-        self.info_lines.append(subdir +'/pass1extra_lines.txt')
-        self.info_lines.append(subdir +'/pass1elem.txt')
+        self.info_lines.append(short_name(cs_extra_fname))
+        self.info_lines.append(short_name(cs_elem_fname))
 
         # Elementy z anglického originálu do seznamu a do souboru.
         self.en_lst = []
-        with open(os.path.join(self.en_aux_dir, 'pass1elem.txt'), 'w',
-                  encoding='utf-8', newline='\n') as fout:
+        en_elem_fname = os.path.join(self.en_aux_dir, 'pass1elem.txt')
+        with open(en_elem_fname, 'w', encoding='utf-8', newline='\n') as fout:
             for relname, lineno, line in gen.sourceFileLines(self.en_name_in):
                 elem = docelement.Element(relname, lineno, line)
                 self.en_lst.append(elem)
                 fout.write(repr(elem) + '\n')
 
         # Přidáme informaci o výstupním souboru.
-        subdir = os.path.basename(self.en_aux_dir)
-        self.info_lines.append(subdir +'/pass1elem.txt')
+        self.info_lines.append(short_name(en_elem_fname))
 
 
     def checkStructDiffs(self):
@@ -181,9 +237,8 @@ class Parser:
                                len(cs_element.line) / len(en_element.line)))
 
         # Přidáme informaci o výstupním souboru.
-        subdir = os.path.basename(self.cs_aux_dir)        # český výstup
-        self.info_lines.append(subdir +'/pass1struct_diff.txt')
-        self.info_lines.append(subdir +'/pass1paralen.txt')
+        self.info_lines.append(short_name(struct_diff_fname))
+        self.info_lines.append(short_name(para_len_fname))
 
         # Přidáme informaci o synchronnosti.
         self.info_lines.append(('-'*40) + ' struktura se ' +

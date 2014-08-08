@@ -1,0 +1,18 @@
+V českém překladu:
+
+	Připravit tento soubor změn [y,n,a,d,/,j,J,g,e,?]? ?
+	y - připravit soubor změn k zapsání
+	n - nepřipravovat soubor změn k zapsání
+	a - připravit tento soubor změn i všechny ostatní komplexy v souboru
+	d - nepřipravovat tento soubor změn ani žádné další komplexy v souboru
+	g - vybrat soubor změn, k němuž má systém přejít
+	/ - najít soubor změn odpovídající danému regulárnímu výrazu
+	j - nechat tento soubor změn nerozhodnutý, zobrazit další nerozhodnutý
+	J - nechat tento soubor změn nerozhodnutý, zobrazit další komplex
+	j - nechat tento soubor změn nerozhodnutý, zobrazit předchozí nerozhodnutý
+	J - nechat tento soubor změn nerozhodnutý, zobrazit předchozí komplex
+	s - rozdělit aktuální soubor změn do menších komplexů
+	e - ručně editovat aktuální soubor změn
+	? - nápověda
+
+=========================================================================
