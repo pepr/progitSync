@@ -4,6 +4,14 @@
 import os
 import re
 
+
+def short_name(fname):
+    '''Vrací jméno pro log -- jen poslední podadresář s holým jménem.'''
+    path, name = os.path.split(fname)
+    subdir = os.path.basename(path)
+    return '/'.join((subdir, name))
+
+
 class Parser:
     '''Parser pro značkování a kontroly.
 
@@ -13,13 +21,13 @@ class Parser:
     rexBackticked = re.compile(r'`(\S.*?\S?)`')
 
     def __init__(self, pass1):
-        self.cs_aux_dir = pass1.cs_aux_dir    # pomocný adresář pro české výstupy
-        self.en_aux_dir = pass1.en_aux_dir    # pomocný adresář pro anglické výstupy
+        self.cs_aux_dir = pass1.cs_aux_dir  # pomocný adresář pro české výstupy
+        self.en_aux_dir = pass1.en_aux_dir  # pomocný adresář pro anglické výstupy
 
         self.en_lst = pass1.en_lst
         self.cs_lst = pass1.cs_lst
 
-        self.info_files = []
+        self.info_lines = []                # sběr řádků pro logování
         self.backticked_set = set()
 
 
@@ -51,9 +59,8 @@ class Parser:
                                                  en_el.line.rstrip()))
 
         # Přidáme informaci o synchronnosti obrázků.
-        subdir = os.path.basename(self.cs_aux_dir)        # český výstup
-        self.info_files.append(subdir +'/pass2img_diff.txt')
-        self.info_files.append(('-'*30) + ' informace o obrázcích se ' +
+        self.info_lines.append(short_name(images_fname))
+        self.info_lines.append(('-'*30) + ' informace o obrázcích se ' +
                                ('shodují' if sync_flag else 'NESHODUJÍ'))
 
 
@@ -255,13 +262,12 @@ class Parser:
                             fa.write('\t{}\n'.format(cs_el.line.rstrip()))
 
         # Přidáme informaci o synchronnosti použití zpětných apostrofů.
-        subdir = os.path.basename(self.cs_aux_dir)        # český výstup
-        self.info_files.append(subdir +'/pass2backticks.txt')
-        self.info_files.append(subdir +'/pass2backticks_skiped')
-        self.info_files.append(('-'*30) + \
+        self.info_lines.append(short_name(btfname))
+        self.info_lines.append(short_name(btfname_skipped))
+        self.info_lines.append(('-'*30) + \
                          ' nesynchronnost zpětných apostrofů: {}'.format(async_cnt))
-        self.info_files.append(subdir +'/pass2backticks_anomally.txt')
-        self.info_files.append(('-'*30) + \
+        self.info_lines.append(short_name(btfname_anomally))
+        self.info_lines.append(('-'*30) + \
                          ' anomálie u zpětných apostrofů: {}'.format(anomally_cnt))
 
 
@@ -337,9 +343,8 @@ class Parser:
 
 
         # Přidáme informaci o synchronnosti použití zpětných apostrofů.
-        subdir = os.path.basename(self.cs_aux_dir)        # český výstup
-        self.info_files.append(subdir +'/pass2dquotes.txt')
-        self.info_files.append(('-'*30) + \
+        self.info_lines.append(short_name(fname))
+        self.info_lines.append(('-'*30) + \
                ' elementy s chybnými uvozovkami: {}'.format(cnt))
 
 
@@ -406,24 +411,22 @@ class Parser:
                             fdiff.write('\t{}\n'.format(cs_el.line.rstrip()))
 
         # Přidáme informaci o provedení kontroly.
-        subdir = os.path.basename(self.cs_aux_dir)        # český výstup
-        self.info_files.append(subdir +'/pass2em_strong.txt')
-        self.info_files.append(subdir +'/pass2em_strong_diff.txt')
-        self.info_files.append(('-'*30) + \
+        self.info_lines.append(short_name(fname))
+        self.info_lines.append(short_name(fname_diff))
+        self.info_lines.append(('-'*30) + \
                ' elementy s *em* a **strong**: {}'.format(cnt))
 
 
     def writePass2txtFile(self):
         ''' Zapíše strojově modifikovaný soubor do pass2.txt.'''
 
-        with open(os.path.join(self.cs_aux_dir, 'pass2.txt'), 'w',
-                  encoding='utf-8', newline='\n') as fout:
+        fname = os.path.join(self.cs_aux_dir, 'pass2.txt')
+        with open(fname, 'w', encoding='utf-8', newline='\n') as fout:
             for cs_element in self.cs_lst:
                 fout.write(cs_element.line)
 
         # Přidáme informaci o vytvářeném souboru.
-        subdir = os.path.basename(self.cs_aux_dir)        # český výstup
-        self.info_files.append(subdir +'/pass2.txt')
+        self.info_lines.append(short_name(fname))
 
 
     def splitToChapterFiles(self):
@@ -463,7 +466,7 @@ class Parser:
 
                 # Pro informaci vypíšeme relativní jméno originálu (je stejné
                 # jako jméno výstupního souboru, ale v jiném adresáři).
-                self.info_files.append('.../pass2cs/' + en_fname)
+                self.info_lines.append('.../pass2cs/' + en_fname)
 
             # Zapíšeme řádek českého elementu.
             f.write(cs_element.line)
@@ -483,7 +486,7 @@ class Parser:
         self.writePass2txtFile()
         self.splitToChapterFiles()
 
-        return '\n\t'.join(self.info_files)
+        return '\n\t'.join(self.info_lines)
 
     #
     # Hledáme značkování uvnitř 'para' elementů. U některých podřetězců můžeme
