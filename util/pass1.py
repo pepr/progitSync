@@ -160,83 +160,164 @@ class Parser:
 
         sync_flag = True   # optimistická inicializace
 
+        # Při porovnávání struktury se příklady (příkazy, odsazené zleva)
+        # porovnávají a měly by být identické. Výjimku představují
+        # případy, kdy se v příkladu uvádí komentář nebo symbolicky popsaný
+        # argument, který byl přeložen. Dřívější implementace využívala
+        # přeskakování těchto úseků uvedením řádků (odstavců) ve zdrojovém
+        # textu. Tímto způsobem se ale neodhalí modifikace obsahu těchto
+        # příkladů v originálu. Proto se nově buduje "překladový slovník"
+        # těchto úseků z definičního souboru, kde první posloupnost uvádí
+        # řádky anglického originálu, oddělovač s nejméně pěti pomlčkami
+        # od začátku řádku, řádky jazykově závislého překladu a oddělovač
+        # s nejméně pěti rovnítky. Pomocný slovník používá první řádek
+        # z originálu jako klíč a dvojici seznamů (en, cz) definujících
+        # odpovídající si posloupnosti.
+        path, scriptname = os.path.split(__file__)
+        cs_translated_snippets_fname = os.path.join(path, 'cs_translated_snippets.txt')
+        translated_snippets = {}
+        status = 0
+        lst = None
+        with open(cs_translated_snippets_fname, encoding='utf-8') as f:
+            for line in f:
+                if status == 0:
+                    # První řádek bude klíčem slovníku, získáme odkaz
+                    # na dvojici seznamů řádků.
+                    en_lst, cs_lst = translated_snippets.setdefault(line, ([], []))
+
+                    en_lst.append(line)     # první řádek originálu
+                    status = 1
+
+                elif status == 1:
+                    # Druhý a další řádek originálu nebo konec posloupnosti
+                    if line.startswith('-----'):    # minimálně 5
+                        en_lst = None               # konec sbírání en
+                        status = 2
+                    else:
+                        en_lst.append(line)
+
+                elif status == 2:
+                    # Řádky české posloupnosti.
+                    if line.startswith('====='):    # minimálně 5
+                        cs_lst = None               # konec sbírání cs
+                        status = 0
+                    else:
+                        cs_lst.append(line)
+
+                else:
+                    raise NotImplementedError('status = {}\n'.format(status))
+
+        # Přidáme informaci o souboru s definicemi.
+        self.info_lines.append(short_name(cs_translated_snippets_fname))
+
         # Zjištěné posloupnosti elementů dokumentů (nadpisy, odstavce, obrázky,
         # příklady kódu) porovnáváme za účelem zjištění rozdílů struktury -- zde
         # jen typy elementů.
         struct_diff_fname = os.path.join(self.cs_aux_dir, 'pass1struct_diff.txt')
         para_len_fname = os.path.join(self.cs_aux_dir, 'pass1paralen.txt')
+        translated_snippets_fname = os.path.join(self.cs_aux_dir, 'pass1transl_snippets.txt')
         with open(struct_diff_fname, 'w', encoding='utf-8', newline='\n') as f, \
+             open(translated_snippets_fname, 'w', encoding='utf-8', newline='\n') as ftransl, \
              open(para_len_fname, 'w', encoding='utf-8', newline='\n') as flen:
 
-            # Některé příklady jsou přeložené. V nich rozdíly povolíme.
-            cs_line_may_differ = {
-                '01-introduction/01-chapter1.markdown':
-                    set([246, 247, 248]),
+            # Použijeme cyklus while, protože budeme různě přeskakovat a modifikovat
+            # seznamy prvků. Musíme manipulovat s indexy i se seznamy.
+            en_i = 0       # index zpracovávaného elementu
+            cs_i = 0
+            while en_i < len(self.en_lst) and cs_i < len(self.cs_lst):
 
-                '02-git-basics/01-chapter2.markdown':
-                    set([175, 176, 178,
-                         180, 182, 184, 186,
-                         405])
-                        .union(range(577, 593))
-                        .union(range(617, 629))
-                        .union(range(653, 659))
-                        .union([876]),
+                # Zpřístupníme si elementy na indexech.
+                en_elem = self.en_lst[en_i]
+                cs_elem = self.cs_lst[cs_i]
 
-                '05-distributed-git/01-chapter5.markdown':
-                    set(range(90, 105)),
+                if en_elem.line in translated_snippets:
+                    # Mohla by to být vložená přeložená posloupnost.
+                    # Odpovídající si definiční seznamy.
+                    enlst, cslst = translated_snippets[en_elem.line]
 
-                '07-customizing-git/01-chapter7.markdown':
-                    set([40, 42, 44, 53, 55, 57]),
+                    # Délky obou definičních seznamů.
+                    enlen = len(enlst)
+                    cslen = len(cslst)
 
-              }
+                    # Příznaky detekce definičních seznamů v en a v cs.
+                    is_enseq = [e.line for e in self.en_lst[en_i:en_i+enlen]] == enlst
+                    is_csseq = [e.line for e in self.cs_lst[cs_i:cs_i+cslen]] == cslst
 
-            for en_element, cs_element in zip(self.en_lst, self.cs_lst):
+                    # Pokud jsou oba příznaky nastaveny, pak jsme nalezli
+                    # odpovídající si posloupnosti. Zaznamenáme je do souboru.
+                    # Z hlediska dalšího porovnání bude jednodušší obě posloupnosti
+                    # vypustit.
+                    if is_enseq and is_csseq:
+                        # Zaznamenáme přeskočené řádky.
+                        ftransl.write('{}/{}:\n'.format(en_elem.fname, en_elem.lineno))
+                        ftransl.write('{}/{}:\n'.format(cs_elem.fname, cs_elem.lineno))
+                        ftransl.write('~~~~~~~~~~~~~~~\n')
+                        ftransl.write(''.join(enlst))
+                        ftransl.write('-----\n')
+                        ftransl.write(''.join(cslst))
+                        ftransl.write('=====\n\n')
 
-                # Pro nejhrubší synchronizaci se budeme řídit pouze typy
-                # elementů. (Nejméně přísné pravidlo synchronizace.)
-                #
-                # Pokud se typy shodují, pak přísnější pravidlo
-                # synchronizace vyžaduje, aby se shodovaly řádky
-                # s příkladem kódu.
-                if en_element.type != cs_element.type \
-                   or (en_element.type == 'code'
-                       and en_element.line.rstrip() != cs_element.line.rstrip()
-                       and cs_element.lineno not in cs_line_may_differ.get(cs_element.fname, {})):
+                        # Přeskočené řádky vypustíme ze seznamu elementů.
+                        del self.en_lst[en_i:en_i+enlen]
+                        del self.cs_lst[cs_i:cs_i+cslen]
 
-                    # Není to synchronní; shodíme příznak.
-                    sync_flag = False
+                        # Indexy posuneme o jeden zpět, protože se posloupnosti
+                        # vypustily a indexy se budou zvyšovat o jedničku.
+                        en_i -= 1
+                        cs_i -= 1
 
-                    # U obou jméno souboru/číslo řádku.
-                    f.write('\ncs {}/{} -- en {}/{}:\n'.format(
-                            cs_element.fname,
-                            cs_element.lineno,
-                            en_element.fname,
-                            en_element.lineno))
+                else:
+                    # Jde o jiný případ. Budeme porovnávat strukturu elementů.
+                    # Pro nejhrubší synchronizaci se budeme řídit pouze typy
+                    # elementů. (Nejméně přísné pravidlo synchronizace.)
+                    #
+                    # Pokud se typy shodují, pak přísnější pravidlo
+                    # synchronizace vyžaduje, aby se shodovaly řádky
+                    # s příkladem kódu.
+                    if en_elem.type != cs_elem.type \
+                       or (en_elem.type == 'code'
+                           and en_elem.line.rstrip() != cs_elem.line.rstrip()):
+                        # Není to synchronní; shodíme příznak.
+                        sync_flag = False
 
-                    # Typ a hodnota českého elementu.
-                    f.write('\t{}:\t{}\n'.format(cs_element.type,
-                                                 cs_element.line.rstrip()))
+                        # U obou jméno souboru/číslo řádku.
+                        f.write('\ncs {}/{} -- en {}/{}:\n'.format(
+                                cs_elem.fname,
+                                cs_elem.lineno,
+                                en_elem.fname,
+                                en_elem.lineno))
 
-                    # Typ a hodnota anglického elementu.
-                    f.write('\t{}:\t{}\n'.format(en_element.type,
-                                                 en_element.line.rstrip()))
+                        # Typ a hodnota českého elementu.
+                        f.write('\t{}:\t{}\n'.format(cs_elem.type,
+                                                     cs_elem.line.rstrip()))
 
-                # V případě shody struktury provedeme heuristickou kontrolu
-                # na délku odstavců. Využívá se skutečnosti, že odstavec
-                # je většinou napsán na jednom dlouhém řádku -- každopádně
-                # stejně v obou jazycích.
-                elif en_element.type in ('para', 'uli', 'li'):
-                    # U obou identifikaci kapitoly, čísla porovnávaných řádků,
-                    # délky porovnávaných řádků a poměr délek.
-                    flen.write('{} cs/{} -- en/{}:\t{}:{}\t({})\n'.format(
-                               os.path.split(cs_element.fname)[0],
-                               cs_element.lineno,
-                               en_element.lineno,
-                               len(cs_element.line),
-                               len(en_element.line),
-                               len(cs_element.line) / len(en_element.line)))
+                        # Typ a hodnota anglického elementu.
+                        f.write('\t{}:\t{}\n'.format(en_elem.type,
+                                                     en_elem.line.rstrip()))
+
+                    # V případě shody struktury provedeme heuristickou kontrolu
+                    # na délku odstavců. Využívá se skutečnosti, že odstavec
+                    # je většinou napsán na jednom dlouhém řádku -- každopádně
+                    # stejně v obou jazycích.
+                    elif en_elem.type in ('para', 'uli', 'li'):
+                        # U obou identifikaci kapitoly, čísla porovnávaných řádků,
+                        # délky porovnávaných řádků a poměr délek.
+                        flen.write('{} cs/{} -- en/{}:\t{}:{}\t({})\n'.format(
+                                   os.path.split(cs_elem.fname)[0],
+                                   cs_elem.lineno,
+                                   en_elem.lineno,
+                                   len(cs_elem.line),
+                                   len(en_elem.line),
+                                   len(cs_elem.line) / len(en_elem.line)))
+
+                # Posuneme se na další elementy, které se mají zpracovat.
+                # Pokud se něco vynechávalo, provedla se korekce, aby
+                # to tady fungovalo.
+                en_i += 1
+                cs_i += 1
 
         # Přidáme informaci o výstupním souboru.
+        self.info_lines.append(short_name(translated_snippets_fname))
         self.info_lines.append(short_name(struct_diff_fname))
         self.info_lines.append(short_name(para_len_fname))
 

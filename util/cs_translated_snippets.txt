@@ -1,0 +1,162 @@
+	$ git help <verb>
+	$ git <verb> --help
+	$ man git-<verb>
+-----
+	$ git help <příkaz>
+	$ git <příkaz> --help
+	$ man git-<příkaz>
+================================== (kapitola 1)
+	# a comment - this is ignored
+	# no .a files
+	*.a
+	# but do track lib.a, even though you're ignoring .a files above
+	!lib.a
+	# only ignore the root TODO file, not subdir/TODO
+	/TODO
+	# ignore all files in the build/ directory
+	build/
+	# ignore doc/notes.txt, but not doc/server/arch.txt
+	doc/*.txt
+	# ignore all .txt files in the doc/ directory
+	doc/**/*.txt
+-----
+	# komentář – ignoruje se
+	# žádné soubory s příponou .a
+	*.a
+	# ale sleduj soubor lib.a, přestože máš ignorovat soubory s příponou .a
+	!lib.a
+	# ignoruj soubor TODO pouze v kořenovém adresáři, ne v podadresářích
+	/TODO
+	# ignoruj všechny soubory v adresáři build/
+	build/
+	# ignoruj doc/notes.txt, ale nikoli doc/server/arch.txt
+	doc/*.txt
+	# ignoruj všechny .txt soubory v adresáři doc/
+	doc/**/*.txt
+================================== (kapitola 2)
+	$ git mv file_from file_to
+-----
+	$ git mv původní_název nový_název
+================================== (kapitola 2)
+	Option	Description of Output
+	%H	Commit hash
+	%h	Abbreviated commit hash
+	%T	Tree hash
+	%t	Abbreviated tree hash
+	%P	Parent hashes
+	%p	Abbreviated parent hashes
+	%an	Author name
+	%ae	Author e-mail
+	%ad	Author date (format respects the --date= option)
+	%ar	Author date, relative
+	%cn	Committer name
+	%ce	Committer email
+	%cd	Committer date
+	%cr	Committer date, relative
+	%s	Subject
+-----
+	Parametr	Popis výstupu
+	%H	Otisk (hash) revize
+	%h	Zkrácený otisk revize
+	%T	Otisk stromu
+	%t	Zkrácený otisk stromu
+	%P	Otisky rodičovských revizí
+	%p	Zkrácené otisky rodičovských revizí
+	%an	Jméno autora
+	%ae	E-mail autora
+	%ad	Datum autora (formát je možné nastavit parametrem --date)
+	%ar	Datum autora, relativní
+	%cn	Jméno autora revize
+	%ce	E-mail autora revize
+	%cd	Datum autora revize
+	%cr	Datum autora revize, relativní
+	%s	Předmět
+================================== (kapitola 2)
+	Option	Description
+-----
+	Parametr	Popis
+================================== (kapitola 2)
+	-p	Show the patch introduced with each commit.
+	--word-diff	Show the patch in a word diff format.
+	--stat	Show statistics for files modified in each commit.
+	--shortstat	Display only the changed/insertions/deletions line from the --stat command.
+	--name-only	Show the list of files modified after the commit information.
+	--name-status	Show the list of files affected with added/modified/deleted information as well.
+	--abbrev-commit	Show only the first few characters of the SHA-1 checksum instead of all 40.
+	--relative-date	Display the date in a relative format (for example, “2 weeks ago”) instead of using the full date format.
+	--graph	Display an ASCII graph of the branch and merge history beside the log output.
+	--pretty	Show commits in an alternate format. Options include oneline, short, full, fuller, and format (where you specify your own format).
+	--oneline	A convenience option short for `--pretty=oneline --abbrev-commit`.
+-----
+	-p	Zobrazí záplatu vytvořenou s každou revizí.
+	--word-diff	Zobrazí záplatu ve tvaru rozdílu po slovech.
+	--stat	Zobrazí statistiku pro změněné soubory v každé revizi.
+	--shortstat	Zobrazí pouze řádek změněno/vloženo/smazáno z příkazu --stat.
+	--name-only	Za informacemi o revizi zobrazí seznam změněných souborů.
+	--name-status	Zobrazí seznam dotčených souborů spolu s informací přidáno/změněno/smazáno.
+	--abbrev-commit	Zobrazí pouze prvních několik znaků kontrolního součtu SHA-1 místo všech 40.
+	--relative-date	Zobrazí datum v relativním formátu (např. "2 weeks ago", tj. před 2 týdny) místo formátu s úplným datem.
+	--graph	Zobrazí vedle výstupu logu ASCII graf k historii větve a slučování.
+	--pretty	Zobrazí revize v alternativním formátu. Parametry příkazu jsou oneline, short, full, fuller a format (ve kterém uvedete svůj vlastní formát).
+	--oneline	Užitečná zkratka pro `--pretty=oneline --abbrev-commit`.
+================================== (kapitola 2)
+	-(n)	Show only the last n commits
+	--since, --after	Limit the commits to those whose CommitDate was made on-or-after the specified date/time.
+	--until, --before	Limit the commits to those whose CommitDate was made on-or-before the specified date/time.
+	--author	Only show commits in which the author entry matches the specified string.
+	--committer	Only show commits in which the committer entry matches the specified string.
+-----
+	-(n)	Zobrazí pouze posledních n revizí.
+	--since, --after	Omezí výpis na revize provedené po zadaném datu.
+	--until, --before	Omezí výpis na revize provedené před zadaným datem.
+	--author	Zobrazí pouze revize, v nichž autor odpovídá zadanému řetězci.
+	--committer	Zobrazí pouze revize, v nichž autor revize odpovídá zadanému řetězci.
+================================== (kapitola 2)
+	$ git fetch [remote-name]
+-----
+	$ git fetch [název vzdáleného repozitáře]
+================================== (kapitola 2)
+	Short (50 chars or less) summary of changes
+
+	More detailed explanatory text, if necessary.  Wrap it to about 72
+	characters or so.  In some contexts, the first line is treated as the
+	subject of an email and the rest of the text as the body.  The blank
+	line separating the summary from the body is critical (unless you omit
+	the body entirely); tools like rebase can get confused if you run the
+	two together.
+
+	Further paragraphs come after blank lines.
+
+	 - Bullet points are okay, too
+
+	 - Typically a hyphen or asterisk is used for the bullet, preceded by a
+	   single space, with blank lines in between, but conventions vary here
+-----
+	Krátké (do 50 znaků) shrnutí změn
+
+	Podrobnější popis revize, je-li třeba. Snažte se nepřesáhnout
+	zhruba 72 znaků. V některých kontextech	je první řádek koncipován
+	jako předmět e-mailu a zbytek textu jako jeho tělo. Prázdný řádek
+	oddělující shrnutí od těla zprávy je nezbytně nutný (pokud
+	nehodláte vypustit celé tělo). Spojení obou částí může zmást
+	některé nástroje, např. přeskládání.
+
+	Další odstavce následují za prázdným řádkem.
+
+	 - Můžete používat i odrážky.
+
+	 - Jako odrážka se nejčastěji používá pomlčka nebo hvězdička, před ně se vkládá
+	   jedna mezera, mezi body výčtu prázdný řádek, avšak úzus tu není jednotný.
+================================== (kapitola 5)
+	subject line
+
+	what happened
+
+	[ticket: X]
+-----
+	řádek předmětu
+
+	co bylo provedeno
+
+	[tiket: X]
+================================== (kapitola 7)
