@@ -119,8 +119,8 @@ class Parser:
                     if e_lines == cs_extras[elem.line]:
                         # Zaznamenáme přeskočené řádky.
                         foutextra.write('{}/{}:\n'.format(elem.fname, elem.lineno))
-                        foutextra.write('\n'.join(e_lines))
-                        foutextra.write('\n====================\n\n')
+                        foutextra.write(''.join(e_lines))
+                        foutextra.write('====================\n\n')
 
                         # Přeskočené řádky vypustíme ze seznamu elementů.
                         del self.cs_lst[index:index+len(cs_extras[elem.line])]
