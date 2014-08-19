@@ -272,7 +272,7 @@ class Parser:
 
 
     def reportBadDoubleQuotes(self):
-        '''Kontroluje použití zprávných uvozovek v českých elementech.
+        '''Kontroluje použití správných uvozovek v českých elementech.
 
            V 'para' elementech musí být „takové“, v 'code' elementech
            zase "takové" a v ostatních elementech uvidíme.
@@ -417,65 +417,6 @@ class Parser:
                ' elementy s *em* a **strong**: {}'.format(cnt))
 
 
-    def writePass2txtFile(self):
-        ''' Zapíše strojově modifikovaný soubor do pass2.txt.'''
-
-        fname = os.path.join(self.cs_aux_dir, 'pass2.txt')
-        with open(fname, 'w', encoding='utf-8', newline='\n') as fout:
-            for cs_element in self.cs_lst:
-                fout.write(cs_element.line)
-
-        # Přidáme informaci o vytvářeném souboru.
-        self.info_lines.append(short_name(fname))
-
-
-    def splitToChapterFiles(self):
-        '''Jediný vstupní cs soubor do více souborů s cílovou strukturou.
-
-           Využívá se informací z načtených seznamů elementů.
-           '''
-
-        assert len(self.cs_lst) > 0
-        assert len(self.en_lst) > 0
-
-        en_fname = None
-        cs_fname = None
-        f = None
-        for en_element, cs_element in zip(self.en_lst, self.cs_lst):
-            # Při změně souboru originálu uzavřeme původní, zajistíme
-            # existenci cílového adresáře a otevřeme nový výstupní soubor.
-            if en_element.fname != en_fname:
-                # Pokud byl otevřen výstupní soubor, uzavřeme jej.
-                if f is not None:
-                    f.close()
-
-                # Zachytíme jméno anglického originálu a trochu je zneužijeme.
-                # Obsahuje relativní cestu vůči podadresáři "en/" originálu,
-                # takže je přímo připlácneme k "pass2cs/". Dodatečně
-                # oddělíme adresář a zajistíme jeho existenci.
-                en_fname = en_element.fname
-                cs_fname = os.path.join(self.cs_aux_dir, 'pass2cs', en_fname)
-                cs_fname = os.path.abspath(cs_fname)
-
-                cs_chapter_dir = os.path.dirname(cs_fname)
-                if not os.path.isdir(cs_chapter_dir):
-                    os.makedirs(cs_chapter_dir)
-
-                # Otevřeme nový výstupní soubor.
-                f = open(cs_fname, 'w', encoding='utf-8', newline='\n')
-
-                # Pro informaci vypíšeme relativní jméno originálu (je stejné
-                # jako jméno výstupního souboru, ale v jiném adresáři).
-                self.info_lines.append('.../pass2cs/' + en_fname)
-
-            # Zapíšeme řádek českého elementu.
-            f.write(cs_element.line)
-
-        # Uzavřeme soubor s poslední částí knihy.
-        f.close()
-
-
-
     def run(self):
         '''Spouštěč jednotlivých fází parseru.'''
 
@@ -483,23 +424,6 @@ class Parser:
         self.fixParaBackticks()
         self.reportBadDoubleQuotes()
         self.reportEmAndStrong()
-        self.writePass2txtFile()
-        self.splitToChapterFiles()
 
         return '\n\t'.join(self.info_lines)
 
-    #
-    # Hledáme značkování uvnitř 'para' elementů. U některých podřetězců můžeme
-    # do českého překladu doplnit značkování přímo:
-    #  - opačné apostrofy obalují úryvky kódu, který by měl být převzatý 1:1,
-    #  - kontrolujeme výskyt podřetězců v opačných apostrofech v cs,
-    #  - plníme množinu podřetězců v opačných apostrofech (zapíšeme seřazené
-    #    do souboru),
-    #  - navrhneme doplnění opačných apostrofů i do míst, kde jsou v originále
-    #    zapomenuty (není jasné, co vše se najde; zatím do odděleného souboru),
-    #  - obyčejné dvojité uvozovky měníme na české (? -- zatím do odděleného souboru),
-    #
-    # Další typy značkování jen nahlásíme a budeme asi doplňovat ručně
-    # (kurzíva, tučné, ...).
-    #
-    # V 'para' kontrolovat správnost odkazů na obrázky (vůči originálu).

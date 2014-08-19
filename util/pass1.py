@@ -184,6 +184,8 @@ class Parser:
                     # První řádek bude klíčem slovníku, získáme odkaz
                     # na dvojici seznamů řádků.
                     en_lst, cs_lst = translated_snippets.setdefault(line, ([], []))
+                    assert len(en_lst) == 0
+                    assert len(cs_lst) == 0
 
                     en_lst.append(line)     # první řádek originálu
                     status = 1
@@ -255,7 +257,7 @@ class Parser:
                         ftransl.write(''.join(enlst))
                         ftransl.write('-----\n')
                         ftransl.write(''.join(cslst))
-                        ftransl.write('=====\n\n')
+                        ftransl.write('========================== {}\n\n'.format(en_elem.fname))
 
                         # Přeskočené řádky vypustíme ze seznamu elementů.
                         del self.en_lst[en_i:en_i+enlen]
