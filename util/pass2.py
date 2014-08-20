@@ -21,11 +21,12 @@ class Parser:
     rexBackticked = re.compile(r'`(\S.*?\S?)`')
 
     def __init__(self, pass1):
-        self.cs_aux_dir = pass1.cs_aux_dir  # pomocný adresář pro české výstupy
+        self.lang = pass1.lang
         self.en_aux_dir = pass1.en_aux_dir  # pomocný adresář pro anglické výstupy
+        self.xx_aux_dir = pass1.xx_aux_dir  # pomocný adresář pro české výstupy
 
         self.en_lst = pass1.en_lst
-        self.cs_lst = pass1.cs_lst
+        self.xx_lst = pass1.xx_lst
 
         self.info_lines = []                # sběr řádků pro logování
         self.backticked_set = set()
@@ -33,26 +34,26 @@ class Parser:
 
     def checkImages(self):
         sync_flag = True  # optimistická inicializace
-        images_fname = os.path.join(self.cs_aux_dir, 'pass2img_diff.txt')
+        images_fname = os.path.join(self.xx_aux_dir, 'pass2img_diff.txt')
         with open(images_fname, 'w', encoding='utf-8', newline='\n') as f:
-            for en_el, cs_el in zip(self.en_lst, self.cs_lst):
-                if    en_el.type == 'img' and en_el.attrib != cs_el.attrib \
+            for en_el, xx_el in zip(self.en_lst, self.xx_lst):
+                if    en_el.type == 'img' and en_el.attrib != xx_el.attrib \
                    or en_el.type == 'imgcaption' \
-                      and en_el.attrib[0] != cs_el.attrib[0]:
+                      and en_el.attrib[0] != xx_el.attrib[0]:
 
                     # Není shoda. Shodíme příznak...
                     sync_flag = False
 
                     # ... a zapíšeme do souboru.
                     f.write('\ncs {}/{} -- en {}/{}:\n'.format(
-                            cs_el.fname,
-                            cs_el.lineno,
+                            xx_el.fname,
+                            xx_el.lineno,
                             en_el.fname,
                             en_el.lineno))
 
                     # Typ a hodnota českého elementu.
-                    f.write('\t{}:\t{}\n'.format(cs_el.type,
-                                                 cs_el.line.rstrip()))
+                    f.write('\t{}:\t{}\n'.format(xx_el.type,
+                                                 xx_el.line.rstrip()))
 
                     # Typ a hodnota anglického elementu.
                     f.write('\t{}:\t{}\n'.format(en_el.type,
@@ -60,8 +61,8 @@ class Parser:
 
         # Přidáme informaci o synchronnosti obrázků.
         self.info_lines.append(short_name(images_fname))
-        self.info_lines.append(('-'*30) + ' informace o obrázcích se ' +
-                               ('shodují' if sync_flag else 'NESHODUJÍ'))
+        self.info_lines.append(('-'*30) + ' image info is ' +
+                               ('the same' if sync_flag else 'DIFFERENT'))
 
 
     def buildRex(self, lst):
@@ -88,9 +89,9 @@ class Parser:
 
         async_cnt = 0     # init -- počet nesynchronních výskytů
         anomally_cnt = 0  # init -- počet odhalených anomálií
-        btfname = os.path.join(self.cs_aux_dir, 'pass2backticks.txt')
-        btfname_skipped = os.path.join(self.cs_aux_dir, 'pass2backticks_skiped.txt')
-        btfname_anomally = os.path.join(self.cs_aux_dir, 'pass2backticks_anomally.txt')
+        btfname = os.path.join(self.xx_aux_dir, 'pass2backticks.txt')
+        btfname_skipped = os.path.join(self.xx_aux_dir, 'pass2backticks_skiped.txt')
+        btfname_anomally = os.path.join(self.xx_aux_dir, 'pass2backticks_anomally.txt')
 
         # Při synchronizaci originálu s překladem je některé případy nutné
         # ošetřit jako výjimky. Dřívější implementace využívala
@@ -103,7 +104,8 @@ class Parser:
         # s nejméně pěti rovnítky. Pomocný slovník používá první řádek
         # z originálu jako klíč překlad jako hodnotu.
         path, scriptname = os.path.split(__file__)
-        backtick_exceptions_fname = os.path.join(path, 'cs_backtick_exceptions.txt')
+        backtick_exceptions_fname =  os.path.join(path, 
+                                     '{}_backtick_exceptions.txt'.format(self.lang))
         backtick_exceptions = {}
         status = 0
         original = None
@@ -137,19 +139,19 @@ class Parser:
              open(btfname_anomally, 'w', encoding='utf-8', newline='\n') as fa:
 
             # V cyklu porovnáme a zpracujeme prvky z obou dokumentů.
-            for en_el, cs_el in zip(self.en_lst, self.cs_lst):
+            for en_el, xx_el in zip(self.en_lst, self.xx_lst):
 
                 # Zpracováváme jen odstavce textu a testy z odrážek a číslovaných
                 # seznamů. Odstavce vykazující známou anomálii ale přeskakujeme.
                 if en_el.type in ['para', 'uli', 'li']:
 
                     # Nastavíme příznak přeskakování.
-                    skipped = cs_el.line == backtick_exceptions.get(en_el.line, '!@#$%^&*')
+                    skipped = xx_el.line == backtick_exceptions.get(en_el.line, '!@#$%^&*')
 
                     # Najdeme všechny symboly uzavřené ve zpětných apostrofech
                     # v originálním odstavci.
                     enlst = self.rexBackticked.findall(en_el.line)
-                    cslst = self.rexBackticked.findall(cs_el.line)
+                    cslst = self.rexBackticked.findall(xx_el.line)
 
                     # Nestačí porovnávat délky seznamů, protože seznamy mohou
                     # obsahovat různé sekvence (což se díky modifikaci textu
@@ -172,20 +174,20 @@ class Parser:
                         # zapíšeme do příslušného souboru.
                         if skipped:
                             fskip.write('\ncs {}/{} -- en {}/{}:\n'.format(
-                                cs_el.fname,
-                                cs_el.lineno,
+                                xx_el.fname,
+                                xx_el.lineno,
                                 en_el.fname,
                                 en_el.lineno))
                         else:
                             async_cnt += 1
                             fout.write('\ncs {}/{} -- en {}/{}:\n'.format(
-                                cs_el.fname,
-                                cs_el.lineno,
+                                xx_el.fname,
+                                xx_el.lineno,
                                 en_el.fname,
                                 en_el.lineno))
 
                         # Český odstavec před úpravou.
-                        cspara1 = cs_el.line.rstrip()
+                        cspara1 = xx_el.line.rstrip()
 
                         # Pokud je rozdílový seznam prázdný, nechceme nic
                         # nahrazovat. Vzhledem k dalšímu způsobu ani nesmíme
@@ -199,7 +201,7 @@ class Parser:
                         n = 0            # init
                         if len(dlst) != 0:
                             rex = self.buildRex(dlst)
-                            cs_el.line, n = rex.subn(r'`\g<0>`', cs_el.line)
+                            xx_el.line, n = rex.subn(r'`\g<0>`', xx_el.line)
 
                         # Do příslušného souboru zapisujeme záznam o všech nahrazovaných.
                         # Rozdílový seznam, anglický odstavec,
@@ -218,11 +220,11 @@ class Parser:
                             fout.write('---------------\n')
                             fout.write('{}\n'.format(cspara1))
                             fout.write('====================================== {}\n'.format(en_el.fname))
-                            fout.write('{}\n'.format(cs_el.line.rstrip()))
+                            fout.write('{}\n'.format(xx_el.line.rstrip()))
 
                         # Znovu zjistíme počet obalených podřetězců v českém
                         # odstavci. Znovu vypočítáme rozdílový seznam.
-                        cslst2 = self.rexBackticked.findall(cs_el.line)
+                        cslst2 = self.rexBackticked.findall(xx_el.line)
                         dlst2 = enlst[:]   # kopie
                         for s in cslst2:
                             if s in dlst2:
@@ -247,7 +249,7 @@ class Parser:
 
                             # Zapíšeme do souboru s anomáliemi.
                             fa.write('\ncs {} -- en {}/{}:\n'.format(
-                                cs_el.lineno,
+                                xx_el.lineno,
                                 en_el.fname[1:2],
                                 en_el.lineno))
 
@@ -262,16 +264,16 @@ class Parser:
                             fa.write('\tsubn   = {}\n'.format(n))
                             fa.write('\t{}\n'.format(en_el.line.rstrip()))
                             fa.write('\t{}\n'.format(cspara1))
-                            fa.write('\t{}\n'.format(cs_el.line.rstrip()))
+                            fa.write('\t{}\n'.format(xx_el.line.rstrip()))
 
         # Přidáme informaci o synchronnosti použití zpětných apostrofů.
         self.info_lines.append(short_name(btfname))
         self.info_lines.append(short_name(btfname_skipped))
         self.info_lines.append(('-'*30) + \
-                         ' nesynchronnost zpětných apostrofů: {}'.format(async_cnt))
+                         ' asynchronous backticks: {}'.format(async_cnt))
         self.info_lines.append(short_name(btfname_anomally))
         self.info_lines.append(('-'*30) + \
-                         ' anomálie u zpětných apostrofů: {}'.format(anomally_cnt))
+                         ' backtick anomalies: {}'.format(anomally_cnt))
 
 
     def reportBadDoubleQuotes(self):
@@ -283,72 +285,80 @@ class Parser:
            Výsledky zapisuje do pass2dquotes.txt.'''
 
         cnt = 0         # init -- počet odhalených chyb
-        fname = os.path.join(self.cs_aux_dir, 'pass2dquotes.txt')
+        fname = os.path.join(self.xx_aux_dir, 'pass2dquotes.txt')
 
         with open(fname, 'w', encoding='utf-8', newline='\n') as f:
 
-            # Regulární výraz pro nevhodné uvozovky v odstavcích.
-            rexBadParaQuotes = re.compile(r'["”]')  # české musí být „takhle“
+            # Only plain ASCII double quotes are allowed in code snippets.
             rexBadCodeQuotes = re.compile(r'[„“”]')
 
-            for en_el, cs_el in zip(self.en_lst, self.cs_lst):
+            # The paragraphs should contain the typesetting-ready 
+            # double quotes that are language dependent.
+            if self.lang == 'cs':
+                rexBadParaQuotes = re.compile(r'["”]')  # Czech ones must be „this way“
+            elif self.lang == 'fr':
+                rexBadParaQuotes = re.compile(r'["”]')  # Czech ones must be „this way“
+            else:
+                rexBadParaQuotes = re.compile(r'["”]')  # Czech ones must be „this way“
+                
+            for en_el, xx_el in zip(self.en_lst, self.xx_lst):
 
                 # Zpracováváme jen odstavce textu.
-                if cs_el.type in ('para', 'li', 'uli', 'imgcaption', 'title'):
+                if xx_el.type in ('para', 'li', 'uli', 'imgcaption', 'title'):
 
-                    if rexBadParaQuotes.search(cs_el.line) is not None:
-
-                        # Našla se nevhodná uvozovka. Započítáme ji
-                        # a zapíšeme do souboru.
-                        cnt += 1
-
-                        f.write('\ncs {}/{} -- en {}/{}, {}:\n'.format(
-                                cs_el.fname,
-                                cs_el.lineno,
-                                en_el.fname,
-                                en_el.lineno,
-                                repr(cs_el.type)))
-
-                        f.write('\t{}\n'.format(en_el.line.rstrip()))
-                        f.write('\t{}\n'.format(cs_el.line.rstrip()))
-
-                elif cs_el.type == 'code':
-
-                    if rexBadCodeQuotes.search(cs_el.line) is not None:
+                    if rexBadParaQuotes.search(xx_el.line) is not None:
 
                         # Našla se nevhodná uvozovka. Započítáme ji
                         # a zapíšeme do souboru.
                         cnt += 1
 
                         f.write('\ncs {}/{} -- en {}/{}, {}:\n'.format(
-                                cs_el.fname,
-                                cs_el.lineno,
+                                xx_el.fname,
+                                xx_el.lineno,
                                 en_el.fname,
                                 en_el.lineno,
-                                repr(cs_el.type)))
+                                repr(xx_el.type)))
 
                         f.write('\t{}\n'.format(en_el.line.rstrip()))
-                        f.write('\t{}\n'.format(cs_el.line.rstrip()))
+                        f.write('\t{}\n'.format(xx_el.line.rstrip()))
 
-                elif cs_el.type not in ('empty', 'img'):
+                elif xx_el.type == 'code':
+
+                    if rexBadCodeQuotes.search(xx_el.line) is not None:
+
+                        # Našla se nevhodná uvozovka. Započítáme ji
+                        # a zapíšeme do souboru.
+                        cnt += 1
+
+                        f.write('\ncs {}/{} -- en {}/{}, {}:\n'.format(
+                                xx_el.fname,
+                                xx_el.lineno,
+                                en_el.fname,
+                                en_el.lineno,
+                                repr(xx_el.type)))
+
+                        f.write('\t{}\n'.format(en_el.line.rstrip()))
+                        f.write('\t{}\n'.format(xx_el.line.rstrip()))
+
+                elif xx_el.type not in ('empty', 'img'):
                         # Neznámý typ elementu.
                         cnt += 1
 
                         f.write('\ncs {}/{} -- en {}/{}, {}:\n'.format(
-                                cs_el.fname,
-                                cs_el.lineno,
+                                xx_el.fname,
+                                xx_el.lineno,
                                 en_el.fname,
                                 en_el.lineno,
-                                repr(cs_el.type)))
+                                repr(xx_el.type)))
 
                         f.write('\t{}\n'.format(en_el.line.rstrip()))
-                        f.write('\t{}\n'.format(cs_el.line.rstrip()))
+                        f.write('\t{}\n'.format(xx_el.line.rstrip()))
 
 
         # Přidáme informaci o synchronnosti použití zpětných apostrofů.
         self.info_lines.append(short_name(fname))
         self.info_lines.append(('-'*30) + \
-               ' elementy s chybnými uvozovkami: {}'.format(cnt))
+               ' elements with bad double quotes: {}'.format(cnt))
 
 
     def reportEmAndStrong(self):
@@ -357,8 +367,8 @@ class Parser:
            Výsledky zapisuje do pass2em_strong.txt.'''
 
         cnt = 0         # init -- počet odhalených chyb
-        fname = os.path.join(self.cs_aux_dir, 'pass2em_strong.txt')
-        fname_diff = os.path.join(self.cs_aux_dir, 'pass2em_strong_diff.txt')
+        fname = os.path.join(self.xx_aux_dir, 'pass2em_strong.txt')
+        fname_diff = os.path.join(self.xx_aux_dir, 'pass2em_strong_diff.txt')
 
         with open(fname, 'w', encoding='utf-8', newline='\n') as f,\
              open(fname_diff, 'w', encoding='utf-8', newline='\n') as fdiff:
@@ -366,15 +376,15 @@ class Parser:
             # Regulární výraz pro jednoduché nebo dvojité hvězdičky.
             rexEmStrong = re.compile(r'([*_]{1,2})([^*_]+?)\1')
 
-            for en_el, cs_el in zip(self.en_lst, self.cs_lst):
+            for en_el, xx_el in zip(self.en_lst, self.xx_lst):
 
                 # Pokud jde o typ elementu s běžným textem...
-                if cs_el.type in ('para', 'li', 'uli', 'imgcaption', 'title'):
+                if xx_el.type in ('para', 'li', 'uli', 'imgcaption', 'title'):
 
                     # Najdeme všechny označkované řetězce z originálního
                     # a z českého odstavce.
                     enlst = rexEmStrong.findall(en_el.line)
-                    cslst = rexEmStrong.findall(cs_el.line)
+                    cslst = rexEmStrong.findall(xx_el.line)
 
                     # Pokud se něco našlo, zobrazíme originál a český vedle sebe.
                     # Pokud se liší počet označkovaných posloupností, započítáme
@@ -382,42 +392,42 @@ class Parser:
                     # do souboru s rozdíly.
                     if enlst or cslst:
                         f.write('\ncs {}/{} -- en {}/{}, {}:\n'.format(
-                                cs_el.fname,
-                                cs_el.lineno,
+                                xx_el.fname,
+                                xx_el.lineno,
                                 en_el.fname,
                                 en_el.lineno,
-                                repr(cs_el.type)))
+                                repr(xx_el.type)))
 
                         # Počty označkovaných posloupností.
                         f.write('\t{} : {}\n'.format(len(enlst), len(cslst)))
 
                         # Odstavce.
                         f.write('\t{}\n'.format(en_el.line.rstrip()))
-                        f.write('\t{}\n'.format(cs_el.line.rstrip()))
+                        f.write('\t{}\n'.format(xx_el.line.rstrip()))
 
                         # Pokud se počet liší, zaznamenáme totéž ještě jednou
                         # do souboru s předpokládanými rozdíly.
                         if len(enlst) != len(cslst):
                             cnt += 1
                             fdiff.write('\ncs {}/{} -- en {}/{}, {}:\n'.format(
-                                        cs_el.fname,
-                                        cs_el.lineno,
+                                        xx_el.fname,
+                                        xx_el.lineno,
                                         en_el.fname,
                                         en_el.lineno,
-                                        repr(cs_el.type)))
+                                        repr(xx_el.type)))
 
                             # Počty označkovaných posloupností.
                             fdiff.write('\t{} : {}\n'.format(len(enlst), len(cslst)))
 
                             # Odstavce.
                             fdiff.write('\t{}\n'.format(en_el.line.rstrip()))
-                            fdiff.write('\t{}\n'.format(cs_el.line.rstrip()))
+                            fdiff.write('\t{}\n'.format(xx_el.line.rstrip()))
 
         # Přidáme informaci o provedení kontroly.
         self.info_lines.append(short_name(fname))
         self.info_lines.append(short_name(fname_diff))
         self.info_lines.append(('-'*30) + \
-               ' elementy s *em* a **strong**: {}'.format(cnt))
+               ' elements with *em* and **strong**: {}'.format(cnt))
 
 
     def run(self):

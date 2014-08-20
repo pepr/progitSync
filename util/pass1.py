@@ -16,23 +16,44 @@ class Parser:
     '''Parser konzumující již dříve synchronizované české a anglické
        vstupy přímo z adresáře progit/en a progit/cs.'''
 
-    def __init__(self, cs_name_in, en_name_in, cs_aux_dir, en_aux_dir):
-        self.cs_name_in = cs_name_in    # jméno vstupního souboru/adresáře s českou verzí
-        self.en_name_in = en_name_in    # jméno vstupního souboru/adresáře s anglickou verzí
-        self.cs_aux_dir = cs_aux_dir    # pomocný adresář pro české výstupy
-        self.en_aux_dir = en_aux_dir    # pomocný adresář pro anglické výstupy
+    def __init__(self, lang, root_src_dir, root_aux_dir):
+        self.lang = lang    # the language abbrev. like 'cs', 'fr', 'ru', etc.
+        self.root_src_dir = os.path.realpath(root_src_dir)
+        self.root_aux_dir = os.path.realpath(root_aux_dir)
 
-        self.cs_lst = None              # seznam elementů z českého překladu
-        self.en_lst = None              # seznam elementů z anglického originálu
+        # Location of the root directory with the English original.
+        self.en_src_dir = os.path.join(self.root_src_dir, 'en')
 
-        self.info_lines = []            # sběr informačních řádků pro stdout
+        # Derive the location of the directory for the target language.
+        self.xx_src_dir = os.path.join(self.root_src_dir, lang)
+
+        # Location of the root for the generated files for English.
+        self.en_aux_dir = os.path.join(self.root_aux_dir, 'en_aux')
+        print(self.en_aux_dir)
+
+        # Derive the auxiliary directory for the target language.
+        self.xx_aux_dir = os.path.join(self.root_aux_dir, lang + '_aux')
+        print(self.xx_aux_dir)
+
+        # Create the auxiliary directories if they does not exist.
+        if not os.path.isdir(self.en_aux_dir):
+            os.makedirs(self.en_aux_dir)
+
+        if not os.path.isdir(self.xx_aux_dir):
+            os.makedirs(self.xx_aux_dir)
+
+
+        self.en_lst = None  # elements from the English original
+        self.xx_lst = None  # elements from the target language
+
+        self.info_lines = []    # lines for displaying through the stdout
 
     def writePass1txtFiles(self):
         # Kopie českého vstupu do jednoho souboru. Při tomto průchodu
         # pochází z jednoho souboru, takže jméno souboru vynecháme.
-        cs_single_fname = os.path.join(self.cs_aux_dir, 'pass1.txt')
-        with open(cs_single_fname, 'w', encoding='utf-8', newline='\n') as fout:
-            for fname, lineno, line in gen.sourceFileLines(self.cs_name_in):
+        xx_single_fname = os.path.join(self.xx_aux_dir, 'pass1.txt')
+        with open(xx_single_fname, 'w', encoding='utf-8', newline='\n') as fout:
+            for fname, lineno, line in gen.sourceFileLines(self.xx_src_dir):
                 fout.write('{}/{}:\t{}'.format(fname[1:2], lineno, line))
 
         # Kopie anglického vstupu do jednoho souboru. Pro lepší orientaci
@@ -40,11 +61,11 @@ class Parser:
         # jen číslo kapitoly (jeden znak relativní cesty).
         en_single_fname = os.path.join(self.en_aux_dir, 'pass1.txt')
         with open(en_single_fname, 'w', encoding='utf-8', newline='\n') as fout:
-            for fname, lineno, line in gen.sourceFileLines(self.en_name_in):
+            for fname, lineno, line in gen.sourceFileLines(self.en_src_dir):
                 fout.write('{}/{}:\t{}'.format(fname[1:2], lineno, line))
 
         # Přidáme informaci o vytvářených souborech.
-        self.info_lines.append(short_name(cs_single_fname))
+        self.info_lines.append(short_name(xx_single_fname))
         self.info_lines.append(short_name(en_single_fname))
 
 
@@ -63,16 +84,16 @@ class Parser:
         # je uložen v adresáři s tímto skriptem/modulem. Klíčem slovníku
         # je první řádek z takové posloupnosti.
         path, scriptname = os.path.split(__file__)
-        cs_def_extras_fname = os.path.join(path, 'cs_def_extras.txt')
-        cs_extras = {}
+        xx_def_extras_fname = os.path.join(path, '{}_def_extras.txt'.format(self.lang))
+        xx_extras = {}
         status = 0
         lst = None
-        with open(cs_def_extras_fname, encoding='utf-8') as f:
+        with open(xx_def_extras_fname, encoding='utf-8') as f:
             for line in f:
                 if status == 0:
                     # První řádek bude klíčem slovníku, získáme odkaz
                     # na seznam řádků.
-                    lst = cs_extras.setdefault(line, [])
+                    lst = xx_extras.setdefault(line, [])
                     assert len(lst) == 0
 
                     lst.append(line)
@@ -90,7 +111,7 @@ class Parser:
                     raise NotImplementedError('status = {}\n'.format(status))
 
         # Přidáme informaci o souboru s definicemi.
-        self.info_lines.append(short_name(cs_def_extras_fname))
+        self.info_lines.append(short_name(xx_def_extras_fname))
 
         # Procházíme elementy. Pokud narazíme na řádek, který zahajuje
         # vynechávanou posloupnost, začneme porovnávat další řádky.
@@ -98,32 +119,32 @@ class Parser:
         # normálně, pokud jde, přeskočíme ji, ale zapíšeme vše do
         # pass1extra_lines.txt. Kvůli backtrackingu načteme nejdříve
         # všechny elementy do seznamu.
-        self.cs_lst = []
-        for relname, lineno, line in gen.sourceFileLines(self.cs_name_in):
+        self.xx_lst = []
+        for relname, lineno, line in gen.sourceFileLines(self.xx_src_dir):
             elem = docelement.Element(relname, lineno, line)
-            self.cs_lst.append(elem)
+            self.xx_lst.append(elem)
 
-        cs_elem_fname = os.path.join(self.cs_aux_dir, 'pass1elem.txt')
-        cs_extra_fname = os.path.join(self.cs_aux_dir, 'pass1extra_lines.txt')
-        with open(cs_elem_fname, 'w', encoding='utf-8', newline='\n') as fout, \
-             open(cs_extra_fname, 'w', encoding='utf-8', newline='\n') as foutextra:
+        xx_elem_fname = os.path.join(self.xx_aux_dir, 'pass1elem.txt')
+        xx_extra_fname = os.path.join(self.xx_aux_dir, 'pass1extra_lines.txt')
+        with open(xx_elem_fname, 'w', encoding='utf-8', newline='\n') as fout, \
+             open(xx_extra_fname, 'w', encoding='utf-8', newline='\n') as foutextra:
 
             index = 0       # index zpracovávaného elementu
-            while index < len(self.cs_lst):  # pozor, délka se dynamicky mění
-                elem = self.cs_lst[index]
+            while index < len(self.xx_lst):  # pozor, délka se dynamicky mění
+                elem = self.xx_lst[index]
 
-                if elem.line in cs_extras:
+                if elem.line in xx_extras:
                     # Mohla by to být vložená (extra) posloupnost.
                     # Porovnáme řádky v délce extra posloupnosti.
-                    e_lines = [e.line for e in self.cs_lst[index:index+len(cs_extras[elem.line])]]
-                    if e_lines == cs_extras[elem.line]:
+                    e_lines = [e.line for e in self.xx_lst[index:index+len(xx_extras[elem.line])]]
+                    if e_lines == xx_extras[elem.line]:
                         # Zaznamenáme přeskočené řádky.
                         foutextra.write('{}/{}:\n'.format(elem.fname, elem.lineno))
                         foutextra.write(''.join(e_lines))
                         foutextra.write('====================\n\n')
 
                         # Přeskočené řádky vypustíme ze seznamu elementů.
-                        del self.cs_lst[index:index+len(cs_extras[elem.line])]
+                        del self.xx_lst[index:index+len(xx_extras[elem.line])]
 
                         # Index posuneme o jeden zpět, protože se posloupnost
                         # vypustila a index se bude zvyšovat o jedničku.
@@ -135,18 +156,18 @@ class Parser:
                 index += 1
 
             # Přefiltrované elementy vypíšeme do určeného souboru.
-            for elem in self.cs_lst:
+            for elem in self.xx_lst:
                 fout.write(repr(elem) + '\n')
 
         # Přidáme informaci o výstupních souborech.
-        self.info_lines.append(short_name(cs_extra_fname))
-        self.info_lines.append(short_name(cs_elem_fname))
+        self.info_lines.append(short_name(xx_extra_fname))
+        self.info_lines.append(short_name(xx_elem_fname))
 
         # Elementy z anglického originálu do seznamu a do souboru.
         self.en_lst = []
         en_elem_fname = os.path.join(self.en_aux_dir, 'pass1elem.txt')
         with open(en_elem_fname, 'w', encoding='utf-8', newline='\n') as fout:
-            for relname, lineno, line in gen.sourceFileLines(self.en_name_in):
+            for relname, lineno, line in gen.sourceFileLines(self.en_src_dir):
                 elem = docelement.Element(relname, lineno, line)
                 self.en_lst.append(elem)
                 fout.write(repr(elem) + '\n')
@@ -174,18 +195,18 @@ class Parser:
         # z originálu jako klíč a dvojici seznamů (en, cz) definujících
         # odpovídající si posloupnosti.
         path, scriptname = os.path.split(__file__)
-        cs_translated_snippets_fname = os.path.join(path, 'cs_translated_snippets.txt')
+        xx_translated_snippets_fname = os.path.join(path, '{}_translated_snippets.txt'.format(self.lang))
         translated_snippets = {}
         status = 0
         lst = None
-        with open(cs_translated_snippets_fname, encoding='utf-8') as f:
+        with open(xx_translated_snippets_fname, encoding='utf-8') as f:
             for line in f:
                 if status == 0:
                     # První řádek bude klíčem slovníku, získáme odkaz
                     # na dvojici seznamů řádků.
-                    en_lst, cs_lst = translated_snippets.setdefault(line, ([], []))
+                    en_lst, xx_lst = translated_snippets.setdefault(line, ([], []))
                     assert len(en_lst) == 0
-                    assert len(cs_lst) == 0
+                    assert len(xx_lst) == 0
 
                     en_lst.append(line)     # první řádek originálu
                     status = 1
@@ -201,23 +222,23 @@ class Parser:
                 elif status == 2:
                     # Řádky české posloupnosti.
                     if line.startswith('====='):    # minimálně 5
-                        cs_lst = None               # konec sbírání cs
+                        xx_lst = None               # konec sbírání cs
                         status = 0
                     else:
-                        cs_lst.append(line)
+                        xx_lst.append(line)
 
                 else:
                     raise NotImplementedError('status = {}\n'.format(status))
 
         # Přidáme informaci o souboru s definicemi.
-        self.info_lines.append(short_name(cs_translated_snippets_fname))
+        self.info_lines.append(short_name(xx_translated_snippets_fname))
 
         # Zjištěné posloupnosti elementů dokumentů (nadpisy, odstavce, obrázky,
         # příklady kódu) porovnáváme za účelem zjištění rozdílů struktury -- zde
         # jen typy elementů.
-        struct_diff_fname = os.path.join(self.cs_aux_dir, 'pass1struct_diff.txt')
-        para_len_fname = os.path.join(self.cs_aux_dir, 'pass1paralen.txt')
-        translated_snippets_fname = os.path.join(self.cs_aux_dir, 'pass1transl_snippets.txt')
+        struct_diff_fname = os.path.join(self.xx_aux_dir, 'pass1struct_diff.txt')
+        para_len_fname = os.path.join(self.xx_aux_dir, 'pass1paralen.txt')
+        translated_snippets_fname = os.path.join(self.xx_aux_dir, 'pass1transl_snippets.txt')
         with open(struct_diff_fname, 'w', encoding='utf-8', newline='\n') as f, \
              open(translated_snippets_fname, 'w', encoding='utf-8', newline='\n') as ftransl, \
              open(para_len_fname, 'w', encoding='utf-8', newline='\n') as flen:
@@ -225,12 +246,12 @@ class Parser:
             # Použijeme cyklus while, protože budeme různě přeskakovat a modifikovat
             # seznamy prvků. Musíme manipulovat s indexy i se seznamy.
             en_i = 0       # index zpracovávaného elementu
-            cs_i = 0
-            while en_i < len(self.en_lst) and cs_i < len(self.cs_lst):
+            xx_i = 0
+            while en_i < len(self.en_lst) and xx_i < len(self.xx_lst):
 
                 # Zpřístupníme si elementy na indexech.
                 en_elem = self.en_lst[en_i]
-                cs_elem = self.cs_lst[cs_i]
+                xx_elem = self.xx_lst[xx_i]
 
                 if en_elem.line in translated_snippets:
                     # Mohla by to být vložená přeložená posloupnost.
@@ -243,7 +264,7 @@ class Parser:
 
                     # Příznaky detekce definičních seznamů v en a v cs.
                     is_enseq = [e.line for e in self.en_lst[en_i:en_i+enlen]] == enlst
-                    is_csseq = [e.line for e in self.cs_lst[cs_i:cs_i+cslen]] == cslst
+                    is_csseq = [e.line for e in self.xx_lst[xx_i:xx_i+cslen]] == cslst
 
                     # Pokud jsou oba příznaky nastaveny, pak jsme nalezli
                     # odpovídající si posloupnosti. Zaznamenáme je do souboru.
@@ -252,7 +273,7 @@ class Parser:
                     if is_enseq and is_csseq:
                         # Zaznamenáme přeskočené řádky.
                         ftransl.write('{}/{}:\n'.format(en_elem.fname, en_elem.lineno))
-                        ftransl.write('{}/{}:\n'.format(cs_elem.fname, cs_elem.lineno))
+                        ftransl.write('{}/{}:\n'.format(xx_elem.fname, xx_elem.lineno))
                         ftransl.write('~~~~~~~~~~~~~~~\n')
                         ftransl.write(''.join(enlst))
                         ftransl.write('-----\n')
@@ -261,12 +282,12 @@ class Parser:
 
                         # Přeskočené řádky vypustíme ze seznamu elementů.
                         del self.en_lst[en_i:en_i+enlen]
-                        del self.cs_lst[cs_i:cs_i+cslen]
+                        del self.xx_lst[xx_i:xx_i+cslen]
 
                         # Indexy posuneme o jeden zpět, protože se posloupnosti
                         # vypustily a indexy se budou zvyšovat o jedničku.
                         en_i -= 1
-                        cs_i -= 1
+                        xx_i -= 1
 
                 else:
                     # Jde o jiný případ. Budeme porovnávat strukturu elementů.
@@ -276,22 +297,22 @@ class Parser:
                     # Pokud se typy shodují, pak přísnější pravidlo
                     # synchronizace vyžaduje, aby se shodovaly řádky
                     # s příkladem kódu.
-                    if en_elem.type != cs_elem.type \
+                    if en_elem.type != xx_elem.type \
                        or (en_elem.type == 'code'
-                           and en_elem.line.rstrip() != cs_elem.line.rstrip()):
+                           and en_elem.line.rstrip() != xx_elem.line.rstrip()):
                         # Není to synchronní; shodíme příznak.
                         sync_flag = False
 
                         # U obou jméno souboru/číslo řádku.
                         f.write('\ncs {}/{} -- en {}/{}:\n'.format(
-                                cs_elem.fname,
-                                cs_elem.lineno,
+                                xx_elem.fname,
+                                xx_elem.lineno,
                                 en_elem.fname,
                                 en_elem.lineno))
 
                         # Typ a hodnota českého elementu.
-                        f.write('\t{}:\t{}\n'.format(cs_elem.type,
-                                                     cs_elem.line.rstrip()))
+                        f.write('\t{}:\t{}\n'.format(xx_elem.type,
+                                                     xx_elem.line.rstrip()))
 
                         # Typ a hodnota anglického elementu.
                         f.write('\t{}:\t{}\n'.format(en_elem.type,
@@ -305,18 +326,18 @@ class Parser:
                         # U obou identifikaci kapitoly, čísla porovnávaných řádků,
                         # délky porovnávaných řádků a poměr délek.
                         flen.write('{} cs/{} -- en/{}:\t{}:{}\t({})\n'.format(
-                                   os.path.split(cs_elem.fname)[0],
-                                   cs_elem.lineno,
+                                   os.path.split(xx_elem.fname)[0],
+                                   xx_elem.lineno,
                                    en_elem.lineno,
-                                   len(cs_elem.line),
+                                   len(xx_elem.line),
                                    len(en_elem.line),
-                                   len(cs_elem.line) / len(en_elem.line)))
+                                   len(xx_elem.line) / len(en_elem.line)))
 
                 # Posuneme se na další elementy, které se mají zpracovat.
                 # Pokud se něco vynechávalo, provedla se korekce, aby
                 # to tady fungovalo.
                 en_i += 1
-                cs_i += 1
+                xx_i += 1
 
         # Přidáme informaci o výstupním souboru.
         self.info_lines.append(short_name(translated_snippets_fname))
@@ -324,8 +345,8 @@ class Parser:
         self.info_lines.append(short_name(para_len_fname))
 
         # Přidáme informaci o synchronnosti.
-        self.info_lines.append(('-'*40) + ' struktura se ' +
-                               ('shoduje' if sync_flag else 'NESHODUJE'))
+        self.info_lines.append(('-'*30) + ' structure of the doc is ' +
+                               ('the same' if sync_flag else '  DIFFERENT'))
 
 
     def run(self):
