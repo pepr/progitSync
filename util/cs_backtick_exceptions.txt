@@ -1,0 +1,172 @@
+*	`/etc/gitconfig` file: Contains values for every user on the system and all their repositories. If you pass the option` --system` to `git config`, it reads and writes from this file specifically.
+---------------
+*	Soubor `/etc/gitconfig` obsahuje údaje pro všechny uživatele systému a pro všechny jejich repozitáře. Pokud příkazu `git config` zadáme parametr `--system` bude číst a zapisovat jen do tohoto souboru.
+====================================== 01-introduction/01-chapter1.markdown
+On Windows systems, Git looks for the `.gitconfig` file in the `$HOME` directory (`%USERPROFILE%` in Windows’ environment), which is `C:\Documents and Settings\$USER` or `C:\Users\$USER` for most people, depending on version (`$USER` is `%USERNAME%` in Windows’ environment). It also still looks for /etc/gitconfig, although it’s relative to the MSys root, which is wherever you decide to install Git on your Windows system when you run the installer.
+---------------
+Ve Windows Git hledá soubor `.gitconfig` v adresáři `$HOME` (v proměnných prostředí Windows je to `%USERPROFILE%`), což je u většiny uživatelů `C:\Documents and Settings\$USER` nebo `C:\Users\$USER` (`$USER` se ve Windows zapisuje odkazem na proměnnou prostředí `%USERNAME%`). I ve Windows se hledá soubor `/etc/gitconfig`, který je ale umístěn relativně v kořeni MSys, tedy vůči místu, do kterého jste se po spuštění instalačního programu rozhodli Git nainstalovat.
+====================================== 01-introduction/01-chapter1.markdown
+You can also check what Git thinks a specific key’s value is by typing `git config {key}`:
+---------------
+Můžete také zkontrolovat, jakou hodnotu Git uchovává pro konkrétní klíč zadáním `git config {klíč}`:
+====================================== 01-introduction/01-chapter1.markdown
+For example, you can get the manpage help for the config command by running
+---------------
+Například manpage nápovědu pro příkaz `config` vyvoláte zadáním:
+====================================== 01-introduction/01-chapter1.markdown
+You can tell that it’s staged because it’s under the “Changes to be committed” heading. If you commit at this point, the version of the file at the time you ran `git add` is what will be in the historical snapshot. You may recall that when you ran `git init` earlier, you then ran `git add (files)` — that was to begin tracking files in your directory. The `git add` command takes a path name for either a file or a directory; if it’s a directory, the command adds all the files in that directory recursively.
+---------------
+Můžeme říci, že je připraven k zapsání, protože je uveden v části „Changes to be committed“, tedy „Změny k zapsání“. Pokud v tomto okamžiku zapíšete revizi, v historickém snímku bude verze souboru z okamžiku, kdy jste spustili příkaz `git add`. Možná si vzpomínáte, že když jste před časem spustili příkaz `git init`, provedli jste potom příkaz `git add (soubory)`. Příkaz jste zadávali kvůli zahájení sledování souborů ve vašem adresáři. Příkaz `git add` je doplněn uvedením cesty buď k souboru, nebo k adresáři. Pokud se jedná o adresář, příkaz přidá rekurzivně všechny soubory v tomto adresáři.
+====================================== 02-git-basics/01-chapter2.markdown
+Git figures out that it’s a rename implicitly, so it doesn’t matter if you rename a file that way or with the `mv` command. The only real difference is that `mv` is one command instead of three — it’s a convenience function. More important, you can use any tool you like to rename a file, and address the add/rm later, before you commit.
+---------------
+Git implicitně zjistí, že se jedná o přejmenování, a proto nehraje roli, zda přejmenujete soubor tímto způsobem, nebo pomocí příkazu `mv`. Jediným skutečným rozdílem je, že `mv` je jediný příkaz, zatímco u druhého způsobu potřebujete příkazy tři — příkaz `mv` je pouze zjednodušením. Důležitější je, že můžete použít jakýkoli způsob přejmenování a příkaz add/rm provést později, před zapsáním revize.
+====================================== 02-git-basics/01-chapter2.markdown
+After these three commands, you end up with a single commit — the second commit replaces the results of the first.
+---------------
+Provedení uvedených tří příkazů zůstane jediná revize – druhý příkaz `commit` nahradí výsledky prvního.
+====================================== 02-git-basics/01-chapter2.markdown
+Right below the “Changes to be committed” text, it says "use `git reset HEAD <file>...` to unstage". So, let’s use that advice to unstage the `benchmarks.rb` file:
+---------------
+Přímo pod nadpisem „Changes to be committed“ (Změny k zapsání) se říká: pro návrat z oblasti připravených změn použijte příkaz `git reset HEAD <soubor>...` Budeme se tedy řídit touto radou a vrátíme soubor `benchmarks.rb` z oblasti připravených změn:
+====================================== 02-git-basics/01-chapter2.markdown
+I’ve mentioned and given some demonstrations of adding remote repositories in previous sections, but here is how to do it explicitly. To add a new remote Git repository as a shortname you can reference easily, run `git remote add [shortname] [url]`:
+---------------
+V předchozích částech už jsem se letmo dotkl přidávání vzdálených repozitářů. V této části se dostávám k tomu, jak přesně při přidávání postupovat. Chcete-li přidat nový vzdálený repozitář Git a zadat zkrácený název, přes který se můžete snadno odkazovat, spusťte příkaz `git remote add [zkrácený název] [url]`:
+====================================== 02-git-basics/01-chapter2.markdown
+When you have your project at a point that you want to share, you have to push it upstream. The command for this is simple: `git push [remote-name] [branch-name]`. If you want to push your master branch to your `origin` server (again, cloning generally sets up both of those names for you automatically), then you can run this to push your work back up to the server:
+---------------
+Pokud se váš projekt nachází ve stavu, kdy ho chcete sdílet s ostatními, můžete ho odeslat (push) na vzdálený server. Příkaz pro tuto akci je jednoduchý: `git push [název vzdáleného repozitáře] [název větve]`. Pokud chcete poslat svou hlavní větev na server `origin` (i tady platí, že proces klonování vám nastaví názvy `master` i `origin` automaticky), můžete k odeslání své práce na server použít tento příkaz:
+====================================== 02-git-basics/01-chapter2.markdown
+If you want to see more information about a particular remote, you can use the `git remote show [remote-name]` command. If you run this command with a particular shortname, such as `origin`, you get something like this:
+---------------
+Jestliže chcete získat více informací o konkrétním vzdáleném repozitáři, můžete použít příkaz `git remote show [název vzdáleného repozitáře]`. Pokud použijete tento příkaz v kombinaci s konkrétním zkráceným názvem (např. `origin`), bude výstup vypadat zhruba následovně:
+====================================== 02-git-basics/01-chapter2.markdown
+It lists the URL for the remote repository as well as the tracking branch information. The command helpfully tells you that if you’re on the master branch and you run `git pull`, it will automatically merge in the master branch on the remote after it fetches all the remote references. It also lists all the remote references it has pulled down.
+---------------
+Bude obsahovat adresu URL vzdáleného repozitáře a informace ke sledování větví. Příkaz vám mimo jiné sděluje, že pokud se nacházíte na hlavní větvi (branch `master`) a spustíte příkaz `git pull`, pak se po vyzvednutí všech vzdálených referencí (fetch) práce z hlavní větve na vzdáleném serveru automaticky začlení (merge). Součástí výpisu jsou také všechny vzdálené reference, které příkaz stáhl.
+====================================== 02-git-basics/01-chapter2.markdown
+To verify a signed tag, you use `git tag -v [tag-name]`. This command uses GPG to verify the signature. You need the signer’s public key in your keyring for this to work properly:
+---------------
+Chcete-li ověřit podepsanou značku, použijte příkaz `git tag -v [název značky]`. Tento příkaz využívá k ověření podpisu program GPG. Aby příkaz správně fungoval, musíte mít ve své klíčence veřejný klíč podepisujícího (signer).
+====================================== 02-git-basics/01-chapter2.markdown
+By default, the `git push` command doesn’t transfer tags to remote servers. You will have to explicitly push tags to a shared server after you have created them.  This process is just like sharing remote branches — you can run `git push origin [tagname]`.
+---------------
+Příkaz `git push` nepřenáší značky na vzdálené servery automaticky. Pokud jste vytvořili značku, budete ji muset na sdílený server poslat explicitně. Tento proces je stejný jako sdílení vzdálených větví. Spusťte příkaz `git push origin [název značky]`.
+====================================== 02-git-basics/01-chapter2.markdown
+Running `git commit` checksums all project directories and stores them as `tree` objects in the Git repository. Git then creates a `commit` object that has the metadata and a pointer to the root project `tree` object so it can re-create that snapshot when needed.
+---------------
+Vytvoříte-li revizi příkazem `git commit`, provede Git kontrolní součet každého adresáře (v tomto případě pouze kořenového adresáře projektu) a uloží tyto objekty stromu v repozitáři Git. Poté vytvoří objekt revize s metadaty a ukazatelem na kořenový strom projektu, aby mohl v případě potřeby tento snímek obnovit.
+====================================== 03-git-branching/01-chapter3.markdown
+This is interesting, because now your testing branch has moved forward, but your `master` branch still points to the commit you were on when you ran `git checkout` to switch branches. Let’s switch back to the `master` branch:
+---------------
+Výsledek je zajímavý z toho důvodu, že se větev `testing` posunula vpřed, zatímco větev `master` stále ukazuje na revizi, na níž jste se nacházeli v okamžiku, kdy jste spustili příkaz `git checkout` a přepnuli tím větve. Přepněme zpět na větev `master`.
+====================================== 03-git-branching/01-chapter3.markdown
+That command did two things. It moved the HEAD pointer back to point to the `master` branch, and it reverted the files in your working directory back to the snapshot that `master` points to. This also means the changes you make from this point forward will diverge from an older version of the project. It essentially rewinds the work you’ve done in your testing branch temporarily so you can go in a different direction.
+---------------
+Tento příkaz provedl dvě věci. Přemístil ukazatel `HEAD` zpět, takže nyní ukazuje na větev `master`, a vrátil soubory ve vašem pracovním adresáři zpět ke snímku, na nějž větev `master` ukazuje. To také znamená, že změny, které od teď provedete, se odštěpí od starší verze projektu. V podstatě dočasně vrátíte všechny změny, které jste provedli ve větvi testing, a vydáte se jiným směrem.
+====================================== 03-git-branching/01-chapter3.markdown
+Many Git developers have a workflow that embraces this approach, such as having only code that is entirely stable in their `master` branch — possibly only code that has been or will be released. They have another parallel branch named develop or next that they work from or use to test stability — it isn’t necessarily always stable, but whenever it gets to a stable state, it can be merged into `master`. It’s used to pull in topic branches (short-lived branches, like your earlier `iss53` branch) when they’re ready, to make sure they pass all the tests and don’t introduce bugs.
+---------------
+Mnoho vývojářů systému Git používá pracovní postup, kdy mají ve větvi `master` pouze kód, který je stoprocentně stabilní — třeba jen kód, který byl nebo bude součástí vydání. Kromě ní mají další paralelní větev, pojmenovanou `develop` nebo `next`, v níž skutečně pracují nebo testují stabilitu kódu. Tato větev nemusí být nutně stabilní, ale jakmile se dostane do stabilního stavu, může být začleněna do větve `master`. Do ní se vtahují tématické větve (ty dočasné, jako byla vaše větev `iss53`) ve chvíli, kdy jsou připravené a je jisté, že projdou všemi testy a nezavlečou chyby.
+====================================== 03-git-branching/01-chapter3.markdown
+They take the form `(remote)/(branch)`. For instance, if you wanted to see what the `master` branch on your `origin` remote looked like as of the last time you communicated with it, you would check the `origin/master` branch. If you were working on an issue with a partner and they pushed up an `iss53` branch, you might have your own local `iss53` branch; but the branch on the server would point to the commit at `origin/iss53`.
+---------------
+Vzdálené větve mají podobu `(vzdálený repozitář)/(větev)`. Pokud například chcete zjistit, jak vypadala větev `master` na vašem vzdáleném serveru `origin`, když jste s ní naposledy komunikovali, budete hledat větev `origin/master`. Pokud pracujete s kolegou na stejném problému a on odešle na server větev s názvem `iss53`, může se stát, že i vy máte jednu z lokálních větví pojmenovanou jako `iss53`. Větev na serveru však ukazuje na revizi označenou jako `origin/iss53`.
+====================================== 03-git-branching/01-chapter3.markdown
+This may be a bit confusing, so let’s look at an example. Let’s say you have a Git server on your network at `git.ourcompany.com`. If you clone from this, Git automatically names it `origin` for you, pulls down all its data, creates a pointer to where its `master` branch is, and names it `origin/master` locally; and you can’t move it. Git also gives you your own `master` branch starting at the same place as origin’s `master` branch, so you have something to work from (see Figure 3-22).
+---------------
+Mohlo by to být trochu matoucí, takže si uveďme příklad. Řekněme, že máte v síti server Git označený `git.ourcompany.com`. Pokud provedete klonování z tohoto serveru, Git ho automaticky pojmenuje `origin`, stáhne z něj všechna data, vytvoří ukazatel, který bude označovat jeho větev `master`, a lokálně ji pojmenuje `origin/master`. Tuto větev nemůžete přesouvat. Git vám rovněž vytvoří vaši vlastní větev `master`, která bude začínat ve stejném místě jako větev `master` serveru `origin`. Máte tak definován výchozí bod pro svoji práci (viz obrázek 3-22).
+====================================== 03-git-branching/01-chapter3.markdown
+To synchronize your work, you run a `git fetch origin` command. This command looks up which server origin is (in this case, it’s `git.ourcompany.com`), fetches any data from it that you don’t yet have, and updates your local database, moving your `origin/master` pointer to its new, more up-to-date position (see Figure 3-24).
+---------------
+K synchronizaci své práce použijte příkaz `git fetch origin`. Tento příkaz zjistí, který server je `origin` (v našem případě je to `git.ourcompany.com`), vyzvedne z něj všechna data, která ještě nemáte, a aktualizuje vaši lokální databázi. Při tom přemístí ukazatel `origin/master` na novou, aktuálnější pozici (viz obrázek 3-24).
+====================================== 03-git-branching/01-chapter3.markdown
+If you have a branch named `serverfix` that you want to work on with others, you can push it up the same way you pushed your first branch. Run `git push (remote) (branch)`:
+---------------
+Máte-li větev s názvem `serverfix`, na níž chcete spolupracovat s ostatními, můžete ji odeslat stejným způsobem, jakým jste odesílali svou první větev. Spusťte příkaz `git push (server) (větev)`:
+====================================== 03-git-branching/01-chapter3.markdown
+This is a bit of a shortcut. Git automatically expands the `serverfix` branchname out to `refs/heads/serverfix:refs/heads/serverfix`, which means, “Take my serverfix local branch and push it to update the remote’s serverfix branch.” We’ll go over the `refs/heads/` part in detail in Chapter 9, but you can generally leave it off. You can also do `git push origin serverfix:serverfix`, which does the same thing — it says, “Take my serverfix and make it the remote’s serverfix.” You can use this format to push a local branch into a remote branch that is named differently. If you didn’t want it to be called `serverfix` on the remote, you could instead run `git push origin serverfix:awesomebranch` to push your local `serverfix` branch to the `awesomebranch` branch on the remote project.
+---------------
+Toto je zkrácená verze příkazu. Git automaticky rozšíří název větve `serverfix` na `refs/heads/serverfix:refs/heads/serverfix`, což znamená: „Vezmi mou lokální větev `serverfix` a odešli ji na vzdálený server, kde aktualizuje tamní větev `serverfix`.“ Části `refs/heads/` se budeme podrobněji věnovat v kapitole 9, pro většinu uživatelů však nebude zajímavá. Můžete rovněž zadat příkaz `git push origin serverfix:serverfix`, který provede totéž. Systému Git říká: „Vezmi mou větev `serverfix` a udělej z ní `serverfix` na vzdáleném serveru.“ Tento formát můžete použít k odeslání lokální větve do vzdálené větve, která se jmenuje jinak. Pokud jste nechtěli, aby se větev na vzdáleném serveru jmenovala `serverfix`, mohli jste zadat příkaz ve tvaru `git push origin serverfix:awesomebranch`. Vaše lokální větev `serverfix` by byla odeslána do větve `awesomebranch` ve vzdáleném projektu.
+====================================== 03-git-branching/01-chapter3.markdown
+When you clone a repository, it generally automatically creates a `master` branch that tracks `origin/master`. That’s why `git push` and `git pull` work out of the box with no other arguments. However, you can set up other tracking branches if you wish — ones that don’t track branches on `origin` and don’t track the `master` branch. The simple case is the example you just saw, running `git checkout -b [branch] [remotename]/[branch]`. If you have Git version 1.6.2 or later, you can also use the `--track` shorthand:
+---------------
+Pokud klonujete repozitář, většinou se vytvoří větev `master`, která bude sledovat větev `origin/master`. To je také důvod, proč příkazy `git push` a `git pull` fungují samy od sebe i bez dalších parametrů. Pokud chcete, můžete nastavit i jiné sledující větve – takové, které nebudou sledovat větve na serveru `origin` a nebudou sledovat hlavní větev `master`. Jednoduchým případem je příklad, který jste právě viděli: spuštění příkazu `git checkout -b [větev] [vzdálený server]/[větev]`. Máte-li Git ve verzi 1.6.2 nebo novější, můžete použít také zkrácenou variantu `--track`:
+====================================== 03-git-branching/01-chapter3.markdown
+Suppose you’re done with a remote branch — say, you and your collaborators are finished with a feature and have merged it into your remote’s `master` branch (or whatever branch your stable codeline is in). You can delete a remote branch using the rather obtuse syntax `git push [remotename] :[branch]`. If you want to delete your `serverfix` branch from the server, you run the following:
+---------------
+Předpokládejme, že už nepotřebujete jednu ze vzdálených větví. Spolu se svými spolupracovníky jste dokončili určitou funkci a začlenili jste ji do větve `master` na vzdáleném serveru (nebo do jakékoli jiné větve, kterou používáte pro stabilní kód). Vzdálenou větev nyní můžete smazat pomocí poněkud neohrabané syntaxe `git push [vzdálený server] :[větev]`. Chcete-li ze serveru odstranit větev `serverfix`, můžete to provést takto:
+====================================== 03-git-branching/01-chapter3.markdown
+Boom. No more branch on your server. You may want to dog-ear this page, because you’ll need that command, and you’ll likely forget the syntax. A way to remember this command is by recalling the `git push [remotename] [localbranch]:[remotebranch]` syntax that we went over a bit earlier. If you leave off the `[localbranch]` portion, then you’re basically saying, “Take nothing on my side and make it be `[remotebranch]`.”
+---------------
+Šup! A větev je ze serveru pryč. Na této stránce si možná chcete ohnout rožek, protože tento příkaz budete určitě potřebovat, ale jeho syntaxi pravděpodobně zapomenete. Zapamatovat si jej ale můžete tak, že si vybavíte příkaz `git push [vzdálený server] [lokální větev]:[vzdálená větev]`, o kterém jsme se zmínili před chvílí. Pokud vynecháte složku `[lokální větev]`, pak v podstatě říkáte: „Neber na mé straně nic a toto nic teď bude `[vzdálená větev]`.“
+====================================== 03-git-branching/01-chapter3.markdown
+You can also have your rebase replay on something other than the rebase branch. Take a history like Figure 3-31, for example. You branched a topic branch (`server`) to add some server-side functionality to your project, and made a commit. Then, you branched off that to make the client-side changes (`client`) and committed a few times. Finally, you went back to your server branch and did a few more commits.
+---------------
+Opětovné provedení změn pomocí příkazu rebase můžete využít i jiným účelům než jen k přeskládání větve. Vezměme například historii na obrázku 3-31. Vytvořili jste novou tematickou větev (`server`), pomocí níž chcete do svého projektu přidat funkci na straně serveru, a zapsali jste revizi. Poté jste tuto větev opustili a začali pracovat na změnách na straně klienta (`client`). I tady jste zapsali několik revizí. Nakonec jste se vrátili na větev `server` a zapsali tu další revize.
+====================================== 03-git-branching/01-chapter3.markdown
+This basically says, “Check out the client branch, figure out the patches from the common ancestor of the `client` and `server` branches, and then replay them onto `master`.” It’s a bit complex; but the result, shown in Figure 3-32, is pretty cool.
+---------------
+Tím v podstatě říkáte: „Proveď checkout větve `client`, zjisti záplaty ze společného předka větví `client` a `server` a znovu je aplikuj na hlavní větev `master`.“ Postup je možná trochu složitý, ale výsledek, znázorněný na obrázku 3-32, stojí opravdu za to.
+====================================== 03-git-branching/01-chapter3.markdown
+Let’s say you decide to pull in your server branch as well. You can rebase the server branch onto the master branch without having to check it out first by running `git rebase [basebranch] [topicbranch]` — which checks out the topic branch (in this case, `server`) for you and replays it onto the base branch (`master`):
+---------------
+Řekněme, že se později rozhodnete vtáhnout i větev server. Větev server můžete přeskládat na hlavní větev příkazem `git rebase [základna] [tematická větev]`. Příkaz provede checkout tematické větve (v tomto případě větve `server`) a přeskládá její změny na základnu (angl. base branch, v tomto případě `master`):
+====================================== 03-git-branching/01-chapter3.markdown
+You’re looking for a pair of files named something and something.pub, where the something is usually `id_dsa` or `id_rsa`. The `.pub` file is your public key, and the other file is your private key. If you don’t have these files (or you don’t even have a `.ssh` directory), you can create them by running a program called `ssh-keygen`, which is provided with the SSH package on Linux/Mac systems and comes with the MSysGit package on Windows:
+---------------
+Zobrazí se několik souborů s názvem `xxx` a `xxx.pub`, kde `xxx` je většinou `id_dsa` nebo `id_rsa`. Soubor `.pub` je váš veřejný klíč, druhý soubor je soukromý klíč. Pokud tyto soubory nemáte (nebo dokonce vůbec nemáte adresář `.ssh`), můžete si je vytvořit. Spusťte program `ssh-keygen`, který je v systémech Linux/Mac součástí balíčku SSH a v systému Windows součástí balíčku MSysGit:
+====================================== 04-git-server/01-chapter4.markdown
+If you want to check out what GitWeb would look like for your project, Git comes with a command to fire up a temporary instance if you have a lightweight server on your system like `lighttpd` or `webrick`. On Linux machines, `lighttpd` is often installed, so you may be able to get it to run by typing `git instaweb` in your project directory. If you’re running a Mac, Leopard comes preinstalled with Ruby, so `webrick` may be your best bet. To start `instaweb` with a non-lighttpd handler, you can run it with the `--httpd` option.
+---------------
+Pokud vás zajímá, jak by GitWeb vypadal pro váš projekt, nabízí Git příkaz, jímž lze spustit dočasnou instanci. V systému je třeba mít lehký server typu `lighttpd` nebo `webrick`. V počítačích se systémem Linux je často nainstalován `lighttpd`. Spustit ho lze zadáním příkazu `git instaweb` v adresáři vašeho projektu. Pokud používáte OS Mac, v systému Leopard je předinstalován jazyk Ruby, a proto pro vás bude nejlepší variantou zřejmě server `webrick`. Chcete-li spustit `instaweb` s jiným správcem než `lighttpd`, použijte parametr `--httpd`:
+====================================== 04-git-server/01-chapter4.markdown
+To begin, create a user called `git` on your server and login to this user.  Copy your SSH public key (a file called `~/.ssh/id_rsa.pub` if you did a plain `ssh-keygen` with all the defaults) from your workstation, renaming it to `<yourname>.pub` (we'll use `scott.pub` in our examples).  Then run these commands:
+---------------
+Začněte tím, že na serveru vytvoříte uživatele nazvaného `git` a přihlásíte se na něj. Z vaší pracovní stanice nakopírujte svůj veřejný SSH klíč (pokud jste spustili `ssh-keygen` s implicitními hodnotami, jde o soubor `~/.ssh/id_rsa.pub`) a přejmenujte jej na `<vasejmeno>.pub` (v příkladech budeme používat `scott.pub`). Potom proveďte následující příkazy:
+====================================== 04-git-server/01-chapter4.markdown
+Let us say, in the situation above, we want engineers to be able to rewind any branch *except* master and integ.  Here’s how to do that:
+---------------
+Řekněme, že ve výše uvedené situaci budeme chtít, aby skupina engineers mohla vracet změny v jakékoliv větvi *s výjimkou* větví `master` a `integ`. Udělá se to následovně:
+====================================== 04-git-server/01-chapter4.markdown
+Again, you simply follow the rules top down until you hit a match for your access mode, or a deny.  Non-rewind push to master or integ is allowed by the first rule.  A rewind push to those refs does not match the first rule, drops down to the second, and is therefore denied.  Any push (rewind or non-rewind) to refs other than master or integ won’t match the first two rules anyway, and the third rule allows it.
+---------------
+Pravidla se  budou opět procházet shora dolů až do momentu, kdy narazíte na shodu s vaším režimem přístupu nebo na pravidlo typu odmítnutí (deny). Odeslání do větve `master` nebo `integ`, která nevracejí zpět změny (non-rewind push), jsou povolena prvním pravidlem. Odeslání, která vracejí změny (rewind push) do těchto větví, neodpovídají prvnímu pravidlu. Porovnají se tedy s druhým pravidlem a na jeho základě budou zamítnuty. Jakékoliv odeslání (bez ohledu na to zda se jedná o vracení změn nebo ne) do jiných referencí než `master` nebo `integ` nebudou odpovídat ani prvnímu ani druhému pravidlu, a proto bude díky třetímu pravidlu povoleno.
+====================================== 04-git-server/01-chapter4.markdown
+Let’s see what it might look like when two developers start to work together with a shared repository. The first developer, John, clones the repository, makes a change, and commits locally. (I’m replacing the protocol messages with `...` in these examples to shorten them somewhat.)
+---------------
+Podívejme se, jak to může vypadat, když dva vývojáři začnou spolupracovat na projektu se sdíleným repozitářem. První vývojář, John, naklonuje repozitář, provede změny a zapíše lokální revizi. (V následujících příkladech nahrazuji zprávy protokolů třemi tečkami, abych je trochu zkrátil.)
+====================================== 05-distributed-git/01-chapter5.markdown
+The original commit message for this functionality gives a simple example of running all your C source code through the `indent` program before committing. You can set it up by setting the filter attribute in your `.gitattributes` file to filter `*.c` files with the "indent" filter:
+---------------
+Původní zpráva k revizi s touto funkcí uvádí jednoduchý příklad, jak můžete před zapsáním prohnat veškeré vaše céčkové zdrojové texty programem `indent`. V souboru `.gitattributes` můžeme nastavit atribut `filter` tak, aby se soubory `*.c` zpracovaly filtrem `indent`:
+====================================== 07-customizing-git/01-chapter7.markdown
+It’s important to note how this tool namespaces your remote references differently. When you’re cloning a normal Git repository, you get all the branches on that remote server available locally as something like `origin/[branch]` - namespaced by the name of the remote. However, `git svn` assumes that you won’t have multiple remotes and saves all its references to points on the remote server with no namespacing. You can use the Git plumbing command `show-ref` to look at all your full reference names:
+---------------
+Doplňme také, že tento nástroj odlišně přiřazuje jmenný prostor vzdálených referencí. Jestliže klonujete normální repozitář Git, získáte ze vzdáleného serveru všechny větve, lokálně dostupné pod označením `origin/[větev]` – jmenný prostor je dán jménem vzdáleného serveru. Příkaz `git svn` však předpokládá, že nebudete mít více vzdálených repozitářů a všechny odkazy na místa na vzdáleném serveru uloží bez použití jmenného prostoru. Pokud si přejete zobrazit všechny své reference s úplným názvem, můžete použít nízkoúrovňový příkaz `show-ref`:
+====================================== 08-git-and-other-scms/01-chapter8.markdown
+To create a new branch in Subversion, you run `git svn branch [branchname]`:
+---------------
+Chcete-li vytvořit novou větev v systému Subversion, spusťte příkaz `git svn branch [název větve]`:
+====================================== 08-git-and-other-scms/01-chapter8.markdown
+Much as the `git svn log` command simulates the `svn log` command offline, you can get the equivalent of `svn annotate` by running `git svn blame [FILE]`. The output looks like this:
+---------------
+Tak jako příkaz `git svn log` simuluje příkaz `svn log` (bez nutnosti připojení), ekvivalentem příkazu `svn annotate` je provedení `git svn blame [SOUBOR]`. Jeho výstup vypadá takto:
+====================================== 08-git-and-other-scms/01-chapter8.markdown
+You need to do a bit of `post-import` cleanup. For one thing, you should clean up the weird references that `git svn` set up. First you’ll move the tags so they’re actual tags rather than strange remote branches, and then you’ll move the rest of the branches so they’re local.
+---------------
+Po importu bude nutné data trochu vyčistit. Zaprvé je nutné vyčistit podivné reference, které vytvořil příkaz `git svn`. Nejprve přesuňte značky tak, aby se z nich staly skutečné značky, a ne podivné vzdálené větve. V dalším kroku přesunete zbytek větví a uděláte z nich větve lokální.
+====================================== 08-git-and-other-scms/01-chapter8.markdown
+You may see some other files in there, but this is a fresh `git init` repository — it’s what you see by default. The `branches` directory isn’t used by newer Git versions, and the `description` file is only used by the GitWeb program, so don’t worry about those. The `config` file contains your project-specific configuration options, and the `info` directory keeps a global exclude file for ignored patterns that you don’t want to track in a `.gitignore` file. The `hooks` directory contains your client- or server-side hook scripts, which are discussed in detail in Chapter 7.
+---------------
+Možná ve svém adresáři najdete i další soubory. Toto je však příkazem `git init` čerstvě vytvořený repozitář s výchozím obsahem. Adresář `branches` se už v novějších verzích systému Git nepoužívá a soubor `description` používá pouze program GitWeb, takže o tyto dvě položky se nemusíte starat. Soubor `config` obsahuje konfigurační nastavení vašeho projektu a v adresáři `info` je uložen globální soubor `exclude` s maskami ignorovaných souborů a adresářů, které chcete explicitně ignorovat prostřednictvím souboru `.gitignore`. Adresář `hooks` obsahuje skripty zásuvných modulů na straně klienta nebo serveru, které jsme podrobně popisovali v kapitole 7.
+====================================== 09-git-internals/01-chapter9.markdown
+When you run commands like `git branch (branchname)`, Git basically runs that `update-ref` command to add the SHA-1 of the last commit of the branch you’re on into whatever new reference you want to create.
+---------------
+Spouštíte-li příkaz typu `git branch (název větve)`, Git ve skutečnosti spustí příkaz `update-ref` a vloží hodnotu SHA-1 poslední revize větve, na níž se nacházíte, do nové reference, kterou chcete vytvořit.
+====================================== 09-git-internals/01-chapter9.markdown
+The question now is, when you run `git branch (branchname)`, how does Git know the SHA-1 of the last commit? The answer is the HEAD file. The HEAD file is a symbolic reference to the branch you’re currently on. By symbolic reference, I mean that unlike a normal reference, it doesn’t generally contain a SHA-1 value but rather a pointer to another reference. If you look at the file, you’ll normally see something like this:
+---------------
+Nyní se však nabízí otázka, jak může Git při spuštění příkazu `git branch (název větve)` znát hodnotu SHA-1 poslední revize. Odpověď zní: soubor HEAD. Soubor HEAD je symbolická reference na větev, na níž se právě nacházíte. Symbolickou referencí myslím to, že na rozdíl od normálních referencí většinou neobsahuje hodnotu SHA-1, ale spíš ukazatel na jinou referenci. Pokud se na soubor podíváte, můžete v něm najít třeba následující:
+====================================== 09-git-internals/01-chapter9.markdown

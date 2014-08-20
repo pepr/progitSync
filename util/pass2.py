@@ -92,60 +92,49 @@ class Parser:
         btfname_skipped = os.path.join(self.cs_aux_dir, 'pass2backticks_skiped.txt')
         btfname_anomally = os.path.join(self.cs_aux_dir, 'pass2backticks_anomally.txt')
 
-        # Při řešení anomálií byly některé případy vyřešeny ručně, ale test
-        # náhrad by odstavec považoval stále za nevyřešený. Proto číslo řádku
-        # s odstavcem musíme přidat mezi přeskakované.
-        cs_skip = {
-            '01-introduction/01-chapter1.markdown':
-                set([193, 197, 237, 250]),
+        # Při synchronizaci originálu s překladem je některé případy nutné
+        # ošetřit jako výjimky. Dřívější implementace využívala
+        # přeskakování těchto úseků uvedením řádků (odstavců) ve zdrojovém
+        # textu. Problémy nastávají, když se originál mění a čísla přeskakovaných
+        # řádků je nutné upravovat. Proto se nově buduje "překladový slovník"
+        # těchto úseků z definičního souboru, kde řádek-odstavec uvádí
+        # anglický originál, oddělovač s nejméně pěti pomlčkami
+        # od začátku řádku, český překlad a oddělovač
+        # s nejméně pěti rovnítky. Pomocný slovník používá první řádek
+        # z originálu jako klíč překlad jako hodnotu.
+        path, scriptname = os.path.split(__file__)
+        backtick_exceptions_fname = os.path.join(path, 'cs_backtick_exceptions.txt')
+        backtick_exceptions = {}
+        status = 0
+        original = None
+        with open(backtick_exceptions_fname, encoding='utf-8') as f:
+            for line in f:
+                if status == 0:
+                    original = line     # bude později klíčem
+                    status = 1
 
-            '02-git-basics/01-chapter2.markdown':
-                set([92, 424, 747, 763, 850, 886, 894, 905, 1063, 1130]),
+                elif status == 1:
+                    assert line.startswith('-----')
+                    status = 2
 
-            '03-git-branching/01-chapter3.markdown':
-                set([18, 68, 77, 355, 392, 394,
-                     404, 423, 433, 459, 475, 481,
-                     526, 535, 548]),
+                elif status == 2:
+                    backtick_exceptions[original] = line    # překlad originálu
+                    original = None
+                    status = 3
 
-            '04-git-server/01-chapter4.markdown':
-                set([179, 330, 530, 608, 614]),
+                elif status == 3:
+                    assert line.startswith('=====')
+                    status = 0
 
-            '05-distributed-git/01-chapter5.markdown':
-                set([115]),
+                else:
+                    raise NotImplementedError('status = {}\n'.format(status))
 
-            '07-customizing-git/01-chapter7.markdown':
-                set([463]),
-
-            '08-git-and-other-scms/01-chapter8.markdown':
-                set([90, 238, 291, 395]),
-
-            '09-git-internals/01-chapter9.markdown':
-                set([30, 332, 336]),
-
-            }
+        # Přidáme informaci o souboru s definicemi.
+        self.info_lines.append(short_name(backtick_exceptions_fname))
 
         with open(btfname, 'w', encoding='utf-8', newline='\n') as fout, \
              open(btfname_skipped, 'w', encoding='utf-8', newline='\n') as fskip, \
              open(btfname_anomally, 'w', encoding='utf-8', newline='\n') as fa:
-
-            # Hlavička souboru s problémy. Upozorníme na ignorované odstavce.
-            fout.write('Přeskakované odstavce -- viz fixParaBackticks() v pass2.py:\n')
-            for k in sorted(cs_skip):
-                chapter = k.split('/')[1][3:11]
-                fout.write('  {}: {!r}\n'.format(chapter, sorted(cs_skip[k])))
-            fout.write('=' * 78 + '\n')
-
-            # Hlavička souboru s odstavci, jejichž porovnávání bylo potlačeno.
-            # Někdy bychom ale mohli chtít prohlédnout, jestli je to potlačeno
-            # správně.
-            fskip.write('Přeskakované odstavce -- viz fixParaBackticks() v pass2.py:\n')
-            for k in sorted(cs_skip):
-                chapter = k.split('/')[1][3:11]
-                fskip.write('  {}: {!r}\n'.format(chapter, sorted(cs_skip[k])))
-            fskip.write('=' * 78 + '\n')
-
-            fa.write('Anomálie')
-            fa.write('=' * 78 + '\n')
 
             # V cyklu porovnáme a zpracujeme prvky z obou dokumentů.
             for en_el, cs_el in zip(self.en_lst, self.cs_lst):
@@ -154,12 +143,8 @@ class Parser:
                 # seznamů. Odstavce vykazující známou anomálii ale přeskakujeme.
                 if en_el.type in ['para', 'uli', 'li']:
 
-                    if cs_el.lineno not in cs_skip.get(cs_el.fname, {}):
-                        f = fout
-                        skipped = False
-                    else:
-                        f = fskip
-                        skipped = True
+                    # Nastavíme příznak přeskakování.
+                    skipped = cs_el.line == backtick_exceptions.get(en_el.line, '!@#$%^&*')
 
                     # Najdeme všechny symboly uzavřené ve zpětných apostrofech
                     # v originálním odstavci.
@@ -183,10 +168,17 @@ class Parser:
                             if s in dlst:
                                 dlst.remove(s)
 
-                        # Započítáme a zapíšeme do souboru.
-                        if not skipped:
+                        # Nepřeskakované odstavce započítáme,
+                        # zapíšeme do příslušného souboru.
+                        if skipped:
+                            fskip.write('\ncs {}/{} -- en {}/{}:\n'.format(
+                                cs_el.fname,
+                                cs_el.lineno,
+                                en_el.fname,
+                                en_el.lineno))
+                        else:
                             async_cnt += 1
-                        f.write('\ncs {}/{} -- en {}/{}:\n'.format(
+                            fout.write('\ncs {}/{} -- en {}/{}:\n'.format(
                                 cs_el.fname,
                                 cs_el.lineno,
                                 en_el.fname,
@@ -209,13 +201,24 @@ class Parser:
                             rex = self.buildRex(dlst)
                             cs_el.line, n = rex.subn(r'`\g<0>`', cs_el.line)
 
-                        # Do souboru f zapisujeme záznam o všech nahrazovaných.
-                        # Rozdílový seznam a jeho délka, anglický odstavec,
+                        # Do příslušného souboru zapisujeme záznam o všech nahrazovaných.
+                        # Rozdílový seznam, anglický odstavec,
                         # český odstavec před náhradou a po ní.
-                        f.write('\t{}\n'.format(repr(dlst)))
-                        f.write('\t{}\n'.format(en_el.line.rstrip()))
-                        f.write('\t{}\n'.format(cspara1))
-                        f.write('\t{}\n'.format(cs_el.line.rstrip()))
+                        if skipped:
+                            fskip.write('{}\n'.format(repr(dlst)))
+                            fskip.write('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
+                            fskip.write('{}\n'.format(en_el.line.rstrip()))
+                            fskip.write('---------------\n')
+                            fskip.write('{}\n'.format(cspara1))
+                            fskip.write('====================================== {}\n'.format(en_el.fname))
+                        else:
+                            fout.write('{}\n'.format(repr(dlst)))
+                            fout.write('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
+                            fout.write('{}\n'.format(en_el.line.rstrip()))
+                            fout.write('---------------\n')
+                            fout.write('{}\n'.format(cspara1))
+                            fout.write('====================================== {}\n'.format(en_el.fname))
+                            fout.write('{}\n'.format(cs_el.line.rstrip()))
 
                         # Znovu zjistíme počet obalených podřetězců v českém
                         # odstavci. Znovu vypočítáme rozdílový seznam.
