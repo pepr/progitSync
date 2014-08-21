@@ -1,29 +1,32 @@
 #!python3
 # -*- coding: utf-8 -*-
 
-'''Skript pro srovnávání již dříve synchronizovaného cs překladu a en originálu.'''
+'''Script to help manual synchronization of the translation with the original.'''
 
 import pass1
 import pass2
 
 
-# V prvním průchodu sesbíráme informace jednak z originálu a jednak
-# z překladu (stejným algoritmem). Vycházíme z čerstvého commitu originálního
-# gitovského repozitáře.
+# You should have the fresh sources of the original and of the translation.
 #
-# Zjištěné posloupnosti elementů dokumentů (nadpisy, odstavce, obrázky,
-# příklady kódu) porovnáváme za účelem zjištění rozdílů struktury. Některé
-# informace se porovnávají podrobněji (příklady kódu, identifikace obrázků),
-# u některých elementů se porovnává jen druh elementu (existence odstavce,
-# existence odrážky, úroveň nadpisu,...).
+# The first pass collects information from both original and the translation
+# and checks for the sameness of the structure. The elements of the docs
+# headings, paragraphs, images, code snippets) should appear synchronously.
+# Some elements are required only to exist (headings, paragraphs, list items),
+# some elements should have the exactly same content (code snippets, image
+# identifiers).
+#
+# Set the language identifier as the first argument, path to the root of
+# the source documents (absolutely or relatively to this script), and
+# path to the root of the auxiliary directories -- they will contain the reports.
 print('pass 1:')
 parser1 = pass1.Parser('cs', '../../progit/', '../')
 msg = parser1.run()
 print('\t' + msg)
 
-# V druhém průchodu vycházíme z předpokladu, že se struktura dokumentu
-# shoduje. Už generujeme cílovou strukturu cs/, ale pro další strojové
-# korekce budeme stále vycházet z informací získaných v předchozím kroku.
+# The second path consumes the result of the first one. It assumes the
+# structure is already synchronized; otherwise, ignore the reports until
+# it IS synchronized.
 print('pass 2:')
 parser2 = pass2.Parser(parser1)
 msg = parser2.run()
