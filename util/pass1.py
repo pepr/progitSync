@@ -92,9 +92,9 @@ class Parser:
         self.info_lines.append(self.short_name(fnameout))
 
         # ... and `pass1.txt` with chapter/line info.
-        fnameout = os.path.join(self.xx_aux_dir, 'pass1.txt')
+        fnameout = os.path.join(self.en_aux_dir, 'pass1.txt')
         with open(fnameout, 'w', encoding='utf-8', newline='\n') as fout:
-            for fname, lineno, line in gen.sourceFileLines(self.xx_src_dir):
+            for fname, lineno, line in gen.sourceFileLines(self.en_src_dir):
                 fout.write('{}/{}:\t{}'.format(fname[1:2], lineno, line))
         self.info_lines.append(self.short_name(fnameout))
 
