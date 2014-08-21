@@ -48,7 +48,7 @@ class Parser:
         images_fname = os.path.join(self.xx_aux_dir, 'pass2img_diff.txt')
         with open(images_fname, 'w', encoding='utf-8', newline='\n') as f:
             for en_el, xx_el in zip(self.en_lst, self.xx_lst):
-                if    en_el.type == 'img' and en_el.attrib != xx_el.attrib \
+                if en_el.type == 'img' and en_el.attrib != xx_el.attrib \
                    or en_el.type == 'imgcaption' \
                       and en_el.attrib[0] != xx_el.attrib[0]:
 
@@ -56,7 +56,8 @@ class Parser:
                     sync_flag = False
 
                     # ... and report to the file.
-                    f.write('\ncs {}/{} -- en {}/{}:\n'.format(
+                    f.write('\n{} {}/{} -- en {}/{}:\n'.format(
+                            self.lang,
                             xx_el.fname,
                             xx_el.lineno,
                             en_el.fname,
@@ -98,23 +99,18 @@ class Parser:
 
            The results reported to pass2backticks.txt.'''
 
-        async_cnt = 0     # init -- počet nesynchronních výskytů
-        anomally_cnt = 0  # init -- počet odhalených anomálií
+        async_cnt = 0     # init -- "not synchronous lines" counter
+        anomaly_cnt = 0   # init -- anomally counter (with respect to the markup in both cases)
         btfname = os.path.join(self.xx_aux_dir, 'pass2backticks.txt')
         btfname_skipped = os.path.join(self.xx_aux_dir, 'pass2backticks_skiped.txt')
-        btfname_anomally = os.path.join(self.xx_aux_dir, 'pass2backticks_anomally.txt')
+        btfname_anomaly = os.path.join(self.xx_aux_dir, 'pass2backticks_anomaly.txt')
 
-        # Při synchronizaci originálu s překladem je některé případy nutné
-        # ošetřit jako výjimky. Dřívější implementace využívala
-        # přeskakování těchto úseků uvedením řádků (odstavců) ve zdrojovém
-        # textu. Problémy nastávají, když se originál mění a čísla přeskakovaných
-        # řádků je nutné upravovat. Proto se nově buduje "překladový slovník"
-        # těchto úseků z definičního souboru, kde řádek-odstavec uvádí
-        # anglický originál, oddělovač s nejméně pěti pomlčkami
-        # od začátku řádku, český překlad a oddělovač
-        # s nejméně pěti rovnítky. Pomocný slovník používá první řádek
-        # z originálu jako klíč překlad jako hodnotu.
-        path, scriptname = os.path.split(__file__)
+        # Some backtick markup (difference, missing, extra) may be intentional
+        # by the translator (human) and as such is captured in the file with
+        # exceptions. The original line is the key, the translated form
+        # is the value. In the exception file, the values are separated by
+        # at least five dashes, and the records by at least five equal signs
+        # -- as in previous cases. See the `exceptions/cs` examples if in doubt.
         backtick_exceptions_fname = os.path.join(self.root_exceptions_dir,
                                     self.lang, 'backtick_exceptions.txt')
 
@@ -154,144 +150,151 @@ class Parser:
 
         with open(btfname, 'w', encoding='utf-8', newline='\n') as fout, \
              open(btfname_skipped, 'w', encoding='utf-8', newline='\n') as fskip, \
-             open(btfname_anomally, 'w', encoding='utf-8', newline='\n') as fa:
+             open(btfname_anomaly, 'w', encoding='utf-8', newline='\n') as fa:
 
-            # V cyklu porovnáme a zpracujeme prvky z obou dokumentů.
+            # The content is expected to be already synchronized; therefore,
+            # looping using the for-loop.
             for en_el, xx_el in zip(self.en_lst, self.xx_lst):
-
-                # Zpracováváme jen odstavce textu a testy z odrážek a číslovaných
-                # seznamů. Odstavce vykazující známou anomálii ale přeskakujeme.
+                # Process only the text from paragraphs and list items.
                 if en_el.type in ['para', 'uli', 'li']:
-
-                    # Nastavíme příznak přeskakování.
+                    # If in exceptions, set the flag, but examine anyway.
                     skipped = xx_el.line == backtick_exceptions.get(en_el.line, '!@#$%^&*')
 
-                    # Najdeme všechny symboly uzavřené ve zpětných apostrofech
-                    # v originálním odstavci.
+                    # Find all symbols in backticks.
                     enlst = self.rexBackticked.findall(en_el.line)
-                    cslst = self.rexBackticked.findall(xx_el.line)
+                    xxlst = self.rexBackticked.findall(xx_el.line)
 
-                    # Nestačí porovnávat délky seznamů, protože seznamy mohou
-                    # obsahovat různé sekvence (což se díky modifikaci textu
-                    # stalo). Proto musíme porovnat množiny. Ale nestačí porovnat
-                    # jen množiny, protože některý seznam by mohl být delší
-                    # (opakoval by se nějaký řetězec). Ostatní situace považujeme
-                    # za málo pravděpodobné.
-                    if set(enlst) != set(cslst) or len(enlst) != len(cslst):
+                    # The marked items may appear in different order
+                    # in the translated text. This way, sets of the marked
+                    # items should be compared. But also, some list may be longer
+                    # because of repetitions of the same marked items.
+                    # There may be also other situations, but consider them
+                    # less probable.
+                    if set(enlst) != set(xxlst) or len(enlst) != len(xxlst):
 
-                        # Vytvoříme rozdílový seznam, do kterého vložíme
-                        # jen řetězce, které jsou v en navíc. To znamená,
-                        # že z anglického seznamu odstraníme ty, které už
-                        # jsou v českém odstavci označkované.
-                        dlst = enlst[:]   # kopie
-                        for s in cslst:
+                        # Create the list of differences that contains only
+                        # the strings that are in en, but not in xx. That is,
+                        # remove the elements used in the translated language
+                        # from the English list.
+                        dlst = enlst[:]   # copy
+                        for s in xxlst:
                             if s in dlst:
                                 dlst.remove(s)
 
-                        # Nepřeskakované odstavce započítáme,
-                        # zapíšeme do příslušného souboru.
+                        # Report the skipped lines. Report separately the
+                        # lines that are not captured as exceptions, and
+                        # increase the counter of problems in the later case.
                         if skipped:
-                            fskip.write('\ncs {}/{} -- en {}/{}:\n'.format(
+                            fskip.write('\n{} {}/{} -- en {}/{}:\n'.format(
+                                self.lang,
                                 xx_el.fname,
                                 xx_el.lineno,
                                 en_el.fname,
                                 en_el.lineno))
                         else:
                             async_cnt += 1
-                            fout.write('\ncs {}/{} -- en {}/{}:\n'.format(
+                            fout.write('\n{} {}/{} -- en {}/{}:\n'.format(
+                                self.lang,
                                 xx_el.fname,
                                 xx_el.lineno,
                                 en_el.fname,
                                 en_el.lineno))
 
-                        # Český odstavec před úpravou.
-                        cspara1 = xx_el.line.rstrip()
+                        # Translated line before the suggested fix.
+                        xxpara1 = xx_el.line.rstrip()
 
-                        # Pokud je rozdílový seznam prázdný, nechceme nic
-                        # nahrazovat. Vzhledem k dalšímu způsobu ani nesmíme
-                        # nic nahrazovat, protože by se zkonstruoval nevhodný
-                        # regulární výraz, který by způsobil obalení kde čeho.
-                        # Náhradu tedy provádět nebudeme, ale považujeme to
-                        # stále za anomálii, která musí být zkontrolována.
-                        # V opačném případě vybudujeme regulární výraz
-                        # a provedeme náhradu. Zjišťujeme také, kolik náhrad
-                        # proběhlo.
-                        n = 0            # init
+                        # If the list of differences is empty, we do not want
+                        # to fix anything. Actually we cannot fix anything
+                        # as it would lead to construction of the bad regular
+                        # expression that would lead to markup of unwanted pieces.
+                        # But we still consider this anomaly, report it
+                        # to the separate log file, and count it separately.
+                        #
+                        # If the list of differences is not empty, the translated
+                        # source does not follow the original markup. Then build
+                        # the regular expression and suggest the markup. Get
+                        # also the number of replacements.
+                        n = 0            # init -- number of replacements
                         if len(dlst) != 0:
                             rex = self.buildRex(dlst)
                             xx_el.line, n = rex.subn(r'`\g<0>`', xx_el.line)
 
-                        # Do příslušného souboru zapisujeme záznam o všech nahrazovaných.
-                        # Rozdílový seznam, anglický odstavec,
-                        # český odstavec před náhradou a po ní.
+                        # Now we have the list of differences, the original line,
+                        # the translated line before the replacements (xxpara1)
+                        # the replaced line in the self.xx_lst.
+                        # Report the information differently
                         if skipped:
                             fskip.write('{}\n'.format(repr(dlst)))
                             fskip.write('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
                             fskip.write('{}\n'.format(en_el.line.rstrip()))
                             fskip.write('---------------\n')
-                            fskip.write('{}\n'.format(cspara1))
+                            fskip.write('{}\n'.format(xxpara1)) # from translated sources
                             fskip.write('====================================== {}\n'.format(en_el.fname))
                         else:
                             fout.write('{}\n'.format(repr(dlst)))
                             fout.write('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
                             fout.write('{}\n'.format(en_el.line.rstrip()))
                             fout.write('---------------\n')
-                            fout.write('{}\n'.format(cspara1))
+                            fout.write('{}\n'.format(xxpara1))  # from translated sources
                             fout.write('====================================== {}\n'.format(en_el.fname))
-                            fout.write('{}\n'.format(xx_el.line.rstrip()))
+                            fout.write('Suggested markup:\n')
+                            fout.write('{}\n'.format(xx_el.line.rstrip())) # suggested markup
 
-                        # Znovu zjistíme počet obalených podřetězců v českém
-                        # odstavci. Znovu vypočítáme rozdílový seznam.
-                        cslst2 = self.rexBackticked.findall(xx_el.line)
-                        dlst2 = enlst[:]   # kopie
-                        for s in cslst2:
+                        # The suggested markup may be wrong because of non-human processing
+                        # implementation that is not perfect. Calculate the difference list
+                        # again based on the suggested markup of the translated line.
+                        xxlst2 = self.rexBackticked.findall(xx_el.line)
+                        dlst2 = enlst[:]   # copy
+                        for s in xxlst2:
                             if s in dlst2:
                                 dlst2.remove(s)
 
-                        # Anomálie nastává, pokud nastává alespoň jeden z případů:
-                        # - liší se množiny podřetězců v originále a v překladu,
-                        # - rozdílový seznam je neprázdný (tj. v překladu nebylo
-                        #   něco obaleno),
-                        # - liší se délky seznamů v originále a v překladu (tj.
-                        #   v překladu bylo obaleno jiné množství podřetězců),
-                        # - počet provedených náhrad je větší než délka původního
-                        #   rozdílového seznamu (může být redundantní vůči ostatním
-                        #   bodům).
-                        if set(enlst) != set(cslst2) or len(dlst2) > 0 \
-                           or len(enlst) != len(cslst2) or len(dlst) != n:
+                        # The anomaly happens when at least one of the cases happens:
+                        # - the sets of substrings in original and in the translation differ,
+                        # - the difference list is not empty (that is missing markup
+                        #   in the translation),
+                        # - the length of lists differs for the original and for
+                        #   the translation (that is, the translation marks up different
+                        #   number of substrings),
+                        # - the number of replacements differ from the length of
+                        #   the first difference list (that is too much markups
+                        #   were suggested).
+                        if set(enlst) != set(xxlst2) or len(dlst2) > 0 \
+                           or len(enlst) != len(xxlst2) or len(dlst) != n:
 
-                            # Za neshodu při synchronizaci považujeme pouze
-                            # vznik anomálie -- započítáme další anomálii.
+                            # It is an anomaly only if it not an explicit exception.
                             if not skipped:
-                                anomally_cnt += 1
+                                anomaly_cnt += 1
 
-                            # Zapíšeme do souboru s anomáliemi.
-                            fa.write('\ncs {} -- en {}/{}:\n'.format(
+                            # Report to the log file with anomalies.
+                            fa.write('\n{} {} -- en {}/{}:\n'.format(
+                                self.lang,
                                 xx_el.lineno,
                                 en_el.fname[1:2],
                                 en_el.lineno))
 
-                            # Do souboru f zapisujeme záznam o všech nahrazovaných.
-                            # Rozdílový seznam a jeho délka, anglický odstavec,
-                            # český odstavec před náhradou a po ní.
-                            fa.write('\tenlst  = {} {}\n'.format(len(enlst), repr(enlst)))
-                            fa.write('\tcslst  = {} {}\n'.format(len(cslst), repr(cslst)))
-                            fa.write('\tdslst  = {} {}\n'.format(len(dlst), repr(dlst)))
-                            fa.write('\tcslst2 = {} {}\n'.format(len(cslst2), repr(cslst2)))
-                            fa.write('\tdslst2 = {} {}\n'.format(len(dlst2), repr(dlst2)))
-                            fa.write('\tsubn   = {}\n'.format(n))
-                            fa.write('\t{}\n'.format(en_el.line.rstrip()))
-                            fa.write('\t{}\n'.format(cspara1))
-                            fa.write('\t{}\n'.format(xx_el.line.rstrip()))
+                            # To the report of anomalies insert all values that can
+                            # help to spot the problem.
+                            fa.write('\t[en] markup               = {} {}\n'.format(len(enlst), repr(enlst)))
+                            fa.write('\t[{}] markup               = {} {}\n'.format(self.lang, len(xxlst), repr(xxlst)))
+                            fa.write('\tmissing in [{}]           = {} {}\n'.format(self.lang, len(dlst), repr(dlst)))
+                            fa.write('\tsuggested [{}] markup     = {} {}\n'.format(self.lang, len(xxlst2), repr(xxlst2)))
+                            fa.write('\tmissing in suggested [{}] = {} {}\n'.format(self.lang, len(dlst2), repr(dlst2)))
+                            fa.write('\tnumber of suggested replacement in [{}] = {}\n'.format(self.lang, n))
+                            fa.write('Original [en]:\n\t{}\n'.format(en_el.line.rstrip()))
+                            fa.write('Translation [{}]:\n\t{}\n'.format(self.lang, xxpara1))
+                            if n > 0:
+                                fa.write('Suggested translation [{}]:\n\t{}\n'.format(self.lang, xx_el.line.rstrip()))
+                            fa.write('-'*50 + '\n')
 
-        # Přidáme informaci o synchronnosti použití zpětných apostrofů.
+        # Capture the info about the report log files and about the result.
         self.info_lines.append(self.short_name(btfname))
         self.info_lines.append(self.short_name(btfname_skipped))
         self.info_lines.append(('-'*30) + \
                          ' asynchronous backticks: {}'.format(async_cnt))
-        self.info_lines.append(self.short_name(btfname_anomally))
+        self.info_lines.append(self.short_name(btfname_anomaly))
         self.info_lines.append(('-'*30) + \
-                         ' backtick anomalies: {}'.format(anomally_cnt))
+                         ' backtick anomalies: {}'.format(anomaly_cnt))
 
 
     def reportBadDoubleQuotes(self):
@@ -315,7 +318,7 @@ class Parser:
             if self.lang == 'cs':
                 rexBadParaQuotes = re.compile(r'["”]')  # Czech ones must be „this way“
             elif self.lang == 'fr':
-                rexBadParaQuotes = re.compile(r'["”]')  # Czech ones must be „this way“
+                rexBadParaQuotes = re.compile(r'["”]')  # I do not know for French
             else:   # as in 'en'
                 rexBadParaQuotes = re.compile(r'["„]')  # English uses “these”
 
@@ -404,13 +407,13 @@ class Parser:
                     # Najdeme všechny označkované řetězce z originálního
                     # a z českého odstavce.
                     enlst = rexEmStrong.findall(en_el.line)
-                    cslst = rexEmStrong.findall(xx_el.line)
+                    xxlst = rexEmStrong.findall(xx_el.line)
 
                     # Pokud se něco našlo, zobrazíme originál a český vedle sebe.
                     # Pokud se liší počet označkovaných posloupností, započítáme
                     # to jako další problém k vyřešení a zobrazíme podobu odstavců
                     # do souboru s rozdíly.
-                    if enlst or cslst:
+                    if enlst or xxlst:
                         f.write('\ncs {}/{} -- en {}/{}, {}:\n'.format(
                                 xx_el.fname,
                                 xx_el.lineno,
@@ -419,7 +422,7 @@ class Parser:
                                 repr(xx_el.type)))
 
                         # Počty označkovaných posloupností.
-                        f.write('\t{} : {}\n'.format(len(enlst), len(cslst)))
+                        f.write('\t{} : {}\n'.format(len(enlst), len(xxlst)))
 
                         # Odstavce.
                         f.write('\t{}\n'.format(en_el.line.rstrip()))
@@ -427,7 +430,7 @@ class Parser:
 
                         # Pokud se počet liší, zaznamenáme totéž ještě jednou
                         # do souboru s předpokládanými rozdíly.
-                        if len(enlst) != len(cslst):
+                        if len(enlst) != len(xxlst):
                             cnt += 1
                             fdiff.write('\ncs {}/{} -- en {}/{}, {}:\n'.format(
                                         xx_el.fname,
@@ -437,7 +440,7 @@ class Parser:
                                         repr(xx_el.type)))
 
                             # Počty označkovaných posloupností.
-                            fdiff.write('\t{} : {}\n'.format(len(enlst), len(cslst)))
+                            fdiff.write('\t{} : {}\n'.format(len(enlst), len(xxlst)))
 
                             # Odstavce.
                             fdiff.write('\t{}\n'.format(en_el.line.rstrip()))
