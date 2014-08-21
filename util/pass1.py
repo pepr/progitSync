@@ -388,6 +388,10 @@ class Parser:
         # The information about the result of the check.
         self.info_lines.append(('-'*30) + ' structure of the doc is ' +
                                ('the same' if sync_flag else 'DIFFERENT'))
+        if not sync_flag:
+            self.info_lines.append(
+                "Have a look at the following log file:\n\t'{}'\n"
+                .format(struct_diff_fname))
 
 
     def run(self):
