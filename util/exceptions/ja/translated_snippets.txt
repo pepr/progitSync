@@ -1,0 +1,28 @@
+	# a comment - this is ignored
+	# no .a files
+	*.a
+	# but do track lib.a, even though you're ignoring .a files above
+	!lib.a
+	# only ignore the root TODO file, not subdir/TODO
+	/TODO
+	# ignore all files in the build/ directory
+	build/
+	# ignore doc/notes.txt, but not doc/server/arch.txt
+	doc/*.txt
+	# ignore all .txt files in the doc/ directory
+	doc/**/*.txt
+----------------------------------
+	# コメント。これは無視されます
+	# .a ファイルは無視
+	*.a
+	# しかし、lib.a ファイルだけは .a であっても追跡対象とします
+	!lib.a
+	# ルートディレクトリの TODO ファイルだけを無視し、サブディレクトリの TODO は無視しません
+	/TODO
+	# build/ ディレクトリのすべてのファイルを無視します
+	build/
+	# doc/notes.txt は無視しますが、doc/server/arch.txt は無視しません
+	doc/*.txt
+	# doc/ ディレクトリの .txt ファイル全てを無視します
+	doc/**/*.txt
+================================================
