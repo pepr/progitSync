@@ -31,12 +31,20 @@ class Parser:
         # Derive the auxiliary directory for the target language.
         self.xx_aux_dir = os.path.join(self.root_aux_dir, lang + '_aux')
 
-        # Create the auxiliary directories if they does not exist.
+        # Root directory for the language-dependent exception-definition files.
+        path, scriptname = os.path.split(__file__)
+        self.root_exceptions_dir = os.path.abspath(os.path.join(path, 'exceptions'))
+
+        # Create the directories if they does not exist.
         if not os.path.isdir(self.en_aux_dir):
             os.makedirs(self.en_aux_dir)
 
         if not os.path.isdir(self.xx_aux_dir):
             os.makedirs(self.xx_aux_dir)
+
+        lang_exceptions_dir = os.path.join(self.root_exceptions_dir, self.lang)
+        if not os.path.isdir(lang_exceptions_dir):
+            os.makedirs(lang_exceptions_dir)
 
 
         self.en_lst = None  # elements from the English original
@@ -96,8 +104,8 @@ class Parser:
         # just split the extra sequences to one extra sequence for
         # the first line, and the two or more sequences of the rest lines
         # (without that first line).
-        path, scriptname = os.path.split(__file__)
-        extras_fname = os.path.join(path, 'exceptions', self.lang, 'extras.txt')
+        extras_fname = os.path.join(self.root_exceptions_dir,
+                                    self.lang, 'extras.txt')
 
         # Create the empty file if it does not exist.
         if not os.path.isfile(extras_fname):
@@ -208,9 +216,8 @@ class Parser:
         # The key is the first line of the original, the value is a couple
         # with lists of related line sequences from the original and from
         # the translated sources.
-        path, scriptname = os.path.split(__file__)
-        translated_snippets_fname = os.path.join(path, 'exceptions',
-                                        self.lang, 'translated_snippets.txt')
+        translated_snippets_fname = os.path.join(self.root_exceptions_dir,
+                                    self.lang, 'translated_snippets.txt')
 
         # Create the empty file if it does not exist.
         if not os.path.isfile(translated_snippets_fname):
@@ -362,7 +369,7 @@ class Parser:
 
         # The information about the result of the check.
         self.info_lines.append(('-'*30) + ' structure of the doc is ' +
-                               ('the same' if sync_flag else ' DIFFERENT'))
+                               ('the same' if sync_flag else 'DIFFERENT'))
 
 
     def run(self):
