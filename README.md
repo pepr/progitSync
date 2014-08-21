@@ -1,52 +1,42 @@
-# progitCZ -- převod překladu do podoby markdown
+# progitSync -- Synchronizing the translation with the original
 
-Projekt pro vylepšování českého překladu knihy autora jménem
-Scott Chacon -- "Pro Git". Gitový repozitář se zdrojovými texty
-knihy najdete na https://github.com/progit/progit.
-
-Opravy jsou zanášeny do odvětveného projektu (Fork) https://github.com/pepr/progit,
-pro který je občas vznesen požadavek na začlenění změn (Pull Request). Je to
-možná trošku nešikovné, ale fork neumožňuje sbírání připomínek a problémů
-(Issues). Proto se k danému účelu používá toto místo.
-
-----------------
-
-As the project is related to the Czech translation of the English original,
-I will try to be bilingual only a bit here.
-
-Project for synchronizing and for improvement of the Czech translation
+Project for synchronizing and for improvement of the translations
 of Scott Chacon's "Pro Git". The Git repository with the sources
 of the book is available at https://github.com/progit/progit.
 
-The initial Czech translation was published in CZ.NIC Edition
+The implementation language of the scripts is Python 3.
+
+## Goal
+
+The main goal is to help human translators to keep their translation
+in sync with the changes of the English original.
+
+This is rather new project. Contact me if you have any suggestions.
+
+## Notes
+
+The project is actually a by-product of the older one (progitCZ; still present
+in the earlier commits of the Git repository). Originally, it was the tool to convert
+the Czech translation was published in CZ.NIC Edition
 of the CZ.NIC association (see http://knihy.nic.cz/page/351/ -- switch
 to English/Czech at the top of the page). The book is available both as printed
 book and the free PDF document at http://knihy.nic.cz/
 (http://knihy.nic.cz/files/nic/edice/scott_chacon_pro_git.pdf).
 
------------------
+## The original goals of the `progitCZ` were:
 
-První úplný český překlad byl vydán v Edici CZ.NIC sdružení CZ.NIC
-(viz http://knihy.nic.cz/page/351/ -- do češtiny/angličtiny se můžete
-přepnout na začátku stránky). Kniha je k dispozici jak v tištěné podobě,
-tak v podobě PDF dokumentu, který si můžete zdarma stáhnout, na stránce
-http://knihy.nic.cz/
-(konkrétně http://knihy.nic.cz/files/nic/edice/scott_chacon_pro_git.pdf).
+1. The first goal was to convert the translation in the PDF form back to the markdown syntax used by
+   Scott Chacon. This goal should enable the synchronization of the newer parts
+   of original with the translation. The first conversion were finished 3rd November 2012.
 
-## Cíle:
+2. The second goal was to replace the partial Czech translation
+   at http://git-scm.com/book/cs at the time. The idea was to make
+   the translation widely available on-line at the very prominent and
+   well known site -- the source of Git. The repository is available
+   as multilingual project at https://github.com/progit/progit.
+   The Czech update was published here in 12th November 2012.
 
-1. Prvním cílem tohoto projektu (progitCZ) byla konverze překladu zpět do podoby,
-   kterou používá Scott Chacon jako zdroj pro generování knihy v různých formátech.
-   Tento krok měl možnit budoucí synchronizaci překladu s živým obsahem originálu.
-   [dokončeno 3. 12. 2012]
-
-2. Druhým cílem byla náhrada částečného českého překladu http://git-scm.com/book/cs.
-   Tím byla zajištěna dostupnost překladu přímo z domácí stránky projektu Git.
-   Repozitář vícejazyčného projektu je k dispozici
-   na https://github.com/progit/progit. [zveřejněno kolem 12. 12. 2012]
-
-3. Třetím (tentokrát dlouhodobým) cílem je udržování kontaktu s českými
-   uživateli gitu za účelem zvyšování kvality překladu -- tj. sbírání
-   připomnínek pomocí nástroje Issues na GitHub (pro Čechy, takže psané
-   česky) -- a k udržování překladu v aktuálním stavu (synchronizace obsahu
-   překladu s originálem).
+3. The third (long term) project was to make the translation easily
+   synchronized and updated--based on the changes in the original--alive and
+   widely available to the Czech users. The GitHub Issues tool can be
+   used for collecting suggestions.
