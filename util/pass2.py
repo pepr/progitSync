@@ -5,35 +5,46 @@ import os
 import re
 
 
-def short_name(fname):
-    '''Vrací jméno pro log -- jen poslední podadresář s holým jménem.'''
-    path, name = os.path.split(fname)
-    subdir = os.path.basename(path)
-    return '/'.join((subdir, name))
-
-
 class Parser:
-    '''Parser pro značkování a kontroly.
+    '''Pass 2 parser for markup checking.
 
-       Konzumuje výstup prvního průchodu přímo ve formě objektu pass1.'''
+       Consumes the result of the pass1 parser.'''
 
-    # Regulární výraz pro rozpoznání znaků uzavřených v opačných apostrofech.
+    # Regular expression for detecting sequences in backticks.
     rexBackticked = re.compile(r'`(\S.*?\S?)`')
 
     def __init__(self, pass1):
         self.lang = pass1.lang
-        self.en_aux_dir = pass1.en_aux_dir  # pomocný adresář pro anglické výstupy
-        self.xx_aux_dir = pass1.xx_aux_dir  # pomocný adresář pro české výstupy
 
+        # Important directories.
+        self.en_src_dir = pass1.en_src_dir
+        self.xx_src_dir = pass1.xx_src_dir
+        self.en_aux_dir = pass1.en_aux_dir
+        self.xx_aux_dir = pass1.xx_aux_dir
+        self.root_exceptions_dir = pass1.root_exceptions_dir
+
+        # Lists of elements (some elements were
+        # processed and deleted in the pass1).
         self.en_lst = pass1.en_lst
         self.xx_lst = pass1.xx_lst
 
-        self.info_lines = []                # sběr řádků pro logování
+        self.info_lines = []                # lines for logging
         self.backticked_set = set()
 
 
+    def short_name(self, fname):
+        '''Returns tail of the fname -- for log info.'''
+        lst = fname.split(os.sep)
+        if lst[-2] == self.lang:
+            return '/'.join(lst[-3:])
+        else:
+            return '/'.join(lst[-2:])
+
+
     def checkImages(self):
-        sync_flag = True  # optimistická inicializace
+        '''Checks if the documents use the same images.'''
+
+        sync_flag = True  # Optimistic initialization
         images_fname = os.path.join(self.xx_aux_dir, 'pass2img_diff.txt')
         with open(images_fname, 'w', encoding='utf-8', newline='\n') as f:
             for en_el, xx_el in zip(self.en_lst, self.xx_lst):
@@ -41,26 +52,26 @@ class Parser:
                    or en_el.type == 'imgcaption' \
                       and en_el.attrib[0] != xx_el.attrib[0]:
 
-                    # Není shoda. Shodíme příznak...
+                    # Out of sync, reset the flag...
                     sync_flag = False
 
-                    # ... a zapíšeme do souboru.
+                    # ... and report to the file.
                     f.write('\ncs {}/{} -- en {}/{}:\n'.format(
                             xx_el.fname,
                             xx_el.lineno,
                             en_el.fname,
                             en_el.lineno))
 
-                    # Typ a hodnota českého elementu.
+                    # Type and value of the translated element.
                     f.write('\t{}:\t{}\n'.format(xx_el.type,
                                                  xx_el.line.rstrip()))
 
-                    # Typ a hodnota anglického elementu.
+                    # Type and value of the English element.
                     f.write('\t{}:\t{}\n'.format(en_el.type,
                                                  en_el.line.rstrip()))
 
-        # Přidáme informaci o synchronnosti obrázků.
-        self.info_lines.append(short_name(images_fname))
+        # Capture the info about the report file.
+        self.info_lines.append(self.short_name(images_fname))
         self.info_lines.append(('-'*30) + ' image info is ' +
                                ('the same' if sync_flag else 'DIFFERENT'))
 
@@ -83,9 +94,9 @@ class Parser:
 
 
     def fixParaBackticks(self):
-        '''Kontroluje synchronnost použití zpětných apostrofů v 'para' elementech.
+        '''Checks the bakctick markup in paragraphs, list items...
 
-           Výsledky zapisuje do pass2backticks.txt.'''
+           The results reported to pass2backticks.txt.'''
 
         async_cnt = 0     # init -- počet nesynchronních výskytů
         anomally_cnt = 0  # init -- počet odhalených anomálií
@@ -104,15 +115,22 @@ class Parser:
         # s nejméně pěti rovnítky. Pomocný slovník používá první řádek
         # z originálu jako klíč překlad jako hodnotu.
         path, scriptname = os.path.split(__file__)
-        backtick_exceptions_fname =  os.path.join(path, 
-                                     '{}_backtick_exceptions.txt'.format(self.lang))
+        backtick_exceptions_fname = os.path.join(self.root_exceptions_dir,
+                                    self.lang, 'backtick_exceptions.txt')
+
+        # Create the empty file if it does not exist.
+        if not os.path.isfile(backtick_exceptions_fname):
+            f = open(backtick_exceptions_fname, 'w')
+            f.close()
+
+        # Load the exceptions.
         backtick_exceptions = {}
         status = 0
         original = None
         with open(backtick_exceptions_fname, encoding='utf-8') as f:
             for line in f:
                 if status == 0:
-                    original = line     # bude později klíčem
+                    original = line     # will be the key later
                     status = 1
 
                 elif status == 1:
@@ -120,7 +138,7 @@ class Parser:
                     status = 2
 
                 elif status == 2:
-                    backtick_exceptions[original] = line    # překlad originálu
+                    backtick_exceptions[original] = line    # translation
                     original = None
                     status = 3
 
@@ -131,8 +149,8 @@ class Parser:
                 else:
                     raise NotImplementedError('status = {}\n'.format(status))
 
-        # Přidáme informaci o souboru s definicemi.
-        self.info_lines.append(short_name(backtick_exceptions_fname))
+        # Capture the info about the definition file.
+        self.info_lines.append(self.short_name(backtick_exceptions_fname))
 
         with open(btfname, 'w', encoding='utf-8', newline='\n') as fout, \
              open(btfname_skipped, 'w', encoding='utf-8', newline='\n') as fskip, \
@@ -267,11 +285,11 @@ class Parser:
                             fa.write('\t{}\n'.format(xx_el.line.rstrip()))
 
         # Přidáme informaci o synchronnosti použití zpětných apostrofů.
-        self.info_lines.append(short_name(btfname))
-        self.info_lines.append(short_name(btfname_skipped))
+        self.info_lines.append(self.short_name(btfname))
+        self.info_lines.append(self.short_name(btfname_skipped))
         self.info_lines.append(('-'*30) + \
                          ' asynchronous backticks: {}'.format(async_cnt))
-        self.info_lines.append(short_name(btfname_anomally))
+        self.info_lines.append(self.short_name(btfname_anomally))
         self.info_lines.append(('-'*30) + \
                          ' backtick anomalies: {}'.format(anomally_cnt))
 
@@ -292,15 +310,15 @@ class Parser:
             # Only plain ASCII double quotes are allowed in code snippets.
             rexBadCodeQuotes = re.compile(r'[„“”]')
 
-            # The paragraphs should contain the typesetting-ready 
+            # The paragraphs should contain the typesetting-ready
             # double quotes that are language dependent.
             if self.lang == 'cs':
                 rexBadParaQuotes = re.compile(r'["”]')  # Czech ones must be „this way“
             elif self.lang == 'fr':
                 rexBadParaQuotes = re.compile(r'["”]')  # Czech ones must be „this way“
-            else:
-                rexBadParaQuotes = re.compile(r'["”]')  # Czech ones must be „this way“
-                
+            else:   # as in 'en'
+                rexBadParaQuotes = re.compile(r'["„]')  # English uses “these”
+
             for en_el, xx_el in zip(self.en_lst, self.xx_lst):
 
                 # Zpracováváme jen odstavce textu.
@@ -312,7 +330,8 @@ class Parser:
                         # a zapíšeme do souboru.
                         cnt += 1
 
-                        f.write('\ncs {}/{} -- en {}/{}, {}:\n'.format(
+                        f.write('\n{} {}/{} -- en {}/{}, {}:\n'.format(
+                                self.lang,
                                 xx_el.fname,
                                 xx_el.lineno,
                                 en_el.fname,
@@ -330,7 +349,8 @@ class Parser:
                         # a zapíšeme do souboru.
                         cnt += 1
 
-                        f.write('\ncs {}/{} -- en {}/{}, {}:\n'.format(
+                        f.write('\n{} {}/{} -- en {}/{}, {}:\n'.format(
+                                self.lang,
                                 xx_el.fname,
                                 xx_el.lineno,
                                 en_el.fname,
@@ -356,7 +376,7 @@ class Parser:
 
 
         # Přidáme informaci o synchronnosti použití zpětných apostrofů.
-        self.info_lines.append(short_name(fname))
+        self.info_lines.append(self.short_name(fname))
         self.info_lines.append(('-'*30) + \
                ' elements with bad double quotes: {}'.format(cnt))
 
@@ -424,8 +444,8 @@ class Parser:
                             fdiff.write('\t{}\n'.format(xx_el.line.rstrip()))
 
         # Přidáme informaci o provedení kontroly.
-        self.info_lines.append(short_name(fname))
-        self.info_lines.append(short_name(fname_diff))
+        self.info_lines.append(self.short_name(fname))
+        self.info_lines.append(self.short_name(fname_diff))
         self.info_lines.append(('-'*30) + \
                ' elements with *em* and **strong**: {}'.format(cnt))
 
