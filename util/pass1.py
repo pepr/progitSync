@@ -63,22 +63,40 @@ class Parser:
 
 
     def writePass1txtFiles(self):
+        # Copy the target language sources into the `single.markdown`.
+        # This can be useful when converting the whole book using the PanDoc utility.
+        fnameout = os.path.join(self.xx_aux_dir, 'single.markdown')
+        with open(fnameout, 'w', encoding='utf-8', newline='\n') as fout:
+            for fname, lineno, line in gen.sourceFileLines(self.xx_src_dir):
+                fout.write(line)
+
+        # Capture the info about the generated file.
+        self.info_lines.append(self.short_name(fnameout))
+
         # Copy the target language sources with chapter/line info into a single
         # file -- mostly for debugging, not consumed later.
-        xx_single_fname = os.path.join(self.xx_aux_dir, 'pass1.txt')
-        with open(xx_single_fname, 'w', encoding='utf-8', newline='\n') as fout:
+        fnameout = os.path.join(self.xx_aux_dir, 'pass1.txt')
+        with open(fnameout, 'w', encoding='utf-8', newline='\n') as fout:
             for fname, lineno, line in gen.sourceFileLines(self.xx_src_dir):
                 fout.write('{}/{}:\t{}'.format(fname[1:2], lineno, line))
 
-        # Do the same with the original.
-        en_single_fname = os.path.join(self.en_aux_dir, 'pass1.txt')
-        with open(en_single_fname, 'w', encoding='utf-8', newline='\n') as fout:
-            for fname, lineno, line in gen.sourceFileLines(self.en_src_dir):
-                fout.write('{}/{}:\t{}'.format(fname[1:2], lineno, line))
+        # Capture the info about the generated file.
+        self.info_lines.append(self.short_name(fnameout))
 
-        # Capture the info about the generated files.
-        self.info_lines.append(self.short_name(xx_single_fname))
-        self.info_lines.append(self.short_name(en_single_fname))
+        # Do the same with the English original -- the `single.markdown`.
+        # This can be useful when converting the whole book using the PanDoc utility.
+        fnameout = os.path.join(self.en_aux_dir, 'single.markdown')
+        with open(fnameout, 'w', encoding='utf-8', newline='\n') as fout:
+            for fname, lineno, line in gen.sourceFileLines(self.en_src_dir):
+                fout.write(line)
+        self.info_lines.append(self.short_name(fnameout))
+
+        # ... and `pass1.txt` with chapter/line info.
+        fnameout = os.path.join(self.xx_aux_dir, 'pass1.txt')
+        with open(fnameout, 'w', encoding='utf-8', newline='\n') as fout:
+            for fname, lineno, line in gen.sourceFileLines(self.xx_src_dir):
+                fout.write('{}/{}:\t{}'.format(fname[1:2], lineno, line))
+        self.info_lines.append(self.short_name(fnameout))
 
 
     def loadElementLists(self):
