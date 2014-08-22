@@ -393,7 +393,7 @@ class Parser:
                                ('the same' if sync_flag else 'DIFFERENT'))
         if not sync_flag:
             self.info_lines.append(
-                "Have a look at the following log file:\n\t'{}'\n"
+                "Have a look at the following report file:\n\t'{}'\n"
                 .format(struct_diff_fname))
 
         return sync_flag
@@ -482,6 +482,11 @@ class Parser:
         self.info_lines.append(self.short_name(fname_diff))
 
         self.info_lines.append(('-'*30) + ' content changes: {}'.format(cnt))
+
+        if cnt > 0:
+            self.info_lines.append(
+                "Have a look at the following report file:\n\t'{}'\n"
+                .format(fname_diff))
 
         self.info_lines.append('checkContentChanges() -- to be implemented')
 
