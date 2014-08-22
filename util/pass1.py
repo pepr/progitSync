@@ -31,9 +31,9 @@ class Parser:
         # Derive the auxiliary directory for the target language.
         self.xx_aux_dir = os.path.join(self.root_aux_dir, lang + '_aux')
 
-        # Root directory for the language-dependent exception-definition files.
+        # Root directory for the language-dependent definition files.
         path, scriptname = os.path.split(__file__)
-        self.root_exceptions_dir = os.path.abspath(os.path.join(path, 'exceptions'))
+        self.root_definitions_dir = os.path.abspath(os.path.join(path, 'definitions'))
 
         # Create the directories if they does not exist.
         if not os.path.isdir(self.en_aux_dir):
@@ -42,9 +42,9 @@ class Parser:
         if not os.path.isdir(self.xx_aux_dir):
             os.makedirs(self.xx_aux_dir)
 
-        lang_exceptions_dir = os.path.join(self.root_exceptions_dir, self.lang)
-        if not os.path.isdir(lang_exceptions_dir):
-            os.makedirs(lang_exceptions_dir)
+        lang_definitions_dir = os.path.join(self.root_definitions_dir, self.lang)
+        if not os.path.isdir(lang_definitions_dir):
+            os.makedirs(lang_definitions_dir)
 
 
         self.en_lst = None  # elements from the English original
@@ -108,7 +108,7 @@ class Parser:
         # The target-language sources may contain some extra parts used
         # as translator notes or some other explanations of the English
         # original. When compared with the original, the parts must be
-        # skipped. The `exceptions/xx/extras.txt` stores the definitions
+        # skipped. The `definitions/xx/extras.txt` stores the definitions
         # of the skipped parts in the form that can be cut/pasted from
         # other logs (UTF-8). If the extras.txt file does not exist,
         # the empty one is created.
@@ -122,7 +122,7 @@ class Parser:
         # just split the extra sequences to one extra sequence for
         # the first line, and the two or more sequences of the rest lines
         # (without that first line).
-        extras_fname = os.path.join(self.root_exceptions_dir,
+        extras_fname = os.path.join(self.root_definitions_dir,
                                     self.lang, 'extras.txt')
 
         # Create the empty file if it does not exist.
@@ -234,7 +234,7 @@ class Parser:
         # The key is the first line of the original, the value is a couple
         # with lists of related line sequences from the original and from
         # the translated sources.
-        translated_snippets_fname = os.path.join(self.root_exceptions_dir,
+        translated_snippets_fname = os.path.join(self.root_definitions_dir,
                                     self.lang, 'translated_snippets.txt')
 
         # Create the empty file if it does not exist.
@@ -361,7 +361,7 @@ class Parser:
                                                      xx_elem.line.rstrip()))
 
                     # The basics of the heuristic analysis (planned for future)
-                    # to detect some stranegeness of the *content* of the texts.
+                    # to detect some strangeness of the *content* of the texts.
                     # Here the lengths from the original and the translation.
                     elif en_elem.type in ('para', 'uli', 'li'):
                         # Chapter ID, language, line no., lengths ratio as a text,
@@ -386,7 +386,7 @@ class Parser:
         self.info_lines.append(self.short_name(para_len_fname))
 
         # The information about the result of the check.
-        self.info_lines.append(('-'*30) + ' structure of the doc is ' +
+        self.info_lines.append(('-'*30) + ' structure of the book is ' +
                                ('the same' if sync_flag else 'DIFFERENT'))
 
 

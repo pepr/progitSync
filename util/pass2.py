@@ -21,7 +21,7 @@ class Parser:
         self.xx_src_dir = pass1.xx_src_dir
         self.en_aux_dir = pass1.en_aux_dir
         self.xx_aux_dir = pass1.xx_aux_dir
-        self.root_exceptions_dir = pass1.root_exceptions_dir
+        self.root_definitions_dir = pass1.root_definitions_dir
 
         # Lists of elements (some elements were
         # processed and deleted in the pass1).
@@ -110,8 +110,8 @@ class Parser:
         # exceptions. The original line is the key, the translated form
         # is the value. In the exception file, the values are separated by
         # at least five dashes, and the records by at least five equal signs
-        # -- as in previous cases. See the `exceptions/cs` examples if in doubt.
-        backtick_exceptions_fname = os.path.join(self.root_exceptions_dir,
+        # -- as in previous cases. See the `definitions/cs` examples if in doubt.
+        backtick_exceptions_fname = os.path.join(self.root_definitions_dir,
                                     self.lang, 'backtick_exceptions.txt')
 
         # Create the empty file if it does not exist.
