@@ -6,93 +6,94 @@ import re
 
 
 class Element:
-    '''Rozpoznané Elementy dokumentu odpovídající řádkům zdrojového textu.'''
+    '''One Element object is constructed from one markdown source line.'''
 
-    # Řádek se symbolicky uvedeným nadpisem (#### Nadpis ####).
+    # The following regular expressions are used for recognition
+    # of the used markdown-syntax elements.
+
+    # Title like ### Title ###.
     rexTitle = re.compile(r'^(?P<level>#+)\s+(?P<title>.+?)\s+\1\s*$')
 
-    # Nečíslovaná odrážka korektně explicitně zapsaná (markdown syntaxe).
+    # Unnumbered list item.
     rexBullet = re.compile(r'^\*\s+(?P<uli>.+?)\s*$')
 
-    # Příkaz pro vložení obrázku.
+    # Image insertion (includes the filename).
     rexInsImg = re.compile(r'^Insert\s+(?P<img>\d+fig\d+\.png)\s*$')
 
-    # Popis obrázku.
+    # Image caption.
     rexImgCaption = re.compile(r'^(Fig(ure)?|Obrázek)\.\s+(?P<num>\d+.+\d+).?\s+(?P<text>.+?)\s*$')
 
-    # Příklad kódu.
+    # One code-snippet line.
     rexCode = re.compile(r'^( {4}|\t)(?P<code>.+?)\s*$')
 
-    # Položka číslovaného seznamu.
+    # Numbered list item.
     rexLi = re.compile(r'^(?P<num>\d+\.)\t(?P<text>.+?)\s*$')
 
     def __init__(self, fname, lineno, line):
-        self.fname = fname      # původní zdrojový soubor
-        self.lineno = lineno    # číslo řádku ve zdrojovém souboru
-        self.line = line        # původní řádek
+        self.fname = fname      # the source file name
+        self.lineno = lineno    # line number in the source file
+        self.line = line        # the line from the source file
 
-        self.type = None        # typ elementu
-        self.attrib = None      # init -- atributy elementu (význam dle typu)
+        self.type = None        # element type
+        self.attrib = None      # init -- element attributes (the type dependent)
 
-        # Řádek obsahující jen whitespace považujeme za prázdný
-        # řádek ve významu oddělovače.
+        # The line that contains only whitespaces is considered empty (separator).
         if self.line.isspace():
             self.type = 'empty'
-            self.attrib = ''   # reprezentací bude prázdný řetězec
+            self.attrib = ''   # represented as empty string
             return
 
-        # Řádek s nadpisem.
+        # Line with the title.
         m = self.rexTitle.match(line)
         if m:
             self.type = 'title'
             self.attrib = (len(m.group('level')), m.group('title'))
             return
 
-        # Odrážka.
+        # Unnumbered list item.
         m = self.rexBullet.match(line)
         if m:
             self.type = 'uli'
             self.attrib = m.group('uli')
             return
 
-        # Položka číslovaného seznamu.
+        # Numbered list item.
         m = self.rexLi.match(line)
         if m:
             self.type = 'li'
             self.attrib = (m.group('num'), m.group('text'))
             return
 
-        # Řádek pro vložení souboru obrázku.
+        # Image insertion.
         m = self.rexInsImg.match(line)
         if m:
             self.type = 'img'
             self.attrib = m.group('img')
             return
 
-        # Řádek s popisem obrázku.
+        # Image caption.
         m = self.rexImgCaption.match(line)
         if m:
             self.type = 'imgcaption'
             self.attrib = (m.group('num'), m.group('text'))
             return
 
-        # Řádek s kódem.
+        # Code-snippet line.
         m = self.rexCode.match(line)
         if m:
             self.type = 'code'
             self.attrib = m.group('code')
             return
 
-        # Prázdný řádek odpovídá situaci, kdy skončil soubor a další řádek
-        # nebylo možno načíst. Neměl by nastávat, ale pro jistotu.
+        # The empty line should not happen, but it means that
+        # there the content in the file was exhausted.
+        # From the solved-problem point of view it is not a separator.
         if self.line == '':
-            # Z pohledu řešeného problému to tedy není prázdný řádek
-            # ve významu oddělovače.
             self.type = 'EOF'
             self.attrib = None
             return
 
-        # Ostatní případy budeme považovat za odstavec.
+        # The other cases are considered paragraphs.
         self.type = 'para'
         self.attrib = line.rstrip()
 
