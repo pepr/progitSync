@@ -299,14 +299,15 @@ class Parser:
 
 
     def reportBadDoubleQuotes(self):
-        '''Kontroluje použití správných uvozovek v českých elementech.
+        '''Checks usage of the correct version of double quotes.
 
-           V 'para' elementech musí být „takové“, v 'code' elementech
-           zase "takové" a v ostatních elementech uvidíme.
+           There should be “these” in the text to be typeset
+           as paragraph or list item. And there should be "these"
+           in the code snippets.
 
-           Výsledky zapisuje do pass2dquotes.txt.'''
+           Results are reported to pass2dquotes.txt.'''
 
-        cnt = 0         # init -- počet odhalených chyb
+        cnt = 0         # init -- counter of improper usage
         fname = os.path.join(self.xx_aux_dir, 'pass2dquotes.txt')
 
         with open(fname, 'w', encoding='utf-8', newline='\n') as f:
@@ -325,13 +326,12 @@ class Parser:
 
             for en_el, xx_el in zip(self.en_lst, self.xx_lst):
 
-                # Zpracováváme jen odstavce textu.
+                # Depending on the element type...
                 if xx_el.type in ('para', 'li', 'uli', 'imgcaption', 'title'):
+                    # The elements that should use *nice* double quotes.
 
                     if rexBadParaQuotes.search(xx_el.line) is not None:
-
-                        # Našla se nevhodná uvozovka. Započítáme ji
-                        # a zapíšeme do souboru.
+                        # Improper double quote found. Count it and report it.
                         cnt += 1
 
                         f.write('\n{} {}/{} -- en {}/{}, {}:\n'.format(
@@ -346,11 +346,11 @@ class Parser:
                         f.write('\t{}\n'.format(xx_el.line.rstrip()))
 
                 elif xx_el.type == 'code':
+                    # Code should use the ASCII double quotes.
 
                     if rexBadCodeQuotes.search(xx_el.line) is not None:
 
-                        # Našla se nevhodná uvozovka. Započítáme ji
-                        # a zapíšeme do souboru.
+                        # Unwanted double quote found.
                         cnt += 1
 
                         f.write('\n{} {}/{} -- en {}/{}, {}:\n'.format(
@@ -365,7 +365,7 @@ class Parser:
                         f.write('\t{}\n'.format(xx_el.line.rstrip()))
 
                 elif xx_el.type not in ('empty', 'img'):
-                        # Neznámý typ elementu.
+                        # No double quotes should be in that type of element.
                         cnt += 1
 
                         f.write('\ncs {}/{} -- en {}/{}, {}:\n'.format(
@@ -379,16 +379,23 @@ class Parser:
                         f.write('\t{}\n'.format(xx_el.line.rstrip()))
 
 
-        # Přidáme informaci o synchronnosti použití zpětných apostrofů.
+        # Capture the info about the log file and the result message.
         self.info_lines.append(self.short_name(fname))
         self.info_lines.append(('-'*30) + \
                ' elements with bad double quotes: {}'.format(cnt))
 
 
     def reportEmAndStrong(self):
-        '''Sbírá odstavce s *emphasize* a **strong** vyznačením.
+        '''Compares the usage of *emphasize* and **strong** markup.
 
-           Výsledky zapisuje do pass2em_strong.txt.'''
+           The comparison is based on the same number of usage of
+           the markup in the English original and in the translated
+           source. From the point of checking, there is no difference
+           between *em* and **strong** as some human languages
+           may tend to use it differently than the English original.
+           All elements with markups are reported to pass2em_strong.txt,
+           if the number of marked substrings differ, the report
+           goes also to pass2em_strong_diff.txt.'''
 
         cnt = 0         # init -- počet odhalených chyb
         fname = os.path.join(self.xx_aux_dir, 'pass2em_strong.txt')
@@ -397,23 +404,24 @@ class Parser:
         with open(fname, 'w', encoding='utf-8', newline='\n') as f,\
              open(fname_diff, 'w', encoding='utf-8', newline='\n') as fdiff:
 
-            # Regulární výraz pro jednoduché nebo dvojité hvězdičky.
+            # Regular exression for single or double stars around
+            # a text. The underscore can also be used instead of
+            # the star..
             rexEmStrong = re.compile(r'([*_]{1,2})([^*_]+?)\1')
 
             for en_el, xx_el in zip(self.en_lst, self.xx_lst):
 
-                # Pokud jde o typ elementu s běžným textem...
+                # Only for elements with a typeset text (that is not
+                # inside code snippets)...
                 if xx_el.type in ('para', 'li', 'uli', 'imgcaption', 'title'):
 
-                    # Najdeme všechny označkované řetězce z originálního
-                    # a z českého odstavce.
+                    # Build the lists of marked substrings.
                     enlst = rexEmStrong.findall(en_el.line)
                     xxlst = rexEmStrong.findall(xx_el.line)
 
-                    # Pokud se něco našlo, zobrazíme originál a český vedle sebe.
-                    # Pokud se liší počet označkovaných posloupností, započítáme
-                    # to jako další problém k vyřešení a zobrazíme podobu odstavců
-                    # do souboru s rozdíly.
+                    # If any markup was found, show the original and
+                    # the translation in the log. If lengths of the lists
+                    # differ, report to the difference log.
                     if enlst or xxlst:
                         f.write('\ncs {}/{} -- en {}/{}, {}:\n'.format(
                                 xx_el.fname,
@@ -422,15 +430,15 @@ class Parser:
                                 en_el.lineno,
                                 repr(xx_el.type)))
 
-                        # Počty označkovaných posloupností.
+                        # Numbers of marked substrings.
                         f.write('\t{} : {}\n'.format(len(enlst), len(xxlst)))
 
-                        # Odstavce.
+                        # The lines.
                         f.write('\t{}\n'.format(en_el.line.rstrip()))
                         f.write('\t{}\n'.format(xx_el.line.rstrip()))
 
-                        # Pokud se počet liší, zaznamenáme totéž ještě jednou
-                        # do souboru s předpokládanými rozdíly.
+                        # If the number of marked substrings differ,
+                        # report also to the difference log.
                         if len(enlst) != len(xxlst):
                             cnt += 1
                             fdiff.write('\ncs {}/{} -- en {}/{}, {}:\n'.format(
@@ -440,22 +448,22 @@ class Parser:
                                         en_el.lineno,
                                         repr(xx_el.type)))
 
-                            # Počty označkovaných posloupností.
+                            # Numbers of marked substrings.
                             fdiff.write('\t{} : {}\n'.format(len(enlst), len(xxlst)))
 
-                            # Odstavce.
+                            # The lines.
                             fdiff.write('\t{}\n'.format(en_el.line.rstrip()))
                             fdiff.write('\t{}\n'.format(xx_el.line.rstrip()))
 
-        # Přidáme informaci o provedení kontroly.
+        # Capture the info about the logs and the result.
         self.info_lines.append(self.short_name(fname))
         self.info_lines.append(self.short_name(fname_diff))
         self.info_lines.append(('-'*30) + \
-               ' elements with *em* and **strong**: {}'.format(cnt))
+               ' differences in *em* and **strong**: {}'.format(cnt))
 
 
     def run(self):
-        '''Spouštěč jednotlivých fází parseru.'''
+        '''Launcher of the parser phases.'''
 
         self.checkImages()
         self.fixParaBackticks()

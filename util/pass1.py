@@ -94,9 +94,9 @@ class Parser:
         self.info_lines.append(self.short_name(fnameout))
 
         # ... and `pass1.txt` with chapter/line info.
-        fnameout = os.path.join(self.xx_aux_dir, 'pass1.txt')
+        fnameout = os.path.join(self.en_aux_dir, 'pass1.txt')
         with open(fnameout, 'w', encoding='utf-8', newline='\n') as fout:
-            for fname, lineno, line in gen.sourceFileLines(self.xx_src_dir):
+            for fname, lineno, line in gen.sourceFileLines(self.en_src_dir):
                 fout.write('{}/{}:\t{}'.format(fname[1:2], lineno, line))
         self.info_lines.append(self.short_name(fnameout))
 
@@ -391,6 +391,10 @@ class Parser:
         # The information about the result of the check.
         self.info_lines.append(('-'*30) + ' structure of the book is ' +
                                ('the same' if sync_flag else 'DIFFERENT'))
+        if not sync_flag:
+            self.info_lines.append(
+                "Have a look at the following log file:\n\t'{}'\n"
+                .format(struct_diff_fname))
 
         return sync_flag
 
