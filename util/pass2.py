@@ -22,6 +22,7 @@ class Parser:
         self.en_aux_dir = pass1.en_aux_dir
         self.xx_aux_dir = pass1.xx_aux_dir
         self.root_definitions_dir = pass1.root_definitions_dir
+        self.lang_definitions_dir = pass1.lang_definitions_dir
 
         # Lists of elements (some elements were
         # processed and deleted in the pass1).
@@ -111,8 +112,8 @@ class Parser:
         # is the value. In the exception file, the values are separated by
         # at least five dashes, and the records by at least five equal signs
         # -- as in previous cases. See the `definitions/cs` examples if in doubt.
-        backtick_exceptions_fname = os.path.join(self.root_definitions_dir,
-                                    self.lang, 'backtick_exceptions.txt')
+        backtick_exceptions_fname = os.path.join(self.lang_definitions_dir,
+                                                 'backtick_exceptions.txt')
 
         # Create the empty file if it does not exist.
         if not os.path.isfile(backtick_exceptions_fname):

@@ -3,8 +3,8 @@
 
 import docelement
 import gen
+import hashlib
 import os
-
 
 
 class Parser:
@@ -35,6 +35,9 @@ class Parser:
         path, scriptname = os.path.split(__file__)
         self.root_definitions_dir = os.path.abspath(os.path.join(path, 'definitions'))
 
+        # Directory with the language dependent definitions.
+        self.lang_definitions_dir = os.path.join(self.root_definitions_dir, self.lang)
+
         # Create the directories if they does not exist.
         if not os.path.isdir(self.en_aux_dir):
             os.makedirs(self.en_aux_dir)
@@ -42,9 +45,8 @@ class Parser:
         if not os.path.isdir(self.xx_aux_dir):
             os.makedirs(self.xx_aux_dir)
 
-        lang_definitions_dir = os.path.join(self.root_definitions_dir, self.lang)
-        if not os.path.isdir(lang_definitions_dir):
-            os.makedirs(lang_definitions_dir)
+        if not os.path.isdir(self.lang_definitions_dir):
+            os.makedirs(self.lang_definitions_dir)
 
 
         self.en_lst = None  # elements from the English original
@@ -122,8 +124,7 @@ class Parser:
         # just split the extra sequences to one extra sequence for
         # the first line, and the two or more sequences of the rest lines
         # (without that first line).
-        extras_fname = os.path.join(self.root_definitions_dir,
-                                    self.lang, 'extras.txt')
+        extras_fname = os.path.join(self.lang_definitions_dir, 'extras.txt')
 
         # Create the empty file if it does not exist.
         if not os.path.isfile(extras_fname):
@@ -222,7 +223,9 @@ class Parser:
 
 
     def checkStructDiffs(self):
-        '''Reports differences of the structures of the sources.'''
+        '''Reports differences of the structures of the sources.
+
+        Returns True if the source structures are synchronized.'''
 
         sync_flag = True   # optimistic initialization
 
@@ -234,8 +237,8 @@ class Parser:
         # The key is the first line of the original, the value is a couple
         # with lists of related line sequences from the original and from
         # the translated sources.
-        translated_snippets_fname = os.path.join(self.root_definitions_dir,
-                                    self.lang, 'translated_snippets.txt')
+        translated_snippets_fname = os.path.join(self.lang_definitions_dir,
+                                                 'translated_snippets.txt')
 
         # Create the empty file if it does not exist.
         if not os.path.isfile(translated_snippets_fname):
@@ -389,12 +392,102 @@ class Parser:
         self.info_lines.append(('-'*30) + ' structure of the book is ' +
                                ('the same' if sync_flag else 'DIFFERENT'))
 
+        return sync_flag
+
+
+    def checkContentChanges(self):
+        '''Compares content with the last known -- based on SHA-1.
+
+        '''
+        # Load the last known content definitions. If the file does not exist,
+        # create the empty one.
+        fname = os.path.join(self.lang_definitions_dir, 'content_sha.txt')
+        if not os.path.isfile(fname):
+            f = open(fname, 'w', encoding='utf-8')
+            f.close()
+
+        sha = {}
+        with open(fname, encoding='utf-8') as f:
+            for line in f:
+                ch_lineno, en_sha, xx_sha = line.split()
+                sha[ch_lineno] = (en_sha, xx_sha)
+
+        # Capture the definition file to the log.
+        self.info_lines.append(self.short_name(fname))
+
+
+        # Loop through all elements in both languages. It is assumed that
+        # the structures were already synchronized. Generate the `content_sha.txt`
+        # in the *auxiliary* directory -- it can be later moved to `definitions`
+        # directory. Report the differences to the file.
+        fname_new_sha = os.path.join(self.xx_aux_dir, 'content_sha.txt')
+        fname_diff = os.path.join(self.xx_aux_dir, 'pass1content_diff.txt')
+        cnt = 0     # init -- number of changes
+        with open(fname_new_sha, 'w', encoding='utf-8') as fsha, \
+             open(fname_diff, 'w', encoding='utf-8') as fdiff:
+
+            for en_el, xx_el in zip(self.en_lst, self.xx_lst):
+
+                # Ignore the lines with number zero as they are used
+                # only as artificial separators between the chapters.
+                if en_el.lineno == 0:
+                    continue
+
+                # Calculate the SHA-1 for the original line and for
+                # the translated line encoded in UTF-8.
+                en_sha = hashlib.sha1(en_el.line.encode('utf-8')).hexdigest()
+                xx_sha = hashlib.sha1(xx_el.line.encode('utf-8')).hexdigest()
+
+                # The chapter and lineno combination used as the key,
+                ch_lineno = '{}/{}'.format(en_el.fname[:2], en_el.lineno)
+
+                # Write the new values to the new definitions file
+                # (in the auxiliary directory). The chapter and lineno
+                # is the auxiliary information that helps to copy/paste
+                # the manually checked parts of the book to the definition
+                # file.
+                fsha.write('{} {} {}\n'.format(
+                    ch_lineno,
+                    en_sha,
+                    xx_sha))
+
+                # Get the last SHA's from the definition. If the record
+                # was not defined, the empty strings are returned.
+                en_last_sha, xx_last_sha = sha.get(ch_lineno, ('', ''))
+
+                # The lines are reported as changed only if at least one
+                # of the SHA's differ from the definition.
+                if en_sha != en_last_sha or xx_sha != xx_last_sha:
+
+                    note = ' changed' if en_sha != en_last_sha else ''
+                    fdiff.write('en {}/{}{}\n'.format(
+                                en_el.fname[:2], en_el.lineno, note))
+                    fdiff.write('\t{}'.format(en_el.line))
+
+                    note = ' changed' if xx_sha != xx_last_sha else ''
+                    fdiff.write('{} {}/{}{}\n'.format(
+                                self.lang, xx_el.fname[:2], xx_el.lineno, note))
+                    fdiff.write('\t{}'.format(xx_el.line))
+                    fdiff.write('\n')
+
+                    cnt += 1    # another change
+
+        # Capture the new definition file to the log, the report file,
+        # and the result.
+        self.info_lines.append(self.short_name(fname_new_sha))
+        self.info_lines.append(self.short_name(fname_diff))
+
+        self.info_lines.append(('-'*30) + ' content changes: {}'.format(cnt))
+
+        self.info_lines.append('checkContentChanges() -- to be implemented')
 
     def run(self):
         '''Launcher of the parser phases.'''
 
         self.writePass1txtFiles()
         self.loadElementLists()
-        self.checkStructDiffs()
+        sync_flag = self.checkStructDiffs()
+        if sync_flag:
+            self.checkContentChanges()
 
         return '\n\t'.join(self.info_lines)
