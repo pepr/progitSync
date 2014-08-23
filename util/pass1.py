@@ -488,7 +488,6 @@ class Parser:
                 "Have a look at the following report file:\n\t'{}'\n"
                 .format(fname_diff))
 
-        self.info_lines.append('checkContentChanges() -- to be implemented')
 
     def run(self):
         '''Launcher of the parser phases.'''
