@@ -5,11 +5,11 @@ import re
 '''Capturing one line of a document and converting it to an object.'''
 
 
-class Element:
-    '''One Element object is constructed from one markdown source line.'''
+class Line:
+    '''One Line object is constructed from one markdown source line.'''
 
     # The following regular expressions are used for recognition
-    # of the used markdown-syntax elements.
+    # of the used markdown-syntax lines.
 
     # Title like ### Title ###.
     rexTitle = re.compile(r'^(?P<level>#+)\s+(?P<title>.+?)\s+\1\s*$')
@@ -34,8 +34,8 @@ class Element:
         self.lineno = lineno    # line number in the source file
         self.line = line        # the line from the source file
 
-        self.type = None        # element type
-        self.attrib = None      # init -- element attributes (the type dependent)
+        self.type = None        # line type
+        self.attrib = None      # init -- line attributes (the type dependent)
 
         # The line that contains only whitespaces is considered empty (separator).
         if self.line.isspace():
@@ -93,8 +93,8 @@ class Element:
             self.attrib = None
             return
 
-        # The other cases are considered paragraphs.
-        self.type = 'para'
+        # The other cases are considered text lines.
+        self.type = 'text'
         self.attrib = line.rstrip()
 
 
@@ -104,3 +104,35 @@ class Element:
 
     def __str__(self):
         return self.line
+
+
+class Element:
+    '''One Element object is constructed from one document lines.
+
+    Implementation note: The earlier Element implementation was earlier
+    what the Lines class is now. The Element was abstracted further to
+    make the content less formatting-dependent. The main reason was that
+    the translated paragraphs were often split to more physical lines
+    than in the original. (The original typically contains paragraphs
+    as one very long line.'''
+
+    def __init__(self, docline):
+        self.fname = docline.fname  # the source file name
+        self.no = docline.lineno    # abstract element number
+        self.doclines = [docline]   # list of lines object
+        self.type = docline.type    # element type
+        self.attrib = docline.attrib # init -- element attributes (the type dependent)
+
+        # Initial implementation just wraps the doc.Line objects
+        # as one-line lists. Then it corrects the 'text' type to 'para'.
+        if self.type == 'text':
+            self.type = 'para'
+
+
+    def __repr__(self):
+        return repr((self.fname, self.no, self.type,
+                     self.attrib, self.doclines))
+
+
+    def __str__(self):
+        return ''.join.self.lines
