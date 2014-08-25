@@ -52,6 +52,9 @@ class Parser:
         self.en_doclines = None  # doclines from the English original
         self.xx_doclines = None  # doclines from the target language
 
+        self.en_elements = None  # doclines converted to more abstract elements
+        self.xx_elements = None
+
         self.log_info = []       # lines for displaying through the stdout
 
 
@@ -159,7 +162,7 @@ class Parser:
         # Capture the info about the input file with the definitions.
         self.log_info.append(self.short_name(extras_fname))
 
-        # Loop through the elements and build the lists of element objects
+        # Loop through the lines and build the lists of Line objects
         # from the original and from the translation. The extra sequences
         # from the target languages are reported and skipped. They will be
         # deleted from the list.
@@ -168,7 +171,7 @@ class Parser:
             docline = doc.Line(relname, lineno, line)
             self.xx_doclines.append(docline)
 
-        # Delete and report the extra elements.
+        # Delete and report the extra lines.
         xx_extra_fname = os.path.join(self.xx_aux_dir, 'pass1extra_lines.txt')
         with open(xx_extra_fname, 'w', encoding='utf-8', newline='\n') as fout:
             index = 0                       # index the processed element
@@ -202,27 +205,31 @@ class Parser:
         self.log_info.append(self.short_name(xx_extra_fname))
 
         # Report the remaining target-language elements.
-        xx_elem_fname = os.path.join(self.xx_aux_dir, 'pass1lines.txt')
-        with open(xx_elem_fname, 'w', encoding='utf-8', newline='\n') as fout:
+        xx_doclines_fname = os.path.join(self.xx_aux_dir, 'pass1doclines.txt')
+        with open(xx_doclines_fname, 'w', encoding='utf-8', newline='\n') as fout:
             for docline in self.xx_doclines:
-                fout.write(repr(docline) + '\n')
+                fout.write('{}/{} {}: {!r}\n'.format(
+                           docline.fname[:2], docline.lineno,
+                           docline.type, docline.attrib))
 
         # Capture the info about the report file.
-        self.log_info.append(self.short_name(xx_elem_fname))
+        self.log_info.append(self.short_name(xx_doclines_fname))
 
         # Report the structure of the English original.
         self.en_doclines = []
-        en_elem_fname = os.path.join(self.en_aux_dir, 'pass1elem.txt')
-        with open(en_elem_fname, 'w', encoding='utf-8', newline='\n') as fout:
+        en_doclines_fname = os.path.join(self.en_aux_dir, 'pass1doclines.txt')
+        with open(en_doclines_fname, 'w', encoding='utf-8', newline='\n') as fout:
             for relname, lineno, line in gen.sourceFileLines(self.en_src_dir):
                 docline = doc.Line(relname, lineno, line)
                 self.en_doclines.append(docline)
-                fout.write(repr(docline) + '\n')
+                fout.write('{}/{} {}: {!r}\n'.format(
+                           docline.fname[:2], docline.lineno,
+                           docline.type, docline.attrib))
 
         # Capture the info about the report file.
-        self.log_info.append(self.short_name(en_elem_fname))
+        self.log_info.append(self.short_name(en_doclines_fname))
 
-        
+
     def convertDoclinesToElements(self):
         '''Initial implementation just wraps doclines.'''
         fname = os.path.join(self.en_aux_dir, 'pass1elements.txt')
@@ -231,12 +238,14 @@ class Parser:
             for docline in self.en_doclines:
                  docelem = doc.Element(docline)
                  self.en_elements.append(docelem)
-                 f.write(repr(docelem))
+                 f.write('{}/{} {}: {!r}\n'.format(
+                         docelem.fname[:2], docelem.no, 
+                         docelem.type, docelem.doclines[0].attrib))
         self.log_info.append(self.short_name(fname))
-                 
+
         self.xx_elements = [doc.Element(docline) for docline in self.xx_doclines]
-        
-        
+
+
 
     def checkStructDiffs(self):
         '''Reports differences of the structures of the sources.
