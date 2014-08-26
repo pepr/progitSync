@@ -27,7 +27,7 @@ class Line:
     rexCode = re.compile(r'^( {4}|\t)(?P<code>.+?)\s*$')
 
     # Numbered list item.
-    rexLi = re.compile(r'^(?P<num>\d+\.)\t(?P<text>.+?)\s*$')
+    rexLi = re.compile(r'^(?P<num>\d+\.)\s+(?P<text>.+?)\s*$')
 
     def __init__(self, fname, lineno, line):
         self.fname = fname      # the source file name
