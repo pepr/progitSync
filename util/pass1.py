@@ -241,23 +241,26 @@ class Parser:
             # must be constructed first and only then it can
             # be written to the fname file.
             elements = []
+            status = 0      # finite automaton
             for docline in doclines:
-                # If docline type is text, then it is
-                # appended to the previous doc element
-                # of some types. Otherwise, append as
-                # the new element.
-                if docline.type == 'text':
-                    docelem = elements[-1]  # last in the list
-                    if docelem.type in ('para', 'uli'):
-                        docelem.append(docline)
+                if status == 0:     # no expectations
+                    docelem = doc.Element(docline)  # new one
+                    elements.append(docelem)        # appended
+                    if docelem.type in ('para', 'uli', 'li'):
+                        status = 1
+
+                elif status == 1:   # accumulate 'text'
+                    if docline.type == 'text':
+                        docelem.append(docline)     # append to the last one
                     else:
-                        # Last was not para -- append as new one.
-                        docelem = doc.Element(docline)
-                        elements.append(docelem)
+                        docelem = doc.Element(docline)  # new one
+                        elements.append(docelem)        # appended
+                        if docelem.type in ('para', 'uli', 'li'):
+                            status = 1  # i.e. stay here
+                        else:
+                            status = 0
                 else:
-                    # docline is not text -- append as new one.
-                    docelem = doc.Element(docline)
-                    elements.append(docelem)
+                    raise NotImplementedError('status = {}'.format(status))
 
             # Report the collected elements.
             with open(fname, 'w', encoding='utf-8') as f:
@@ -473,10 +476,11 @@ class Parser:
                 if en_el.lineno() == '0':
                     continue
 
-                # Calculate the SHA-1 for the original line and for
-                # the translated line encoded in UTF-8.
-                en_sha = hashlib.sha1(en_el._line().encode('utf-8')).hexdigest()
-                xx_sha = hashlib.sha1(xx_el._line().encode('utf-8')).hexdigest()
+                # Calculate the SHA-1 for the original line(s) and for
+                # the translated line(s) encoded in UTF-8. (Possibly more
+                # lines as one value but without rstrips.
+                en_sha = hashlib.sha1(en_el.value(False).encode('utf-8')).hexdigest()
+                xx_sha = hashlib.sha1(xx_el.value(False).encode('utf-8')).hexdigest()
 
                 # The chapter and lineno combination used as the key,
                 ch_lineno = '{}/{}'.format(en_el.fname[:2], en_el.lineno())
@@ -495,19 +499,19 @@ class Parser:
                 # was not defined, the empty strings are returned.
                 en_last_sha, xx_last_sha = sha.get(ch_lineno, ('', ''))
 
-                # The lines are reported as changed only if at least one
+                # The element contents are reported as changed only if at least one
                 # of the SHA's differ from the definition.
                 if en_sha != en_last_sha or xx_sha != xx_last_sha:
 
                     note = ' changed' if en_sha != en_last_sha else ''
                     fdiff.write('en {}/{}{}\n'.format(
                                 en_el.fname[:2], en_el.lineno(), note))
-                    fdiff.write('\t{}'.format(en_el._line()))
+                    fdiff.write('\t{}\n'.format(en_el.value()))
 
                     note = ' changed' if xx_sha != xx_last_sha else ''
                     fdiff.write('{} {}/{}{}\n'.format(
                                 self.lang, xx_el.fname[:2], xx_el.lineno(), note))
-                    fdiff.write('\t{}'.format(xx_el._line()))
+                    fdiff.write('\t{}\n'.format(xx_el.value()))
                     fdiff.write('\n')
 
                     cnt += 1    # another change
