@@ -354,13 +354,14 @@ class Parser:
                     if is_enseq and is_xxseq:
                         # Report the differences. The lines below tildas has the form
                         # to be possibly copy/pasted to the translated snippets file later.
-                        ftransl.write('{}/{}:\n'.format(en_elem.fname, en_elem.lineno()))
-                        ftransl.write('{}/{}:\n'.format(xx_elem.fname, xx_elem.lineno()))
+                        ftransl.write('en/{}/{}:\n'.format(en_elem.fname, en_elem.lineno()))
+                        ftransl.write('{}/{}/{}:\n'.format(
+                            self.lang, xx_elem.fname, xx_elem.lineno()))
                         ftransl.write('~~~~~~~~~~~~~~~\n')
                         ftransl.write(''.join(enlst))
                         ftransl.write('-----\n')
                         ftransl.write(''.join(xxlst))
-                        ftransl.write('========================== {}\n\n'.format(en_elem.fname))
+                        ftransl.write('========================== ch.{}\n\n'.format(en_elem.fname[:2]))
 
                         # Delete the elements from the member lists.
                         del self.en_elements[en_i:en_i+enlen]
