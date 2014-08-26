@@ -128,7 +128,7 @@ class Element:
             self.type = 'para'
 
 
-    def line(self):
+    def _line(self):
         '''Probably legacy -- to be replaced by something better.'''
         return self.doclines[0].line
 

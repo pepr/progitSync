@@ -336,18 +336,18 @@ class Parser:
                 en_elem = self.en_elements[en_i]
                 xx_elem = self.xx_elements[xx_i]
 
-                if en_elem.line() in translated_snippets:
+                if en_elem._line() in translated_snippets:
                     # It could be the translated sequence. Get the definition lists.
                     # The line from the original is the key.
-                    enlst, xxlst = translated_snippets[en_elem.line()]
+                    enlst, xxlst = translated_snippets[en_elem._line()]
 
                     # Lengths of both sequences.
                     enlen = len(enlst)
                     xxlen = len(xxlst)
 
                     # Compare the definitions with the sources.
-                    is_enseq = [e.line() for e in self.en_elements[en_i:en_i+enlen]] == enlst
-                    is_xxseq = [e.line() for e in self.xx_elements[xx_i:xx_i+xxlen]] == xxlst
+                    is_enseq = [e._line() for e in self.en_elements[en_i:en_i+enlen]] == enlst
+                    is_xxseq = [e._line() for e in self.xx_elements[xx_i:xx_i+xxlen]] == xxlst
 
                     # If both flags are set then the translated sequence was found.
                     # Report it and delete the elements from both original and translation.
@@ -377,7 +377,7 @@ class Parser:
                     # the same content.
                     if en_elem.type != xx_elem.type \
                        or (en_elem.type == 'code'
-                           and en_elem.line().rstrip() != xx_elem.line().rstrip()):
+                           and en_elem.value() != xx_elem.value()):
                         # Not in sync -- reset the optimistic value of the flag.
                         sync_flag = False
 
@@ -391,11 +391,11 @@ class Parser:
 
                         # The type and the value of the English element.
                         f.write('\t{}:\t{}\n'.format(en_elem.type,
-                                                     en_elem.line().rstrip()))
+                                                     en_elem.value()))
 
                         # The type and the value of the translated element.
                         f.write('\t{}:\t{}\n'.format(xx_elem.type,
-                                                     xx_elem.line().rstrip()))
+                                                     xx_elem.value()))
 
                 # Jump to the next elements.
                 en_i += 1
@@ -456,8 +456,8 @@ class Parser:
 
                 # Calculate the SHA-1 for the original line and for
                 # the translated line encoded in UTF-8.
-                en_sha = hashlib.sha1(en_el.line().encode('utf-8')).hexdigest()
-                xx_sha = hashlib.sha1(xx_el.line().encode('utf-8')).hexdigest()
+                en_sha = hashlib.sha1(en_el._line().encode('utf-8')).hexdigest()
+                xx_sha = hashlib.sha1(xx_el._line().encode('utf-8')).hexdigest()
 
                 # The chapter and lineno combination used as the key,
                 ch_lineno = '{}/{}'.format(en_el.fname[:2], en_el.lineno())
@@ -483,12 +483,12 @@ class Parser:
                     note = ' changed' if en_sha != en_last_sha else ''
                     fdiff.write('en {}/{}{}\n'.format(
                                 en_el.fname[:2], en_el.lineno(), note))
-                    fdiff.write('\t{}'.format(en_el.line()))
+                    fdiff.write('\t{}'.format(en_el._line()))
 
                     note = ' changed' if xx_sha != xx_last_sha else ''
                     fdiff.write('{} {}/{}{}\n'.format(
                                 self.lang, xx_el.fname[:2], xx_el.lineno(), note))
-                    fdiff.write('\t{}'.format(xx_el.line()))
+                    fdiff.write('\t{}'.format(xx_el._line()))
                     fdiff.write('\n')
 
                     cnt += 1    # another change
