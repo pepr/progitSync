@@ -60,17 +60,17 @@ class Parser:
                     f.write('\n{} {}/{} -- en {}/{}:\n'.format(
                             self.lang,
                             xx_e.fname,
-                            xx_e.lineno,
+                            xx_e.lineno(),
                             en_e.fname,
-                            en_e.lineno))
+                            en_e.lineno()))
 
                     # Type and value of the translated element.
                     f.write('\t{}:\t{}\n'.format(xx_e.type,
-                                                 xx_e.line().rstrip()))
+                                                 xx_e.value()))
 
                     # Type and value of the English element.
                     f.write('\t{}:\t{}\n'.format(en_e.type,
-                                                 en_e.line().rstrip()))
+                                                 en_e.value()))
 
         # Capture the info about the report file.
         self.log_info.append(self.short_name(images_fname))

@@ -231,33 +231,51 @@ class Parser:
 
 
     def convertDoclinesToElements(self):
-        '''Initial implementation just wraps doclines.
+        '''Some elements glue more doclines together.'''
 
-        The 'text' lines are simply renamed as 'para'.
-        '''
-        # English original.
-        fname = os.path.join(self.en_aux_dir, 'pass1elements.txt')
-        self.en_elements = []
-        with open(fname, 'w', encoding='utf-8') as f:
-            for docline in self.en_doclines:
-                 docelem = doc.Element(docline)
-                 self.en_elements.append(docelem)
+        def aux_convert(self, aux_dir, doclines):
+            '''The core used for both English and the target language.'''
+            fname = os.path.join(aux_dir, 'pass1elements.txt')
+
+            # As some elements contain more doclines, the list
+            # must be constructed first and only then it can
+            # be written to the fname file.
+            elements = []
+            for docline in doclines:
+                # If docline type is text, then it is
+                # appended to the previous doc element
+                # of some types. Otherwise, append as
+                # the new element.
+                if docline.type == 'text':
+                    docelem = elements[-1]  # last in the list
+                    if docelem.type in ('para', 'uli'):
+                        docelem.append(docline)
+                    else:
+                        # Last was not para -- append as new one.
+                        docelem = doc.Element(docline)
+                        elements.append(docelem)
+                else:
+                    # docline is not text -- append as new one.
+                    docelem = doc.Element(docline)
+                    elements.append(docelem)
+
+            # Report the collected elements.
+            with open(fname, 'w', encoding='utf-8') as f:
                  f.write('{}/{} {}: {!r}\n'.format(
                          docelem.fname[:2], docelem.lineno(),
-                         docelem.type, docelem.doclines[0].attrib))
-        self.log_info.append(self.short_name(fname))
+                         docelem.type, docelem.value()))
+            self.log_info.append(self.short_name(fname))
+
+            # Return the collected result list.
+            return elements
 
         # The target language.
-        fname = os.path.join(self.xx_aux_dir, 'pass1elements.txt')
-        self.xx_elements = []
-        with open(fname, 'w', encoding='utf-8') as f:
-            for docline in self.xx_doclines:
-                 docelem = doc.Element(docline)
-                 self.xx_elements.append(docelem)
-                 f.write('{}/{} {}: {!r}\n'.format(
-                         docelem.fname[:2], docelem.lineno(),
-                         docelem.type, docelem.doclines[0].attrib))
-        self.log_info.append(self.short_name(fname))
+        self.xx_elements = aux_convert(self, self.xx_aux_dir,
+                                       self.xx_doclines)
+
+        # English original.
+        self.en_elements = aux_convert(self, self.en_aux_dir,
+                                       self.en_doclines)
 
 
     def checkStructDiffs(self):

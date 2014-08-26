@@ -128,13 +128,23 @@ class Element:
             self.type = 'para'
 
 
+    def append(self, docline):
+        '''Appends the docline to the list.'''
+        self.doclines.append(docline)
+
+
     def _line(self):
         '''Probably legacy -- to be replaced by something better.'''
         return self.doclines[0].line
 
-    def value(self):
-        '''???'''
-        return self.doclines[0].line.rstrip()
+
+    def value(self, rstrip_lines=True):
+        '''Returns the lines of the element as one string.'''
+        if rstrip_lines:
+            return ' '.join(dl.line.rstrip() for dl in self.doclines)
+        else:
+            return ''.join(dl.line for dl in self.doclines)
+
 
     def lineno(self):
         '''Returns the source line numbers as a readable string range with dash.'''
