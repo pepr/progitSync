@@ -118,7 +118,6 @@ class Element:
 
     def __init__(self, docline):
         self.fname = docline.fname  # the source file name
-        self.no = docline.lineno    # abstract element number
         self.doclines = [docline]   # list of lines object
         self.type = docline.type    # element type
         self.attrib = docline.attrib # init -- element attributes (the type dependent)
@@ -127,6 +126,24 @@ class Element:
         # as one-line lists. Then it corrects the 'text' type to 'para'.
         if self.type == 'text':
             self.type = 'para'
+
+
+    def line(self):
+        '''Probably legacy -- to be replaced by something better.'''
+        return self.doclines[0].line
+
+    def value(self):
+        '''???'''
+        return self.doclines[0].line.rstrip()
+
+    def lineno(self):
+        '''Returns the source line numbers as a readable string range with dash.'''
+        no1 = self.doclines[0].lineno
+        no2 = self.doclines[-1].lineno
+        if no1 == no2:
+            return str(no1)
+        else:
+            return '{}-{}'.format(no1, no2)
 
 
     def __repr__(self):

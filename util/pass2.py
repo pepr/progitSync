@@ -26,8 +26,8 @@ class Parser:
 
         # Lists of elements (some elements were
         # processed and deleted in the pass1).
-        self.en_doclines = pass1.en_doclines
-        self.xx_doclines = pass1.xx_doclines
+        self.en_elements = pass1.en_elements
+        self.xx_elements = pass1.xx_elements
 
         self.log_info = []                # lines for logging
         self.backticked_set = set()
@@ -47,11 +47,11 @@ class Parser:
 
         sync_flag = True  # Optimistic initialization
         images_fname = os.path.join(self.xx_aux_dir, 'pass2img_diff.txt')
-        with open(images_fname, 'w', encoding='utf-8', newline='\n') as f:
-            for en_l, xx_l in zip(self.en_doclines, self.xx_doclines):
-                if en_l.type == 'img' and en_l.attrib != xx_l.attrib \
-                   or en_l.type == 'imgcaption' \
-                      and en_l.attrib[0] != xx_l.attrib[0]:
+        with open(images_fname, 'w', encoding='utf-8') as f:
+            for en_e, xx_e in zip(self.en_elements, self.xx_elements):
+                if en_e.type == 'img' and en_e.attrib != xx_e.attrib \
+                   or en_e.type == 'imgcaption' \
+                      and en_e.attrib[0] != xx_e.attrib[0]:
 
                     # Out of sync, reset the flag...
                     sync_flag = False
@@ -59,18 +59,18 @@ class Parser:
                     # ... and report to the file.
                     f.write('\n{} {}/{} -- en {}/{}:\n'.format(
                             self.lang,
-                            xx_l.fname,
-                            xx_l.lineno,
-                            en_l.fname,
-                            en_l.lineno))
+                            xx_e.fname,
+                            xx_e.lineno,
+                            en_e.fname,
+                            en_e.lineno))
 
                     # Type and value of the translated element.
-                    f.write('\t{}:\t{}\n'.format(xx_l.type,
-                                                 xx_l.line.rstrip()))
+                    f.write('\t{}:\t{}\n'.format(xx_e.type,
+                                                 xx_e.line().rstrip()))
 
                     # Type and value of the English element.
-                    f.write('\t{}:\t{}\n'.format(en_l.type,
-                                                 en_l.line.rstrip()))
+                    f.write('\t{}:\t{}\n'.format(en_e.type,
+                                                 en_e.line().rstrip()))
 
         # Capture the info about the report file.
         self.log_info.append(self.short_name(images_fname))
@@ -101,7 +101,7 @@ class Parser:
            The results reported to pass2backticks.txt.'''
 
         async_cnt = 0     # init -- "not synchronous lines" counter
-        anomaly_cnt = 0   # init -- anomally counter (with respect to the markup in both cases)
+        anomaly_cnt = 0   # init -- anomaly counter (with respect to the markup in both cases)
         btfname = os.path.join(self.xx_aux_dir, 'pass2backticks.txt')
         btfname_skipped = os.path.join(self.xx_aux_dir, 'pass2backticks_skiped.txt')
         btfname_anomaly = os.path.join(self.xx_aux_dir, 'pass2backticks_anomaly.txt')
@@ -149,21 +149,21 @@ class Parser:
         # Capture the info about the definition file.
         self.log_info.append(self.short_name(backtick_exceptions_fname))
 
-        with open(btfname, 'w', encoding='utf-8', newline='\n') as fout, \
-             open(btfname_skipped, 'w', encoding='utf-8', newline='\n') as fskip, \
-             open(btfname_anomaly, 'w', encoding='utf-8', newline='\n') as fa:
+        with open(btfname, 'w', encoding='utf-8') as fout, \
+             open(btfname_skipped, 'w', encoding='utf-8') as fskip, \
+             open(btfname_anomaly, 'w', encoding='utf-8') as fa:
 
             # The content is expected to be already synchronized; therefore,
             # looping using the for-loop.
-            for en_l, xx_l in zip(self.en_doclines, self.xx_doclines):
+            for en_e, xx_e in zip(self.en_elements, self.xx_elements):
                 # Process only the text from paragraphs and list items.
-                if en_l.type in ['para', 'uli', 'li']:
+                if en_e.type in ['para', 'uli', 'li']:
                     # If in exceptions, set the flag, but examine anyway.
-                    skipped = xx_l.line == backtick_exceptions.get(en_l.line, '!@#$%^&*')
+                    skipped = xx_e.line() == backtick_exceptions.get(en_e.line(), '!@#$%^&*')
 
                     # Find all symbols in backticks.
-                    enlst = self.rexBackticked.findall(en_l.line)
-                    xxlst = self.rexBackticked.findall(xx_l.line)
+                    enlst = self.rexBackticked.findall(en_e.line())
+                    xxlst = self.rexBackticked.findall(xx_e.line())
 
                     # The marked items may appear in different order
                     # in the translated text. This way, sets of the marked
@@ -188,21 +188,21 @@ class Parser:
                         if skipped:
                             fskip.write('\n{} {}/{} -- en {}/{}:\n'.format(
                                 self.lang,
-                                xx_l.fname,
-                                xx_l.lineno,
-                                en_l.fname,
-                                en_l.lineno))
+                                xx_e.fname,
+                                xx_e.lineno(),
+                                en_e.fname,
+                                en_e.lineno()))
                         else:
                             async_cnt += 1
                             fout.write('\n{} {}/{} -- en {}/{}:\n'.format(
                                 self.lang,
-                                xx_l.fname,
-                                xx_l.lineno,
-                                en_l.fname,
-                                en_l.lineno))
+                                xx_e.fname,
+                                xx_e.lineno(),
+                                en_e.fname,
+                                en_e.lineno()))
 
                         # Translated line before the suggested fix.
-                        xxpara1 = xx_l.line.rstrip()
+                        xxpara1 = xx_e.line().rstrip()
 
                         # If the list of differences is empty, we do not want
                         # to fix anything. Actually we cannot fix anything
@@ -216,35 +216,36 @@ class Parser:
                         # the regular expression and suggest the markup. Get
                         # also the number of replacements.
                         n = 0            # init -- number of replacements
+                        xx_suggested_line = xx_e.line()
                         if len(dlst) != 0:
                             rex = self.buildRex(dlst)
-                            xx_l.line, n = rex.subn(r'`\g<0>`', xx_l.line)
+                            xx_suggested_line, n = rex.subn(r'`\g<0>`', xx_e.line())
 
                         # Now we have the list of differences, the original line,
                         # the translated line before the replacements (xxpara1)
-                        # the replaced line in the self.xx_doclines.
+                        # the replaced line in the self.xx_elements.
                         # Report the information differently
                         if skipped:
                             fskip.write('{}\n'.format(repr(dlst)))
                             fskip.write('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
-                            fskip.write('{}\n'.format(en_l.line.rstrip()))
+                            fskip.write('{}\n'.format(en_e.line().rstrip()))
                             fskip.write('---------------\n')
                             fskip.write('{}\n'.format(xxpara1)) # from translated sources
-                            fskip.write('====================================== {}\n'.format(en_l.fname))
+                            fskip.write('====================================== {}\n'.format(en_e.fname))
                         else:
                             fout.write('{}\n'.format(repr(dlst)))
                             fout.write('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
-                            fout.write('{}\n'.format(en_l.line.rstrip()))
+                            fout.write('{}\n'.format(en_e.line().rstrip()))
                             fout.write('---------------\n')
                             fout.write('{}\n'.format(xxpara1))  # from translated sources
-                            fout.write('====================================== {}\n'.format(en_l.fname))
+                            fout.write('====================================== {}\n'.format(en_e.fname))
                             fout.write('Suggested markup:\n')
-                            fout.write('{}\n'.format(xx_l.line.rstrip())) # suggested markup
+                            fout.write('{}\n'.format(xx_suggested_line.rstrip())) # suggested markup
 
                         # The suggested markup may be wrong because of non-human processing
                         # implementation that is not perfect. Calculate the difference list
                         # again based on the suggested markup of the translated line.
-                        xxlst2 = self.rexBackticked.findall(xx_l.line)
+                        xxlst2 = self.rexBackticked.findall(xx_suggested_line)
                         dlst2 = enlst[:]   # copy
                         for s in xxlst2:
                             if s in dlst2:
@@ -270,9 +271,9 @@ class Parser:
                             # Report to the log file with anomalies.
                             fa.write('\n{} {} -- en {}/{}:\n'.format(
                                 self.lang,
-                                xx_l.lineno,
-                                en_l.fname[1:2],
-                                en_l.lineno))
+                                xx_e.lineno(),
+                                en_e.fname[:2],
+                                en_e.lineno()))
 
                             # To the report of anomalies insert all values that can
                             # help to spot the problem.
@@ -282,10 +283,10 @@ class Parser:
                             fa.write('\tsuggested [{}] markup     = {} {}\n'.format(self.lang, len(xxlst2), repr(xxlst2)))
                             fa.write('\tmissing in suggested [{}] = {} {}\n'.format(self.lang, len(dlst2), repr(dlst2)))
                             fa.write('\tnumber of suggested replacement in [{}] = {}\n'.format(self.lang, n))
-                            fa.write('Original [en]:\n\t{}\n'.format(en_l.line.rstrip()))
+                            fa.write('Original [en]:\n\t{}\n'.format(en_e.line().rstrip()))
                             fa.write('Translation [{}]:\n\t{}\n'.format(self.lang, xxpara1))
                             if n > 0:
-                                fa.write('Suggested translation [{}]:\n\t{}\n'.format(self.lang, xx_l.line.rstrip()))
+                                fa.write('Suggested translation [{}]:\n\t{}\n'.format(self.lang, xx_suggested_line.rstrip()))
                             fa.write('-'*50 + '\n')
 
         # Capture the info about the report log files and about the result.
@@ -324,59 +325,60 @@ class Parser:
             else:   # as in 'en'
                 rexBadParaQuotes = re.compile(r'["„]')  # English uses “these”
 
-            for en_l, xx_l in zip(self.en_doclines, self.xx_doclines):
+            for en_e, xx_e in zip(self.en_elements, self.xx_elements):
 
                 # Depending on the element type...
-                if xx_l.type in ('para', 'li', 'uli', 'imgcaption', 'title'):
+                if xx_e.type in ('para', 'li', 'uli', 'imgcaption', 'title'):
                     # The elements that should use *nice* double quotes.
 
-                    if rexBadParaQuotes.search(xx_l.line) is not None:
+                    if rexBadParaQuotes.search(xx_e.line()) is not None:
                         # Improper double quote found. Count it and report it.
                         cnt += 1
 
                         f.write('\n{} {}/{} -- en {}/{}, {}:\n'.format(
                                 self.lang,
-                                xx_l.fname,
-                                xx_l.lineno,
-                                en_l.fname,
-                                en_l.lineno,
-                                repr(xx_l.type)))
+                                xx_e.fname,
+                                xx_e.lineno(),
+                                en_e.fname,
+                                en_e.lineno(),
+                                repr(xx_e.type)))
 
-                        f.write('\t{}\n'.format(en_l.line.rstrip()))
-                        f.write('\t{}\n'.format(xx_l.line.rstrip()))
+                        f.write('\t{}\n'.format(en_e.line().rstrip()))
+                        f.write('\t{}\n'.format(xx_e.line().rstrip()))
 
-                elif xx_l.type == 'code':
+                elif xx_e.type == 'code':
                     # Code should use the ASCII double quotes.
 
-                    if rexBadCodeQuotes.search(xx_l.line) is not None:
+                    if rexBadCodeQuotes.search(xx_e.line()) is not None:
 
                         # Unwanted double quote found.
                         cnt += 1
 
                         f.write('\n{} {}/{} -- en {}/{}, {}:\n'.format(
                                 self.lang,
-                                xx_l.fname,
-                                xx_l.lineno,
-                                en_l.fname,
-                                en_l.lineno,
-                                repr(xx_l.type)))
+                                xx_e.fname,
+                                xx_e.lineno(),
+                                en_e.fname,
+                                en_e.lineno(),
+                                repr(xx_e.type)))
 
-                        f.write('\t{}\n'.format(en_l.line.rstrip()))
-                        f.write('\t{}\n'.format(xx_l.line.rstrip()))
+                        f.write('\t{}\n'.format(en_e.line().rstrip()))
+                        f.write('\t{}\n'.format(xx_e.line().rstrip()))
 
-                elif xx_l.type not in ('empty', 'img'):
+                elif xx_e.type not in ('empty', 'img'):
                         # No double quotes should be in that type of element.
                         cnt += 1
 
-                        f.write('\ncs {}/{} -- en {}/{}, {}:\n'.format(
-                                xx_l.fname,
-                                xx_l.lineno,
-                                en_l.fname,
-                                en_l.lineno,
-                                repr(xx_l.type)))
+                        f.write('\n{} {}/{} -- en {}/{}, {}:\n'.format(
+                                self.lang,
+                                xx_e.fname,
+                                xx_e.lineno(),
+                                en_e.fname,
+                                en_e.lineno(),
+                                repr(xx_e.type)))
 
-                        f.write('\t{}\n'.format(en_l.line.rstrip()))
-                        f.write('\t{}\n'.format(xx_l.line.rstrip()))
+                        f.write('\t{}\n'.format(en_e.line().rstrip()))
+                        f.write('\t{}\n'.format(xx_e.line().rstrip()))
 
 
         # Capture the info about the log file and the result message.
@@ -404,56 +406,58 @@ class Parser:
         with open(fname, 'w', encoding='utf-8', newline='\n') as f,\
              open(fname_diff, 'w', encoding='utf-8', newline='\n') as fdiff:
 
-            # Regular exression for single or double stars around
+            # Regular expression for single or double stars around
             # a text. The underscore can also be used instead of
             # the star..
             rexEmStrong = re.compile(r'([*_]{1,2})([^*_]+?)\1')
 
-            for en_l, xx_l in zip(self.en_doclines, self.xx_doclines):
+            for en_e, xx_e in zip(self.en_elements, self.xx_elements):
 
                 # Only for elements with a typeset text (that is not
                 # inside code snippets)...
-                if xx_l.type in ('para', 'li', 'uli', 'imgcaption', 'title'):
+                if xx_e.type in ('para', 'li', 'uli', 'imgcaption', 'title'):
 
                     # Build the lists of marked substrings.
-                    enlst = rexEmStrong.findall(en_l.line)
-                    xxlst = rexEmStrong.findall(xx_l.line)
+                    enlst = rexEmStrong.findall(en_e.line())
+                    xxlst = rexEmStrong.findall(xx_e.line())
 
                     # If any markup was found, show the original and
                     # the translation in the log. If lengths of the lists
                     # differ, report to the difference log.
                     if enlst or xxlst:
-                        f.write('\ncs {}/{} -- en {}/{}, {}:\n'.format(
-                                xx_l.fname,
-                                xx_l.lineno,
-                                en_l.fname,
-                                en_l.lineno,
-                                repr(xx_l.type)))
+                        f.write('\n{} {}/{} -- en {}/{}, {}:\n'.format(
+                                self.lang,
+                                xx_e.fname,
+                                xx_e.lineno(),
+                                en_e.fname,
+                                en_e.lineno(),
+                                repr(xx_e.type)))
 
                         # Numbers of marked substrings.
                         f.write('\t{} : {}\n'.format(len(enlst), len(xxlst)))
 
                         # The lines.
-                        f.write('\t{}\n'.format(en_l.line.rstrip()))
-                        f.write('\t{}\n'.format(xx_l.line.rstrip()))
+                        f.write('\t{}\n'.format(en_e.line().rstrip()))
+                        f.write('\t{}\n'.format(xx_e.line().rstrip()))
 
                         # If the number of marked substrings differ,
                         # report also to the difference log.
                         if len(enlst) != len(xxlst):
                             cnt += 1
-                            fdiff.write('\ncs {}/{} -- en {}/{}, {}:\n'.format(
-                                        xx_l.fname,
-                                        xx_l.lineno,
-                                        en_l.fname,
-                                        en_l.lineno,
-                                        repr(xx_l.type)))
+                            fdiff.write('\n{} {}/{} -- en {}/{}, {}:\n'.format(
+                                        self.lang,
+                                        xx_e.fname,
+                                        xx_e.lineno(),
+                                        en_e.fname,
+                                        en_e.lineno(),
+                                        repr(xx_e.type)))
 
                             # Numbers of marked substrings.
                             fdiff.write('\t{} : {}\n'.format(len(enlst), len(xxlst)))
 
                             # The lines.
-                            fdiff.write('\t{}\n'.format(en_l.line.rstrip()))
-                            fdiff.write('\t{}\n'.format(xx_l.line.rstrip()))
+                            fdiff.write('\t{}\n'.format(en_e.line().rstrip()))
+                            fdiff.write('\t{}\n'.format(xx_e.line().rstrip()))
 
         # Capture the info about the logs and the result.
         self.log_info.append(self.short_name(fname))

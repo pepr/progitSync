@@ -49,13 +49,13 @@ class Parser:
             os.makedirs(self.lang_definitions_dir)
 
 
-        self.en_doclines = None  # doclines from the English original
-        self.xx_doclines = None  # doclines from the target language
+        self.en_doclines = None  # list of Line objects from the English original
+        self.xx_doclines = None  # ... and from the target language
 
-        self.en_elements = None  # doclines converted to more abstract elements
-        self.xx_elements = None
+        self.en_elements = None  # list of Element objects from English
+        self.xx_elements = None  # ... and from the target language
 
-        self.log_info = []       # lines for displaying through the stdout
+        self.log_info = []       # lines for displaying or logging
 
 
     def short_name(self, fname):
@@ -83,7 +83,7 @@ class Parser:
         fnameout = os.path.join(self.xx_aux_dir, 'pass1.txt')
         with open(fnameout, 'w', encoding='utf-8', newline='\n') as fout:
             for fname, lineno, line in gen.sourceFileLines(self.xx_src_dir):
-                fout.write('{}/{}:\t{}'.format(fname[1:2], lineno, line))
+                fout.write('{}/{}:\t{}'.format(fname[:2], lineno, line))
 
         # Capture the info about the generated file for logging.
         self.log_info.append(self.short_name(fnameout))
@@ -98,9 +98,9 @@ class Parser:
 
         # ... and `pass1.txt` with chapter/line info.
         fnameout = os.path.join(self.en_aux_dir, 'pass1.txt')
-        with open(fnameout, 'w', encoding='utf-8', newline='\n') as fout:
+        with open(fnameout, 'w', encoding='utf-8') as fout:
             for fname, lineno, line in gen.sourceFileLines(self.en_src_dir):
-                fout.write('{}/{}:\t{}'.format(fname[1:2], lineno, line))
+                fout.write('{}/{}:\t{}'.format(fname[:2], lineno, line))
         self.log_info.append(self.short_name(fnameout))
 
 
@@ -173,7 +173,7 @@ class Parser:
 
         # Delete and report the extra lines.
         xx_extra_fname = os.path.join(self.xx_aux_dir, 'pass1extra_lines.txt')
-        with open(xx_extra_fname, 'w', encoding='utf-8', newline='\n') as fout:
+        with open(xx_extra_fname, 'w', encoding='utf-8') as fout:
             index = 0                       # index the processed element
             while index < len(self.xx_doclines): # do not optimize, the length can change
                 docline = self.xx_doclines[index]# current element
@@ -206,7 +206,7 @@ class Parser:
 
         # Report the remaining target-language elements.
         xx_doclines_fname = os.path.join(self.xx_aux_dir, 'pass1doclines.txt')
-        with open(xx_doclines_fname, 'w', encoding='utf-8', newline='\n') as fout:
+        with open(xx_doclines_fname, 'w', encoding='utf-8') as fout:
             for docline in self.xx_doclines:
                 fout.write('{}/{} {}: {!r}\n'.format(
                            docline.fname[:2], docline.lineno,
@@ -218,7 +218,7 @@ class Parser:
         # Report the structure of the English original.
         self.en_doclines = []
         en_doclines_fname = os.path.join(self.en_aux_dir, 'pass1doclines.txt')
-        with open(en_doclines_fname, 'w', encoding='utf-8', newline='\n') as fout:
+        with open(en_doclines_fname, 'w', encoding='utf-8') as fout:
             for relname, lineno, line in gen.sourceFileLines(self.en_src_dir):
                 docline = doc.Line(relname, lineno, line)
                 self.en_doclines.append(docline)
@@ -231,7 +231,11 @@ class Parser:
 
 
     def convertDoclinesToElements(self):
-        '''Initial implementation just wraps doclines.'''
+        '''Initial implementation just wraps doclines.
+
+        The 'text' lines are simply renamed as 'para'.
+        '''
+        # English original.
         fname = os.path.join(self.en_aux_dir, 'pass1elements.txt')
         self.en_elements = []
         with open(fname, 'w', encoding='utf-8') as f:
@@ -239,12 +243,21 @@ class Parser:
                  docelem = doc.Element(docline)
                  self.en_elements.append(docelem)
                  f.write('{}/{} {}: {!r}\n'.format(
-                         docelem.fname[:2], docelem.no, 
+                         docelem.fname[:2], docelem.lineno(),
                          docelem.type, docelem.doclines[0].attrib))
         self.log_info.append(self.short_name(fname))
 
-        self.xx_elements = [doc.Element(docline) for docline in self.xx_doclines]
-
+        # The target language.
+        fname = os.path.join(self.xx_aux_dir, 'pass1elements.txt')
+        self.xx_elements = []
+        with open(fname, 'w', encoding='utf-8') as f:
+            for docline in self.xx_doclines:
+                 docelem = doc.Element(docline)
+                 self.xx_elements.append(docelem)
+                 f.write('{}/{} {}: {!r}\n'.format(
+                         docelem.fname[:2], docelem.lineno(),
+                         docelem.type, docelem.doclines[0].attrib))
+        self.log_info.append(self.short_name(fname))
 
 
     def checkStructDiffs(self):
@@ -273,33 +286,33 @@ class Parser:
         # Load the snippet definitions.
         translated_snippets = {}
         status = 0
-        en_doclines = None
-        xx_doclines = None
+        en_lines = None
+        xx_lines = None
         with open(translated_snippets_fname, encoding='utf-8') as f:
             for line in f:
                 if status == 0:
                     # First line is the key.
-                    en_doclines, xx_doclines = translated_snippets.setdefault(line, ([], []))
-                    assert len(en_doclines) == 0 # duplicities not allowed, split
-                    assert len(xx_doclines) == 0 # the definitions if necessary
-                    en_doclines.append(line)     # first line of the original
+                    en_lines, xx_lines = translated_snippets.setdefault(line, ([], []))
+                    assert len(en_lines) == 0 # duplicities not allowed, split
+                    assert len(xx_lines) == 0 # the definitions if necessary
+                    en_lines.append(line)     # first line of the original
                     status = 1
 
                 elif status == 1:
                     # Lines of the original until the separator.
                     if line.startswith('-----'):    # at least 5 from beginning
-                        en_doclines = None               # collected, done
+                        en_lines = None             # collected, done
                         status = 2
                     else:
-                        en_doclines.append(line)         # another line of the original
+                        en_lines.append(line)       # another line of the original
 
                 elif status == 2:
                     # Lines of the translated sources until the separator.
                     if line.startswith('====='):    # at least 5 from first pos
-                        xx_doclines = None               # collected, done
+                        xx_lines = None             # collected, done
                         status = 0
                     else:
-                        xx_doclines.append(line)         # another line of the translation
+                        xx_lines.append(line)       # another line of the translation
 
                 else:
                     raise NotImplementedError('status = {}\n'.format(status))
@@ -307,46 +320,42 @@ class Parser:
         # Capture the info about the file with definitions.
         self.log_info.append(self.short_name(translated_snippets_fname))
 
-        # Compare the document structures. (The para_len report is for future
-        # to detect whether the *content* of the paragraph is reasonably different
-        # than the original based on heuristics -- ratio of the length in the original
-        # and in the translation.)
+        # Compare the document structures.
         struct_diff_fname = os.path.join(self.xx_aux_dir, 'pass1struct_diff.txt')
-        para_len_fname = os.path.join(self.xx_aux_dir, 'pass1paralen.txt')
-        translated_snippets_fname = os.path.join(self.xx_aux_dir, 'pass1translated_snippets.txt')
-        with open(struct_diff_fname, 'w', encoding='utf-8', newline='\n') as f, \
-             open(translated_snippets_fname, 'w', encoding='utf-8', newline='\n') as ftransl, \
-             open(para_len_fname, 'w', encoding='utf-8', newline='\n') as flen:
+        translated_snippets_fname = os.path.join(self.xx_aux_dir,
+                                                 'pass1translated_snippets.txt')
+        with open(struct_diff_fname, 'w', encoding='utf-8') as f, \
+             open(translated_snippets_fname, 'w', encoding='utf-8') as ftransl:
 
             # Jumping around, we need the while loop and indexes.
             en_i = 0
             xx_i = 0
-            while en_i < len(self.en_doclines) and xx_i < len(self.xx_doclines):
+            while en_i < len(self.en_elements) and xx_i < len(self.xx_elements):
 
                 # Shortcut to element on indexes.
-                en_elem = self.en_doclines[en_i]
-                xx_elem = self.xx_doclines[xx_i]
+                en_elem = self.en_elements[en_i]
+                xx_elem = self.xx_elements[xx_i]
 
-                if en_elem.line in translated_snippets:
+                if en_elem.line() in translated_snippets:
                     # It could be the translated sequence. Get the definition lists.
                     # The line from the original is the key.
-                    enlst, xxlst = translated_snippets[en_elem.line]
+                    enlst, xxlst = translated_snippets[en_elem.line()]
 
                     # Lengths of both sequences.
                     enlen = len(enlst)
                     xxlen = len(xxlst)
 
                     # Compare the definitions with the sources.
-                    is_enseq = [e.line for e in self.en_doclines[en_i:en_i+enlen]] == enlst
-                    is_xxseq = [e.line for e in self.xx_doclines[xx_i:xx_i+xxlen]] == xxlst
+                    is_enseq = [e.line() for e in self.en_elements[en_i:en_i+enlen]] == enlst
+                    is_xxseq = [e.line() for e in self.xx_elements[xx_i:xx_i+xxlen]] == xxlst
 
                     # If both flags are set then the translated sequence was found.
                     # Report it and delete the elements from both original and translation.
                     if is_enseq and is_xxseq:
                         # Report the differences. The lines below tildas has the form
                         # to be possibly copy/pasted to the translated snippets file later.
-                        ftransl.write('{}/{}:\n'.format(en_elem.fname, en_elem.lineno))
-                        ftransl.write('{}/{}:\n'.format(xx_elem.fname, xx_elem.lineno))
+                        ftransl.write('{}/{}:\n'.format(en_elem.fname, en_elem.lineno()))
+                        ftransl.write('{}/{}:\n'.format(xx_elem.fname, xx_elem.lineno()))
                         ftransl.write('~~~~~~~~~~~~~~~\n')
                         ftransl.write(''.join(enlst))
                         ftransl.write('-----\n')
@@ -354,8 +363,8 @@ class Parser:
                         ftransl.write('========================== {}\n\n'.format(en_elem.fname))
 
                         # Delete the elements from the member lists.
-                        del self.en_doclines[en_i:en_i+enlen]
-                        del self.xx_doclines[xx_i:xx_i+xxlen]
+                        del self.en_elements[en_i:en_i+enlen]
+                        del self.xx_elements[xx_i:xx_i+xxlen]
 
                         # Corrections of the indexes as they will be incremented later.
                         en_i -= 1
@@ -368,40 +377,25 @@ class Parser:
                     # the same content.
                     if en_elem.type != xx_elem.type \
                        or (en_elem.type == 'code'
-                           and en_elem.line.rstrip() != xx_elem.line.rstrip()):
+                           and en_elem.line().rstrip() != xx_elem.line().rstrip()):
                         # Not in sync -- reset the optimistic value of the flag.
                         sync_flag = False
 
                         # Report the difference: heading contains file/lineno.
                         f.write('\nen {}/{} -- {} {}/{}:\n'.format(
                                 en_elem.fname,
-                                en_elem.lineno,
+                                en_elem.lineno(),
                                 self.lang,
                                 xx_elem.fname,
-                                xx_elem.lineno))
+                                xx_elem.lineno()))
 
                         # The type and the value of the English element.
                         f.write('\t{}:\t{}\n'.format(en_elem.type,
-                                                     en_elem.line.rstrip()))
+                                                     en_elem.line().rstrip()))
 
                         # The type and the value of the translated element.
                         f.write('\t{}:\t{}\n'.format(xx_elem.type,
-                                                     xx_elem.line.rstrip()))
-
-                    # The basics of the heuristic analysis (planned for future)
-                    # to detect some strangeness of the *content* of the texts.
-                    # Here the lengths from the original and the translation.
-                    elif en_elem.type in ('para', 'uli', 'li'):
-                        # Chapter ID, language, line no., lengths ratio as a text,
-                        # lengths ratio as the calculated value.
-                        flen.write('{} en/{} -- {}/{}:\t{}:{}\t({})\n'.format(
-                                   os.path.split(xx_elem.fname)[0],
-                                   en_elem.lineno,
-                                   self.lang,
-                                   xx_elem.lineno,
-                                   len(en_elem.line),
-                                   len(xx_elem.line),
-                                   len(en_elem.line) / len(xx_elem.line)))
+                                                     xx_elem.line().rstrip()))
 
                 # Jump to the next elements.
                 en_i += 1
@@ -411,7 +405,6 @@ class Parser:
         # identifier is reused -- here for the output file.)
         self.log_info.append(self.short_name(translated_snippets_fname))
         self.log_info.append(self.short_name(struct_diff_fname))
-        self.log_info.append(self.short_name(para_len_fname))
 
         # The information about the result of the check.
         self.log_info.append(('-'*30) + ' structure of the book is ' +
@@ -444,7 +437,6 @@ class Parser:
         # Capture the definition file to the log.
         self.log_info.append(self.short_name(fname))
 
-
         # Loop through all elements in both languages. It is assumed that
         # the structures were already synchronized. Generate the `content_sha.txt`
         # in the *auxiliary* directory -- it can be later moved to `definitions`
@@ -455,20 +447,20 @@ class Parser:
         with open(fname_new_sha, 'w', encoding='utf-8') as fsha, \
              open(fname_diff, 'w', encoding='utf-8') as fdiff:
 
-            for en_el, xx_el in zip(self.en_doclines, self.xx_doclines):
+            for en_el, xx_el in zip(self.en_elements, self.xx_elements):
 
-                # Ignore the lines with number zero as they are used
+                # Ignore the elements with number zero as they are used
                 # only as artificial separators between the chapters.
-                if en_el.lineno == 0:
+                if en_el.lineno() == '0':
                     continue
 
                 # Calculate the SHA-1 for the original line and for
                 # the translated line encoded in UTF-8.
-                en_sha = hashlib.sha1(en_el.line.encode('utf-8')).hexdigest()
-                xx_sha = hashlib.sha1(xx_el.line.encode('utf-8')).hexdigest()
+                en_sha = hashlib.sha1(en_el.line().encode('utf-8')).hexdigest()
+                xx_sha = hashlib.sha1(xx_el.line().encode('utf-8')).hexdigest()
 
                 # The chapter and lineno combination used as the key,
-                ch_lineno = '{}/{}'.format(en_el.fname[:2], en_el.lineno)
+                ch_lineno = '{}/{}'.format(en_el.fname[:2], en_el.lineno())
 
                 # Write the new values to the new definitions file
                 # (in the auxiliary directory). The chapter and lineno
@@ -490,13 +482,13 @@ class Parser:
 
                     note = ' changed' if en_sha != en_last_sha else ''
                     fdiff.write('en {}/{}{}\n'.format(
-                                en_el.fname[:2], en_el.lineno, note))
-                    fdiff.write('\t{}'.format(en_el.line))
+                                en_el.fname[:2], en_el.lineno(), note))
+                    fdiff.write('\t{}'.format(en_el.line()))
 
                     note = ' changed' if xx_sha != xx_last_sha else ''
                     fdiff.write('{} {}/{}{}\n'.format(
-                                self.lang, xx_el.fname[:2], xx_el.lineno, note))
-                    fdiff.write('\t{}'.format(xx_el.line))
+                                self.lang, xx_el.fname[:2], xx_el.lineno(), note))
+                    fdiff.write('\t{}'.format(xx_el.line()))
                     fdiff.write('\n')
 
                     cnt += 1    # another change
