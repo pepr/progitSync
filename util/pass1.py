@@ -248,6 +248,10 @@ class Parser:
                     elements.append(docelem)        # appended
                     if docelem.type in ('para', 'uli', 'li'):
                         status = 1
+                    elif docelem.type == 'code':
+                        status = 2
+                    elif docelem.type == 'empty':
+                        status = 3
 
                 elif status == 1:   # accumulate 'text'
                     if docline.type == 'text':
@@ -257,16 +261,88 @@ class Parser:
                         elements.append(docelem)        # appended
                         if docelem.type in ('para', 'uli', 'li'):
                             status = 1  # i.e. stay here
+                        elif docelem.type == 'code':
+                            status = 2
                         else:
                             status = 0
+
+                elif status == 2:   # after 'code'
+                    docelem = doc.Element(docline)  # new one
+                    elements.append(docelem)        # appended
+                    if docelem.type in ('para', 'uli', 'li'):
+                        status = 1
+                    elif docelem.type == 'code':
+                        status = 2      # i.e. stay here
+                    elif docelem.type == 'empty':
+                        status = 3
+                    else:
+                        status = 0
+
+                elif status == 3:   # was 'empty' after 'code'
+                    # The earlier 'empty' may actually be part
+                    # of the code snippet.
+                    docelem = doc.Element(docline)  # new one
+                    elements.append(docelem)        # appended
+
+                    # If the element is different than 'empty' or 'code', shrink
+                    # the previous 'empty' element (if any) to a single one.
+                    if docelem.type not in ('empty', 'code'):
+                        prev = elements[-3] # previous to the 'empty'
+                        while prev.type == 'empty':
+                            # Extend the doclist of the previous by doclines
+                            # from the last 'empty' element (not to loose
+                            # the source lines representation). Then delete
+                            # the absorbed empty element.
+                            prev.extend_lines_from(elements[-2])
+                            del elements[-2]
+
+                            # There may be more 'empty' elements because
+                            # we did not know they are not part of
+                            # the code snippet.
+                            prev = elements[-3]
+
+                    # Now decide the next status based on the last
+                    # element type.
+                    if docelem.type == 'code':
+                        status = 2
+                    elif docelem.type == 'empty':
+                        status = 3  # i.e. stay here
+                    elif docelem.type in ('para', 'uli', 'li'):
+                        status = 1
+                    else:
+                        status = 0
+
+                elif status == 4:   # after 'empty'
+                    # The earlier 'empty' is not part of the code snippet.
+                    # Do not append the element if it is 'empty' again.
+                    # Absorb the lines instead.
+                    docelem = doc.Element(docline)  # new one
+                    if docelem.type == 'empty':
+                        elements[-1].extend_lines_from(docelem) # absorbed
+                    else:
+                        elements.append(docelem)    # appended
+
+                    # Now decide the next status based on the last
+                    # appended element type.
+                    e = elements[-1]
+                    if e.type == 'code':
+                        status = 2
+                    elif e.type == 'empty':
+                        status = 4  # i.e. stay here
+                    elif e.type in ('para', 'uli', 'li'):
+                        status = 1
+                    else:
+                        status = 0
+
                 else:
                     raise NotImplementedError('status = {}'.format(status))
 
             # Report the collected elements.
             with open(fname, 'w', encoding='utf-8') as f:
-                 f.write('{}/{} {}: {!r}\n'.format(
-                         docelem.fname[:2], docelem.lineno(),
-                         docelem.type, docelem.value()))
+                for docelem in elements:
+                    f.write('{}/{} {}: {!r}\n'.format(
+                            docelem.fname[:2], docelem.lineno(),
+                            docelem.type, docelem.value()))
             self.log_info.append(self.short_name(fname))
 
             # Return the collected result list.

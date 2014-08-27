@@ -132,6 +132,9 @@ class Element:
         '''Appends the docline to the list.'''
         self.doclines.append(docline)
 
+    def extend_lines_from(self, element):
+        '''Extends the doclines list by items from the element.'''
+        self.doclines.extend(element.doclines)
 
     def _line(self):
         '''Probably legacy -- to be replaced by something better.'''
