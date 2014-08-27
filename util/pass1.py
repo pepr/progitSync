@@ -541,7 +541,9 @@ class Parser:
         # directory. Report the differences to the file.
         fname_new_sha = os.path.join(self.xx_aux_dir, 'content_sha.txt')
         fname_diff = os.path.join(self.xx_aux_dir, 'pass1content_diff.txt')
-        cnt = 0     # init -- number of changes
+        cnt_en_changed = 0      # init -- number of changes in original
+        cnt_xx_changed = 0      # init -- number of changes in target
+        cnt_unchecked = 0       # init -- number of unchecked translations
         with open(fname_new_sha, 'w', encoding='utf-8') as fsha, \
              open(fname_diff, 'w', encoding='utf-8') as fdiff:
 
@@ -579,27 +581,50 @@ class Parser:
                 # of the SHA's differ from the definition.
                 if en_sha != en_last_sha or xx_sha != xx_last_sha:
 
-                    note = ' changed' if en_sha != en_last_sha else ''
+                    # English.
+                    if en_last_sha == '':
+                        note = ' unchecked'
+                        cnt_unchecked += 1
+                    elif en_sha != en_last_sha:
+                        note = ' changed'
+                        cnt_en_changed += 1
+                    else:
+                        note = ''
                     fdiff.write('en {}/{}{}\n'.format(
                                 en_el.fname[:2], en_el.lineno(), note))
                     fdiff.write('\t{}\n'.format(en_el.value()))
 
-                    note = ' changed' if xx_sha != xx_last_sha else ''
+                    # The target language.
+                    if xx_last_sha == '':
+                        note = ' unchecked'
+                    elif xx_sha != xx_last_sha:
+                        note = ' changed'
+                        cnt_xx_changed += 1
+                    else:
+                        note = ''
                     fdiff.write('{} {}/{}{}\n'.format(
                                 self.lang, xx_el.fname[:2], xx_el.lineno(), note))
                     fdiff.write('\t{}\n'.format(xx_el.value()))
                     fdiff.write('\n')
-
-                    cnt += 1    # another change
 
         # Capture the new definition file to the log, the report file,
         # and the result.
         self.log_info.append(self.short_name(fname_new_sha))
         self.log_info.append(self.short_name(fname_diff))
 
-        self.log_info.append(('-'*30) + ' content changes: {}'.format(cnt))
+        if cnt_en_changed > 0:
+            note = ' [en] content changed: {}'.format(cnt_en_changed)
+            self.log_info.append(('-'*30) + note)
 
-        if cnt > 0:
+        if cnt_xx_changed > 0:
+            note = ' [{}] content changed: {}'.format(self.lang, cnt_xx_changed)
+            self.log_info.append(('-'*30) + note)
+
+        if cnt_unchecked > 0:
+            note = ' content unchecked: {}'.format(cnt_unchecked)
+            self.log_info.append(('-'*30) + note)
+
+        if (cnt_en_changed + cnt_xx_changed + cnt_unchecked) > 0:
             self.log_info.append(
                 "Have a look at the following report file:\n\t'{}'\n"
                 .format(fname_diff))
