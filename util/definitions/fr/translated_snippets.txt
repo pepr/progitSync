@@ -5,4 +5,65 @@
 	$ git help <verbe>
 	$ git <verbe> --help
 	$ man git-<verbe>
-==================================
+================================== ch.01
+	$ git add *.c
+	$ git add README
+	$ git commit -m 'initial project version'
+-----
+	$ git add *.c
+	$ git add README
+	$ git commit –m 'version initiale du projet'
+================================== ch.02
+	$ vim README
+	$ git status
+	On branch master
+	Untracked files:
+	  (use "git add <file>..." to include in what will be committed)
+-----
+	$ vim LISEZMOI
+	$ git status
+	On branch master
+	Untracked files:
+	  (use "git add <file>..." to include in what will be committed)
+================================== ch.02
+	        README
+-----
+	        LISEZMOI
+================================== ch.02
+	$ git add README
+-----
+	$ git add LISEZMOI
+================================== ch.02
+	        new file:   README
+-----
+	        new file:   LISEZMOI
+================================== ch.02
+	# a comment - this is ignored
+	# no .a files
+	*.a
+	# but do track lib.a, even though you're ignoring .a files above
+	!lib.a
+	# only ignore the root TODO file, not subdir/TODO
+	/TODO
+	# ignore all files in the build/ directory
+	build/
+	# ignore doc/notes.txt, but not doc/server/arch.txt
+	doc/*.txt
+	# ignore all .txt files in the doc/ directory
+	doc/**/*.txt
+-----
+	# un commentaire, cette ligne est ignorée
+	# pas de fichier .a
+	*.a
+	# mais suivre lib.a malgré la règle précédente
+	!lib.a
+	# ignorer uniquement le fichier TODO à la racine du projet
+	/TODO
+	# ignorer tous les fichiers dans le répertoire build
+	build/
+	# ignorer doc/notes.txt, mais pas doc/server/arch.txt
+	doc/*.txt
+	# ignorer tous les fichiers .txt sous le répertoire doc/
+	doc/**/*.txt
+================================== ch.02
+            
