@@ -526,11 +526,12 @@ class Parser:
             f = open(fname, 'w', encoding='utf-8')
             f.close()
 
-        sha = {}
+        en_chl_to_shas = {}
+        en_chl_to_shas = {}
         with open(fname, encoding='utf-8') as f:
             for line in f:
-                ch_lineno, en_sha, xx_sha = line.split()
-                sha[ch_lineno] = (en_sha, xx_sha)
+                en_ch_lineno, xx_ch_lineno, en_sha, xx_sha = line.split()
+                en_chl_to_shas[en_ch_lineno] = (en_sha, xx_sha)
 
         # Capture the definition file to the log.
         self.log_info.append(self.short_name(fname))
@@ -560,22 +561,22 @@ class Parser:
                 en_sha = hashlib.sha1(en_el.value(False).encode('utf-8')).hexdigest()
                 xx_sha = hashlib.sha1(xx_el.value(False).encode('utf-8')).hexdigest()
 
-                # The chapter and lineno combination used as the key,
-                ch_lineno = '{}/{}'.format(en_el.fname[:2], en_el.lineno())
+                # The chapter and lineno combination.
+                en_ch_lineno = '{}/{}'.format(en_el.fname[:2], en_el.lineno())
+                xx_ch_lineno = '{}/{}'.format(xx_el.fname[:2], xx_el.lineno())
 
                 # Write the new values to the new definitions file
                 # (in the auxiliary directory). The chapter and lineno
-                # is the auxiliary information that helps to copy/paste
-                # the manually checked parts of the book to the definition
-                # file.
-                fsha.write('{} {} {}\n'.format(
-                    ch_lineno,
-                    en_sha,
-                    xx_sha))
+                # informations for both languages are used when the move
+                # of the element is detected. It also helps to copy/paste
+                # the sha lines to the definition file when manually
+                # checking parts of the book.
+                fsha.write('{} {} {} {}\n'.format(
+                    en_ch_lineno, xx_ch_lineno, en_sha, xx_sha))
 
                 # Get the last SHA's from the definition. If the record
                 # was not defined, the empty strings are returned.
-                en_last_sha, xx_last_sha = sha.get(ch_lineno, ('', ''))
+                en_last_sha, xx_last_sha = en_chl_to_shas.get(en_ch_lineno, ('', ''))
 
                 # The element contents are reported as changed only if at least one
                 # of the SHA's differ from the definition.
