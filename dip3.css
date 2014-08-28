@@ -314,7 +314,7 @@ h1 {
 }
 h1:before {
   counter-increment: h1;
-  content: "Chapter " counter(h1) ". ";
+  content: "Kapitola " counter(h1) ". ";
 }
 h2:before {
   counter-increment: h2;
