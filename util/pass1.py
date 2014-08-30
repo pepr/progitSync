@@ -55,6 +55,9 @@ class Parser:
         self.en_elements = None  # list of Element objects from English
         self.xx_elements = None  # ... and from the target language
 
+        self.en_sha_to_elem = {} # reverse lookup table
+        self.xx_sha_to_elem = {} # reverse lookup table
+
         self.log_info = []       # lines for displaying or logging
 
 
@@ -233,7 +236,7 @@ class Parser:
     def convertDoclinesToElements(self):
         '''Some elements glue more doclines together.'''
 
-        def aux_convert(self, aux_dir, doclines):
+        def aux_convert(self, aux_dir, doclines, sha_to_elem):
             '''The core used for both English and the target language.'''
             fname = os.path.join(aux_dir, 'pass1elements.txt')
 
@@ -337,12 +340,23 @@ class Parser:
                 else:
                     raise NotImplementedError('status = {}'.format(status))
 
-            # Add sha to the elements and report their content.
+            # Add sha to the elements, fill the reverse lookup table,
+            # and report their content.
             with open(fname, 'w', encoding='utf-8') as f:
                 for e in elements:
                     # Calculate the SHA-1 for the original line(s)
                     # encoded in UTF-8 (including newlines, no rstrips).
                     e.sha = hashlib.sha1(e.value(False).encode('utf-8')).hexdigest()
+
+                    # Insert the record to the reverse lookup table.
+                    # There may be repeated items: empty elements are
+                    # all the same elsewhere, the code elements, may
+                    # often repeat as the same lines may appear easily
+                    # in more snippets, the titles like "Summary" also
+                    # repeat. Ignore the cases. The last known repeated
+                    # element with the same value will be captured
+                    # in the reverse lookup table.
+                    sha_to_elem[e.sha] = e
 
                     # Report the content of the element.
                     f.write('{}/{} {} {}: {!r}\n'.format(
@@ -355,11 +369,11 @@ class Parser:
 
         # The target language.
         self.xx_elements = aux_convert(self, self.xx_aux_dir,
-                                       self.xx_doclines)
+                                       self.xx_doclines, self.xx_sha_to_elem)
 
         # English original.
         self.en_elements = aux_convert(self, self.en_aux_dir,
-                                       self.en_doclines)
+                                       self.en_doclines, self.en_sha_to_elem)
 
 
     def checkStructDiffs(self):
