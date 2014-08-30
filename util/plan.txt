@@ -1,0 +1,7 @@
+# `pass1.py`
+
+The implementation should be changed to improve detection of changes in the original. For example, the change of en between 71619c4f and 0cdd7e8a added a paragraph in chapter 1 and modified the paragraph just before the added one.
+
+The implementation of `pass1.py` reports a difference in structure, but it does not recognize that all the other structure is almost fine. The reason is that the structure match was not based earlier on the content, and there were no `content_sha.txt`. The structure match was based only on the types.
+
+After introducing the hash hex digest, it is possible to find (based on `util/definitions/xx/content_sha.txt`) what elements only moved to another location, and what elements were deleted or changed.
