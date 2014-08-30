@@ -337,12 +337,17 @@ class Parser:
                 else:
                     raise NotImplementedError('status = {}'.format(status))
 
-            # Report the collected elements.
+            # Add sha to the elements and report their content.
             with open(fname, 'w', encoding='utf-8') as f:
-                for docelem in elements:
-                    f.write('{}/{} {}: {!r}\n'.format(
-                            docelem.fname[:2], docelem.lineno(),
-                            docelem.type, docelem.value()))
+                for e in elements:
+                    # Calculate the SHA-1 for the original line(s)
+                    # encoded in UTF-8 (including newlines, no rstrips).
+                    e.sha = hashlib.sha1(e.value(False).encode('utf-8')).hexdigest()
+
+                    # Report the content of the element.
+                    f.write('{}/{} {} {}: {!r}\n'.format(
+                            e.fname[:2], e.lineno(),
+                            e.sha[:6], e.type, e.value()))
             self.log_info.append(self.short_name(fname))
 
             # Return the collected result list.
@@ -479,21 +484,24 @@ class Parser:
                         # Not in sync -- reset the optimistic value of the flag.
                         sync_flag = False
 
-                        # Report the difference: heading contains file/lineno.
-                        f.write('\nen {}/{} -- {} {}/{}:\n'.format(
-                                en_elem.fname,
+                        # Report the difference: heading contains
+                        # chapter no., lineno, type, and the value.
+                        # English...
+                        f.write('\nen {}/{} [{}] {}:\n\t{}\n'.format(
+                                en_elem.fname[:2],
                                 en_elem.lineno(),
+                                en_elem.sha[:6],
+                                en_elem.type,
+                                en_elem.value()))
+
+                        # The target language...
+                        f.write('{} {}/{} [{}] {}:\n\t{}\n'.format(
                                 self.lang,
-                                xx_elem.fname,
-                                xx_elem.lineno()))
-
-                        # The type and the value of the English element.
-                        f.write('\t{}:\t{}\n'.format(en_elem.type,
-                                                     en_elem.value()))
-
-                        # The type and the value of the translated element.
-                        f.write('\t{}:\t{}\n'.format(xx_elem.type,
-                                                     xx_elem.value()))
+                                xx_elem.fname[:2],
+                                xx_elem.lineno(),
+                                xx_elem.sha[:6],
+                                xx_elem.type,
+                                xx_elem.value()))
 
                 # Jump to the next elements.
                 en_i += 1
@@ -555,11 +563,9 @@ class Parser:
                 if en_el.lineno() == '0':
                     continue
 
-                # Calculate the SHA-1 for the original line(s) and for
-                # the translated line(s) encoded in UTF-8. (Possibly more
-                # lines as one value but without rstrips.
-                en_sha = hashlib.sha1(en_el.value(False).encode('utf-8')).hexdigest()
-                xx_sha = hashlib.sha1(xx_el.value(False).encode('utf-8')).hexdigest()
+                # Get the SHA-1 for the original and for the translated.
+                en_sha = en_el.sha
+                xx_sha = xx_el.sha
 
                 # The chapter and lineno combination.
                 en_ch_lineno = '{}/{}'.format(en_el.fname[:2], en_el.lineno())
@@ -638,7 +644,6 @@ class Parser:
         self.loadDoclineLists()
         self.convertDoclinesToElements()
         sync_flag = self.checkStructDiffs()
-        if sync_flag:
-            self.checkContentChanges()
+        self.checkContentChanges()
 
         return '\n\t'.join(self.log_info)
