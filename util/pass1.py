@@ -236,15 +236,21 @@ class Parser:
     def convertDoclinesToElements(self):
         '''Some elements glue more doclines together.'''
 
-        def aux_convert(self, aux_dir, doclines, sha_to_elem):
-            '''The core used for both English and the target language.'''
+        def aux_convert(self, aux_dir, doclines):
+            '''Returns the list of elements and the reverse table.
+
+            The reverse table uses the element SHA digest as a key,
+            and the reference to the element object as the value.
+            The core used for both English and the target language.'''
+
             fname = os.path.join(aux_dir, 'pass1elements.txt')
 
             # As some elements contain more doclines, the list
             # must be constructed first and only then it can
             # be written to the fname file.
-            elements = []
-            status = 0      # finite automaton
+            elements = []       # init -- empty list of elements
+            sha_to_elem = {}    # init -- empty reverse table
+            status = 0          # finite automaton
             for docline in doclines:
                 if status == 0:     # no expectations
                     docelem = doc.Element(docline)  # new one
@@ -364,16 +370,18 @@ class Parser:
                             e.sha[:6], e.type, e.value()))
             self.log_info.append(self.short_name(fname))
 
-            # Return the collected result list.
-            return elements
+            # Return the collected result list, and the reverse table.
+            return elements, sha_to_elem
 
         # The target language.
-        self.xx_elements = aux_convert(self, self.xx_aux_dir,
-                                       self.xx_doclines, self.xx_sha_to_elem)
+        self.xx_elements, self.xx_sha_to_elem = aux_convert(self,
+                                                            self.xx_aux_dir,
+                                                            self.xx_doclines)
 
         # English original.
-        self.en_elements = aux_convert(self, self.en_aux_dir,
-                                       self.en_doclines, self.en_sha_to_elem)
+        self.en_elements, self.en_sha_to_elem = aux_convert(self,
+                                                            self.en_aux_dir,
+                                                            self.en_doclines)
 
 
     def checkStructDiffs(self):
