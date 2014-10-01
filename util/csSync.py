@@ -6,6 +6,8 @@
 import pass1
 import pass2
 
+import langdoc
+
 
 # You should have the fresh sources of the original and of the translation.
 #
@@ -23,6 +25,14 @@ print('pass 1:')
 parser1 = pass1.Parser('cs', '../../progit/', '../')
 msg = parser1.run()
 print('\t' + msg)
+
+##???
+print('-------------------------')
+langdoc = langdoc.LangDoc('cs', '../../progit/', '../')
+msg = langdoc.run()
+print('\t' + msg)
+print('-------------------------')
+
 
 # The second path consumes the result of the first one. It assumes the
 # structure is already synchronized; otherwise, ignore the reports until
