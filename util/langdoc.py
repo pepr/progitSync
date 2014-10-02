@@ -20,10 +20,10 @@ class LangDoc:
         self.root_aux_dir = os.path.realpath(root_aux_dir)
 
         # Derive the location of the directory for the language.
-        self.xx_src_dir = os.path.join(self.root_src_dir, lang)
+        self.src_dir = os.path.join(self.root_src_dir, lang)
 
         # Derive the auxiliary directory for the language.
-        self.xx_aux_dir = os.path.join(self.root_aux_dir, lang + '_aux')
+        self.aux_dir = os.path.join(self.root_aux_dir, lang + '_aux')
 
         # Root directory for the language-dependent definition files.
         path, scriptname = os.path.split(__file__)
@@ -33,15 +33,15 @@ class LangDoc:
         self.lang_definitions_dir = os.path.join(self.root_definitions_dir, self.lang)
 
         # Create the directories if they does not exist.
-        if not os.path.isdir(self.xx_aux_dir):
-            os.makedirs(self.xx_aux_dir)
+        if not os.path.isdir(self.aux_dir):
+            os.makedirs(self.aux_dir)
 
         if not os.path.isdir(self.lang_definitions_dir):
             os.makedirs(self.lang_definitions_dir)
 
-        self.xx_doclines = None  # list of Line objects the language
-        self.xx_elements = None  # list of Element objects from the language
-        self.xx_sha_to_elem = {} # reverse lookup table
+        self.doclines = None  # list of Line objects the language
+        self.elements = None  # list of Element objects from the language
+        self.sha_to_elem = {} # reverse lookup table
 
         self.log_info = []       # lines for displaying or logging
 
@@ -58,9 +58,9 @@ class LangDoc:
     def writePass1txtFiles(self):
         # Copy the language sources into the `single.markdown`.
         # This can be useful when converting the whole book using the PanDoc utility.
-        fnameout = os.path.join(self.xx_aux_dir, 'xx_single.markdown')
+        fnameout = os.path.join(self.aux_dir, 'xx_single.markdown')
         with open(fnameout, 'w', encoding='utf-8', newline='\n') as fout:
-            for fname, lineno, line in gen.sourceFileLines(self.xx_src_dir):
+            for fname, lineno, line in gen.sourceFileLines(self.src_dir):
                 fout.write(line)
 
         # Capture the info about the generated file.
@@ -68,9 +68,9 @@ class LangDoc:
 
         # Copy the language sources with chapter/line info into a single
         # file -- mostly for debugging, not consumed later.
-        fnameout = os.path.join(self.xx_aux_dir, 'xx_pass1.txt')
+        fnameout = os.path.join(self.aux_dir, 'xx_pass1.txt')
         with open(fnameout, 'w', encoding='utf-8', newline='\n') as fout:
-            for fname, lineno, line in gen.sourceFileLines(self.xx_src_dir):
+            for fname, lineno, line in gen.sourceFileLines(self.src_dir):
                 fout.write('{}/{}:\t{}'.format(fname[:2], lineno, line))
 
         # Capture the info about the generated file for logging.
@@ -85,15 +85,15 @@ class LangDoc:
 
         # Loop through the lines and build the lists of Line objects
         # from the language sources.
-        self.xx_doclines = []
-        for relname, lineno, line in gen.sourceFileLines(self.xx_src_dir):
+        self.doclines = []
+        for relname, lineno, line in gen.sourceFileLines(self.src_dir):
             docline = doc.Line(relname, lineno, line)
-            self.xx_doclines.append(docline)
+            self.doclines.append(docline)
 
         # Report the language elements.
-        xx_doclines_fname = os.path.join(self.xx_aux_dir, 'xx_pass1doclines.txt')
+        xx_doclines_fname = os.path.join(self.aux_dir, 'xx_pass1doclines.txt')
         with open(xx_doclines_fname, 'w', encoding='utf-8') as fout:
-            for docline in self.xx_doclines:
+            for docline in self.doclines:
                 fout.write('{}/{} {}: {!r}\n'.format(
                            docline.fname[:2], docline.lineno,
                            docline.type, docline.attrib))
@@ -109,18 +109,18 @@ class LangDoc:
         The reverse table uses the element SHA digest as a key,
         and the reference to the element object as the value.'''
 
-        fname = os.path.join(self.xx_aux_dir, 'xx_pass1elements.txt')
+        fname = os.path.join(self.aux_dir, 'xx_pass1elements.txt')
 
         # As some elements contain more doclines, the list
         # must be constructed first and only then it can
         # be written to the fname file.
-        self.xx_elements = []       # init -- empty list of elements
-        self.xx_sha_to_elem = {}    # init -- empty reverse table
+        self.elements = []       # init -- empty list of elements
+        self.sha_to_elem = {}    # init -- empty reverse table
         status = 0          # finite automaton
-        for docline in self.xx_doclines:
+        for docline in self.doclines:
             if status == 0:     # no expectations
                 docelem = doc.Element(docline)  # new one
-                self.xx_elements.append(docelem)        # appended
+                self.elements.append(docelem)        # appended
                 if docelem.type in ('para', 'uli', 'li'):
                     status = 1
                 elif docelem.type == 'code':
@@ -133,7 +133,7 @@ class LangDoc:
                     docelem.append(docline)     # append to the last one
                 else:
                     docelem = doc.Element(docline)  # new one
-                    self.xx_elements.append(docelem)        # appended
+                    self.elements.append(docelem)        # appended
                     if docelem.type in ('para', 'uli', 'li'):
                         status = 1  # i.e. stay here
                     elif docelem.type == 'code':
@@ -143,7 +143,7 @@ class LangDoc:
 
             elif status == 2:   # after 'code'
                 docelem = doc.Element(docline)  # new one
-                self.xx_elements.append(docelem)        # appended
+                self.elements.append(docelem)        # appended
                 if docelem.type in ('para', 'uli', 'li'):
                     status = 1
                 elif docelem.type == 'code':
@@ -157,24 +157,24 @@ class LangDoc:
                 # The earlier 'empty' may actually be part
                 # of the code snippet.
                 docelem = doc.Element(docline)  # new one
-                self.xx_elements.append(docelem)        # appended
+                self.elements.append(docelem)        # appended
 
                 # If the element is different than 'empty' or 'code', shrink
                 # the previous 'empty' element (if any) to a single one.
                 if docelem.type not in ('empty', 'code'):
-                    prev = self.xx_elements[-3] # previous to the 'empty'
+                    prev = self.elements[-3] # previous to the 'empty'
                     while prev.type == 'empty':
                         # Extend the doclist of the previous by doclines
                         # from the last 'empty' element (not to loose
                         # the source lines representation). Then delete
                         # the absorbed empty element.
-                        prev.extend_lines_from(self.xx_elements[-2])
-                        del self.xx_elements[-2]
+                        prev.extend_lines_from(self.elements[-2])
+                        del self.elements[-2]
 
                         # There may be more 'empty' elements because
                         # we did not know they are not part of
                         # the code snippet.
-                        prev = self.xx_elements[-3]
+                        prev = self.elements[-3]
 
                 # Now decide the next status based on the last
                 # element type.
@@ -193,13 +193,13 @@ class LangDoc:
                 # Absorb the lines instead.
                 docelem = doc.Element(docline)  # new one
                 if docelem.type == 'empty':
-                    self.xx_elements[-1].extend_lines_from(docelem) # absorbed
+                    self.elements[-1].extend_lines_from(docelem) # absorbed
                 else:
-                    self.xx_elements.append(docelem)    # appended
+                    self.elements.append(docelem)    # appended
 
                 # Now decide the next status based on the last
                 # appended element type.
-                e = self.xx_elements[-1]
+                e = self.elements[-1]
                 if e.type == 'code':
                     status = 2
                 elif e.type == 'empty':
@@ -215,7 +215,7 @@ class LangDoc:
         # Add sha to the elements, fill the reverse lookup table,
         # and report their content.
         with open(fname, 'w', encoding='utf-8') as f:
-            for e in self.xx_elements:
+            for e in self.elements:
                 # Calculate the SHA-1 for the original line(s)
                 # encoded in UTF-8 (including newlines, no rstrips).
                 e.sha = hashlib.sha1(e.value(False).encode('utf-8')).hexdigest()
@@ -228,13 +228,14 @@ class LangDoc:
                 # repeat. Ignore the cases. The last known repeated
                 # element with the same value will be captured
                 # in the reverse lookup table.
-                self.xx_sha_to_elem[e.sha] = e
+                self.sha_to_elem[e.sha] = e
 
                 # Report the content of the element.
                 f.write('{}/{} {} {}: {!r}\n'.format(
                         e.fname[:2], e.lineno(),
                         e.sha[:6], e.type, e.value()))
         self.log_info.append(self.short_name(fname))
+
 
     def run(self):
         '''Launcher of the phases.'''
@@ -244,4 +245,3 @@ class LangDoc:
         self.convertDoclinesToElements()
 
         return '\n\t'.join(self.log_info)
-        
